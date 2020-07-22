@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<projectMdd:Backend xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:projectMdd="http://www.example.org/projectMdd"/>
+<projectMdd:Backend xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:projectMdd="http://www.example.org/projectMdd">
+  <entities inwardRelations="//@relation.0 //@relation.1" name="Team"/>
+  <entities inwardRelations="//@relation.0" name="Game"/>
+  <entities inwardRelations="//@relation.1" name="Monk"/>
+  <entities name="Ref"/>
+  <relation start="//@entities.0" name="TeamGame" end="//@entities.1"/>
+  <relation start="//@entities.0" name="TeamMonk" end="//@entities.2"/>
+</projectMdd:Backend>
