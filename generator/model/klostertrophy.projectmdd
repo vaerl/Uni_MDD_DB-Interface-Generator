@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectMdd:Backend xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:projectMdd="http://www.example.org/projectMdd">
+  <entities outwardRelations="//@relation.0" name="Team">
+    <attributes xsi:type="projectMdd:EnumAttribute" name="status">
+      <values>done</values>
+      <values>playing</values>
+    </attributes>
+    <attributes xsi:type="projectMdd:TypeAttribute" name="name"/>
+    <attributes xsi:type="projectMdd:TypeAttribute" name="points" type="Integer"/>
+    <attributes xsi:type="projectMdd:EnumAttribute" name="gender">
+      <values>male</values>
+      <values>female</values>
+      <values>mixed</values>
+    </attributes>
+  </entities>
+  <entities inwardRelations="//@relation.0" name="Game">
+    <attributes xsi:type="projectMdd:TypeAttribute" name="name"/>
+    <attributes xsi:type="projectMdd:EnumAttribute" name="status">
+      <values>done</values>
+      <values>playing</values>
+    </attributes>
+    <attributes xsi:type="projectMdd:EnumAttribute" name="sortOrder">
+      <values>ascending</values>
+      <values>descending</values>
+    </attributes>
+    <attributes xsi:type="projectMdd:EnumAttribute" name="pointType">
+      <values>time</values>
+      <values>points</values>
+    </attributes>
+  </entities>
+  <entities transient="true" display="false" name="Admin">
+    <attributes xsi:type="projectMdd:TypeAttribute" name="username"/>
+    <attributes xsi:type="projectMdd:TypeAttribute" name="password"/>
+  </entities>
+  <relation start="//@entities.0" name="TeamGame" end="//@entities.1" type="ManyToMany"/>
+</projectMdd:Backend>
