@@ -28,8 +28,6 @@ import org.eclipse.ui.PlatformUI;
 import generator.Generator;
 
 public class GenerationHandler extends AbstractHandler {
-
-	
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

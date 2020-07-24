@@ -37,14 +37,14 @@
          point="org.eclipse.ui.commands">
       <command
             id="projectMdd.editor.generatorCommand"
-            name="GenratorCommand">
+            name="GeneratorCommand">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            locationURI="popup:projectMdd.presentation.ProjectMddEditorID?before=additions">
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?endof=group.edit">
          <command
                commandId="projectMdd.editor.generatorCommand"
                label="Generate"
@@ -57,14 +57,6 @@
       <handler
             class="generator.GenerationHandler"
             commandId="projectMdd.editor.generatorCommand">
-         <enabledWhen>
-            <iterate
-                  ifEmpty="false">
-               <instanceof
-                     value="projectMdd.Backend">
-               </instanceof>
-            </iterate>
-         </enabledWhen>
       </handler>
    </extension>
 
