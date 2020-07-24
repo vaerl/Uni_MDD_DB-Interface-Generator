@@ -1,6 +1,5 @@
 package generator;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -9,19 +8,13 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
-import org.eclipse.xtext.xbase.lib.Functions.Function1;
-import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import projectMdd.Backend;
+import projectMdd.Entity;
 
 /**
  * The generator for ecore files.
@@ -33,12 +26,12 @@ public class Generator {
   /**
    * The path where to generate the Java files.
    */
-  public static final String SOURCE_FOLDER_PATH = "src-gen/";
+  public static final String SOURCE_FOLDER_PATH = "src-gen/main/";
   
   /**
-   * The base package name.
+   * The base package name. Needs the succeeding dot!
    */
-  public static final String PACKAGE = "de.thm.mdd.testapp.";
+  public static final String PACKAGE = "de.thm.dbiGenerator.";
   
   public static final String PACKAGE_PATH = ("/" + Generator.PACKAGE.replaceAll("\\.", "/"));
   
@@ -99,48 +92,24 @@ public class Generator {
    */
   public void doGenerate(final Resource resourceEcore, final IProject project, final IProgressMonitor progressMonitor) {
     try {
-      progressMonitor.beginTask("Generating Java code", 2);
-      progressMonitor.subTask("Creating folders");
+      progressMonitor.beginTask("Generating Java code.", 2);
+      progressMonitor.subTask("Creating folders.");
       IFolder folder = project.getFolder(Generator.SOURCE_FOLDER_PATH);
-      boolean _exists = folder.exists();
-      boolean _not = (!_exists);
-      if (_not) {
-        folder.create(true, true, null);
+      String[] _split = Generator.PACKAGE.split(".");
+      for (final String subPath : _split) {
+        {
+          boolean _exists = folder.exists();
+          boolean _not = (!_exists);
+          if (_not) {
+            folder.create(true, true, null);
+          }
+          folder = project.getFolder((Generator.SOURCE_FOLDER_PATH + subPath));
+        }
       }
-      folder = project.getFolder((Generator.SOURCE_FOLDER_PATH + "de"));
-      boolean _exists_1 = folder.exists();
-      boolean _not_1 = (!_exists_1);
-      if (_not_1) {
-        folder.create(true, true, null);
-      }
-      folder = project.getFolder((Generator.SOURCE_FOLDER_PATH + "/de/thm"));
-      boolean _exists_2 = folder.exists();
-      boolean _not_2 = (!_exists_2);
-      if (_not_2) {
-        folder.create(true, true, null);
-      }
-      folder = project.getFolder((Generator.SOURCE_FOLDER_PATH + "/de/thm/mdd"));
-      boolean _exists_3 = folder.exists();
-      boolean _not_3 = (!_exists_3);
-      if (_not_3) {
-        folder.create(true, true, null);
-      }
-      folder = project.getFolder((Generator.SOURCE_FOLDER_PATH + "/de/thm/mdd/testapp"));
-      boolean _exists_4 = folder.exists();
-      boolean _not_4 = (!_exists_4);
-      if (_not_4) {
-        folder.create(true, true, null);
-      }
-      folder = project.getFolder(((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "entities"));
-      boolean _exists_5 = folder.exists();
-      boolean _not_5 = (!_exists_5);
-      if (_not_5) {
-        folder.create(true, true, null);
-      }
+      folder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "entities"));
       this.makeProgressAndCheckCanceled(progressMonitor);
-      IFolder entityFolder = project.getFolder(((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "entities"));
       progressMonitor.subTask("Generating Entities");
-      this.doGenerate(entityFolder, IteratorExtensions.<Backend>head(Iterators.<Backend>filter(resourceEcore.getAllContents(), Backend.class)), progressMonitor);
+      this.doGenerate(project, IteratorExtensions.<Backend>head(Iterators.<Backend>filter(resourceEcore.getAllContents(), Backend.class)), progressMonitor);
       this.makeProgressAndCheckCanceled(progressMonitor);
       progressMonitor.done();
     } catch (final Throwable _t) {
@@ -153,10 +122,6 @@ public class Generator {
     }
   }
   
-  public void doGenerate(final IFolder outputFolder, final EObject rootElement, final IProgressMonitor progressMonitor) {
-    Backend mc = ((Backend) rootElement);
-  }
-  
   public void makeProgressAndCheckCanceled(final IProgressMonitor monitor) {
     monitor.worked(1);
     boolean _isCanceled = monitor.isCanceled();
@@ -165,349 +130,83 @@ public class Generator {
     }
   }
   
-  public CharSequence compileEntitiesGen(final EClass e) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("package ");
-    _builder.append(Generator.PACKAGE);
-    _builder.append("entities;");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("/**");
-    _builder.newLine();
-    _builder.append("* This is the {@link ");
-    String _name = e.getName();
-    _builder.append(_name);
-    _builder.append("} entity class.");
-    _builder.newLineIfNotEmpty();
-    _builder.append("*");
-    _builder.newLine();
-    _builder.append("*@generated");
-    _builder.newLine();
-    _builder.append("*/");
-    _builder.newLine();
-    _builder.append("public class ");
-    String _name_1 = e.getName();
-    _builder.append(_name_1);
-    _builder.append("Gen ");
-    {
-      boolean _isEmpty = e.getEAllSuperTypes().isEmpty();
-      boolean _not = (!_isEmpty);
+  public IFolder getAndCreateFolder(final IProject project, final String path) {
+    try {
+      IFolder folder = project.getFolder(path);
+      boolean _exists = folder.exists();
+      boolean _not = (!_exists);
       if (_not) {
-        _builder.append(" extends ");
-        String _name_2 = IterableExtensions.<EClass>head(e.getEAllSuperTypes()).getName();
-        _builder.append(_name_2);
-        _builder.append(" ");
+        folder.create(true, true, null);
+      }
+      return folder;
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
+  
+  public void doGenerate(final IProject project, final EObject rootElement, final IProgressMonitor progressMonitor) {
+    Backend backend = ((Backend) rootElement);
+    IFolder sourceFolder = this.getAndCreateFolder(project, Generator.SOURCE_FOLDER_PATH);
+    IFolder resourceFolder = this.getAndCreateFolder(project, (Generator.SOURCE_FOLDER_PATH + "resources"));
+    IFolder entityFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "entities"));
+    IFolder repoFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "repos"));
+    IFolder pageFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "pages"));
+    IFolder gridFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "grids"));
+    this.createFile(sourceFolder, "pom.xml", true, this.genPom(backend), progressMonitor);
+    this.createFile(resourceFolder, "application.properties", true, this.genApplicationProperties(backend), progressMonitor);
+    EList<Entity> _entities = backend.getEntities();
+    for (final Entity entity : _entities) {
+      {
+        String _name = entity.getName();
+        String _plus = (_name + ".java");
+        this.createFile(entityFolder, _plus, true, this.genEntityExtensionClass(entity), progressMonitor);
+        boolean _isTransient = entity.isTransient();
+        boolean _not = (!_isTransient);
+        if (_not) {
+          String _name_1 = entity.getName();
+          String _plus_1 = (_name_1 + "Gen.java");
+          this.createFile(entityFolder, _plus_1, true, this.genEntityClass(entity), progressMonitor);
+          String _name_2 = entity.getName();
+          String _plus_2 = (_name_2 + ".java");
+          this.createFile(repoFolder, _plus_2, true, this.genEntityRepo(entity), progressMonitor);
+          boolean _isDisplay = entity.isDisplay();
+          if (_isDisplay) {
+            String _name_3 = entity.getName();
+            String _plus_3 = (_name_3 + "Page.java");
+            this.createFile(pageFolder, _plus_3, true, this.genEntityPage(entity), progressMonitor);
+            String _name_4 = entity.getName();
+            String _plus_4 = (_name_4 + "Grid.java");
+            this.createFile(gridFolder, _plus_4, true, this.genEntityGrid(entity), progressMonitor);
+          }
+        } else {
+          String _name_5 = entity.getName();
+          String _plus_5 = (_name_5 + "Gen.java");
+          this.createFile(entityFolder, _plus_5, true, this.genTransientEntityClass(entity), progressMonitor);
+        }
       }
     }
-    _builder.append(" {");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("// attributes");
-    _builder.newLine();
-    {
-      EList<EAttribute> _eAllAttributes = e.getEAllAttributes();
-      for(final EAttribute a : _eAllAttributes) {
-        _builder.append("\t");
-        _builder.append("private ");
-        String _instanceTypeName = a.getEType().getInstanceTypeName();
-        _builder.append(_instanceTypeName, "\t");
-        _builder.append(" ");
-        String _name_3 = a.getName();
-        _builder.append(_name_3, "\t");
-        _builder.append(";");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("\t");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("// references");
-    _builder.newLine();
-    {
-      final Function1<EReference, Boolean> _function = (EReference it) -> {
-        boolean _isMany = it.isMany();
-        return Boolean.valueOf((!_isMany));
-      };
-      Iterable<EReference> _filter = IterableExtensions.<EReference>filter(e.getEAllReferences(), _function);
-      for(final EReference a_1 : _filter) {
-        _builder.append("\t");
-        _builder.append("private ");
-        String _name_4 = a_1.getEReferenceType().getName();
-        _builder.append(_name_4, "\t");
-        _builder.append(" ");
-        String _name_5 = a_1.getName();
-        _builder.append(_name_5, "\t");
-        _builder.append(";");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    {
-      final Function1<EReference, Boolean> _function_1 = (EReference it) -> {
-        return Boolean.valueOf(it.isMany());
-      };
-      Iterable<EReference> _filter_1 = IterableExtensions.<EReference>filter(e.getEAllReferences(), _function_1);
-      for(final EReference a_2 : _filter_1) {
-        _builder.append("\t");
-        _builder.append("private java.util.ArrayList<");
-        String _name_6 = a_2.getEReferenceType().getName();
-        _builder.append(_name_6, "\t");
-        _builder.append("> ");
-        String _name_7 = a_2.getName();
-        _builder.append(_name_7, "\t");
-        _builder.append(";");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("\t");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("/**");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("* Default constructor.");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("*/");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("public ");
-    String _name_8 = e.getName();
-    _builder.append(_name_8, "\t");
-    _builder.append("Gen() {");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.newLine();
-    {
-      boolean _isEmpty_1 = e.getEAllAttributes().isEmpty();
-      boolean _not_1 = (!_isEmpty_1);
-      if (_not_1) {
-        _builder.append("\t");
-        _builder.append("/**");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("* Constructor for all attributes.");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("*/");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("public ");
-        String _name_9 = e.getName();
-        _builder.append(_name_9, "\t");
-        _builder.append("Gen(");
-        {
-          EList<EAttribute> _eAllAttributes_1 = e.getEAllAttributes();
-          boolean _hasElements = false;
-          for(final EAttribute a_3 : _eAllAttributes_1) {
-            if (!_hasElements) {
-              _hasElements = true;
-            } else {
-              _builder.appendImmediate(", ", "\t");
-            }
-            _builder.append(" ");
-            String _instanceTypeName_1 = a_3.getEType().getInstanceTypeName();
-            _builder.append(_instanceTypeName_1, "\t");
-            _builder.append(" ");
-            String _name_10 = a_3.getName();
-            _builder.append(_name_10, "\t");
-            _builder.append(" ");
-          }
-        }
-        _builder.append(") {");
-        _builder.newLineIfNotEmpty();
-        {
-          EList<EAttribute> _eAllAttributes_2 = e.getEAllAttributes();
-          for(final EAttribute a_4 : _eAllAttributes_2) {
-            _builder.append("\t");
-            _builder.append("\t");
-            _builder.append("this.");
-            String _name_11 = a_4.getName();
-            _builder.append(_name_11, "\t\t");
-            _builder.append(" = ");
-            String _name_12 = a_4.getName();
-            _builder.append(_name_12, "\t\t");
-            _builder.append(";");
-            _builder.newLineIfNotEmpty();
-          }
-        }
-        _builder.append("\t");
-        _builder.append("}");
-        _builder.newLine();
-      }
-    }
-    _builder.append("\t");
-    _builder.newLine();
-    {
-      if (((!e.getEAllAttributes().isEmpty()) && (!e.getEAllReferences().isEmpty()))) {
-        _builder.append("\t");
-        _builder.append("/**");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("* Full constructor.");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("*/");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("public ");
-        String _name_13 = e.getName();
-        _builder.append(_name_13, "\t");
-        _builder.append("Gen(");
-        _builder.newLineIfNotEmpty();
-        _builder.append("\t");
-        {
-          EList<EAttribute> _eAllAttributes_3 = e.getEAllAttributes();
-          boolean _hasElements_1 = false;
-          for(final EAttribute a_5 : _eAllAttributes_3) {
-            if (!_hasElements_1) {
-              _hasElements_1 = true;
-            } else {
-              _builder.appendImmediate(", ", "\t");
-            }
-            _builder.append(" ");
-            String _instanceTypeName_2 = a_5.getEType().getInstanceTypeName();
-            _builder.append(_instanceTypeName_2, "\t");
-            _builder.append(" ");
-            String _name_14 = a_5.getName();
-            _builder.append(_name_14, "\t");
-            _builder.append(" ");
-          }
-        }
-        _builder.append(" ");
-        _builder.newLineIfNotEmpty();
-        _builder.append("\t");
-        {
-          final Function1<EReference, Boolean> _function_2 = (EReference it) -> {
-            boolean _isMany = it.isMany();
-            return Boolean.valueOf((!_isMany));
-          };
-          Iterable<EReference> _filter_2 = IterableExtensions.<EReference>filter(e.getEAllReferences(), _function_2);
-          boolean _hasElements_2 = false;
-          for(final EReference a_6 : _filter_2) {
-            if (!_hasElements_2) {
-              _hasElements_2 = true;
-              _builder.append(", ", "\t");
-            } else {
-              _builder.appendImmediate(", ", "\t");
-            }
-            _builder.append(" ");
-            String _name_15 = a_6.getEReferenceType().getName();
-            _builder.append(_name_15, "\t");
-            _builder.append(" ");
-            String _name_16 = a_6.getName();
-            _builder.append(_name_16, "\t");
-            _builder.append(" ");
-          }
-        }
-        _builder.newLineIfNotEmpty();
-        _builder.append("\t");
-        {
-          final Function1<EReference, Boolean> _function_3 = (EReference it) -> {
-            return Boolean.valueOf(it.isMany());
-          };
-          Iterable<EReference> _filter_3 = IterableExtensions.<EReference>filter(e.getEAllReferences(), _function_3);
-          boolean _hasElements_3 = false;
-          for(final EReference a_7 : _filter_3) {
-            if (!_hasElements_3) {
-              _hasElements_3 = true;
-              _builder.append(", ", "\t");
-            } else {
-              _builder.appendImmediate(", ", "\t");
-            }
-            _builder.append(" java.util.ArrayList<");
-            String _name_17 = a_7.getEReferenceType().getName();
-            _builder.append(_name_17, "\t");
-            _builder.append("> ");
-            String _name_18 = a_7.getName();
-            _builder.append(_name_18, "\t");
-            _builder.append(" ");
-          }
-        }
-        _builder.append(") {");
-        _builder.newLineIfNotEmpty();
-        {
-          EList<EAttribute> _eAllAttributes_4 = e.getEAllAttributes();
-          EList<EReference> _eAllReferences = e.getEAllReferences();
-          Iterable<EStructuralFeature> _plus = Iterables.<EStructuralFeature>concat(_eAllAttributes_4, _eAllReferences);
-          for(final EStructuralFeature a_8 : _plus) {
-            _builder.append("\t");
-            _builder.append("this.");
-            String _name_19 = a_8.getName();
-            _builder.append(_name_19, "\t");
-            _builder.append(" = ");
-            String _name_20 = a_8.getName();
-            _builder.append(_name_20, "\t");
-            _builder.append(";");
-            _builder.newLineIfNotEmpty();
-          }
-        }
-        _builder.append("\t");
-        _builder.append("}");
-        _builder.newLine();
-      }
-    }
-    _builder.append("\t");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("//TODO getter setter");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("@Override");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("public String toString() {");
-    _builder.newLine();
-    {
-      final Function1<EAttribute, Boolean> _function_4 = (EAttribute it) -> {
-        return Boolean.valueOf(this.isString(it));
-      };
-      boolean _exists = IterableExtensions.<EAttribute>exists(e.getEAllAttributes(), _function_4);
-      if (_exists) {
-        _builder.append("\t\t");
-        _builder.append("StringBuilder builder = new StringBuilder();");
-        _builder.newLine();
-        {
-          final Function1<EAttribute, Boolean> _function_5 = (EAttribute it) -> {
-            return Boolean.valueOf(this.isString(it));
-          };
-          Iterable<EAttribute> _filter_4 = IterableExtensions.<EAttribute>filter(e.getEAllAttributes(), _function_5);
-          for(final EAttribute a_9 : _filter_4) {
-            _builder.append("\t\t");
-            _builder.append("builder.append(");
-            String _name_21 = a_9.getName();
-            _builder.append(_name_21, "\t\t");
-            _builder.append(");");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
-            _builder.append("builder.append(\" - \");");
-            _builder.newLine();
-          }
-        }
-        _builder.append("\t\t");
-        _builder.append("return builder.toString();");
-        _builder.newLine();
-      } else {
-        _builder.append("\t\t");
-        _builder.append("return null; //TODO");
-        _builder.newLine();
-      }
-    }
-    _builder.append("\t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("}");
-    _builder.newLine();
+  }
+  
+  public CharSequence genPom(final Backend backend) {
+    StringConcatenation _builder = new StringConcatenation();
     return _builder;
   }
   
-  public CharSequence compileEntities(final EClass e) {
+  public CharSequence genApplicationProperties(final Backend backend) {
+    StringConcatenation _builder = new StringConcatenation();
+    return _builder;
+  }
+  
+  public String genEntityClass(final Entity entity) {
+    return "fix implementation";
+  }
+  
+  public CharSequence genTransientEntityClass(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    return _builder;
+  }
+  
+  public CharSequence genEntityExtensionClass(final Entity entity) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package ");
     _builder.append(Generator.PACKAGE);
@@ -515,10 +214,10 @@ public class Generator {
     _builder.newLineIfNotEmpty();
     _builder.newLine();
     _builder.append("public class ");
-    String _name = e.getName();
+    String _name = entity.getName();
     _builder.append(_name);
     _builder.append(" extends ");
-    String _name_1 = e.getName();
+    String _name_1 = entity.getName();
     _builder.append(_name_1);
     _builder.append("Gen {");
     _builder.newLineIfNotEmpty();
@@ -529,8 +228,18 @@ public class Generator {
     return _builder;
   }
   
-  public boolean isString(final EAttribute a) {
-    int _classifierID = a.getEAttributeType().getClassifierID();
-    return (_classifierID == EcorePackage.ESTRING);
+  public CharSequence genEntityRepo(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    return _builder;
+  }
+  
+  public CharSequence genEntityPage(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    return _builder;
+  }
+  
+  public CharSequence genEntityGrid(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    return _builder;
   }
 }
