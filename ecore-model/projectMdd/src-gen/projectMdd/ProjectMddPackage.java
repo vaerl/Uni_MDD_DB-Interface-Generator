@@ -95,13 +95,31 @@ public interface ProjectMddPackage extends EPackage {
 	int BACKEND__DATABASE = 2;
 
 	/**
+	 * The feature id for the '<em><b>Project Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BACKEND__PROJECT_NAME = 3;
+
+	/**
+	 * The feature id for the '<em><b>Project Description</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BACKEND__PROJECT_DESCRIPTION = 4;
+
+	/**
 	 * The number of structural features of the '<em>Backend</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int BACKEND_FEATURE_COUNT = 3;
+	int BACKEND_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>Backend</em>' class.
@@ -726,6 +744,28 @@ public interface ProjectMddPackage extends EPackage {
 	EReference getBackend_Database();
 
 	/**
+	 * Returns the meta object for the attribute '{@link projectMdd.Backend#getProjectName <em>Project Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project Name</em>'.
+	 * @see projectMdd.Backend#getProjectName()
+	 * @see #getBackend()
+	 * @generated
+	 */
+	EAttribute getBackend_ProjectName();
+
+	/**
+	 * Returns the meta object for the attribute '{@link projectMdd.Backend#getProjectDescription <em>Project Description</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project Description</em>'.
+	 * @see projectMdd.Backend#getProjectDescription()
+	 * @see #getBackend()
+	 * @generated
+	 */
+	EAttribute getBackend_ProjectDescription();
+
+	/**
 	 * Returns the meta object for class '{@link projectMdd.Entity <em>Entity</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1077,6 +1117,22 @@ public interface ProjectMddPackage extends EPackage {
 		 * @generated
 		 */
 		EReference BACKEND__DATABASE = eINSTANCE.getBackend_Database();
+
+		/**
+		 * The meta object literal for the '<em><b>Project Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BACKEND__PROJECT_NAME = eINSTANCE.getBackend_ProjectName();
+
+		/**
+		 * The meta object literal for the '<em><b>Project Description</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BACKEND__PROJECT_DESCRIPTION = eINSTANCE.getBackend_ProjectDescription();
 
 		/**
 		 * The meta object literal for the '{@link projectMdd.impl.EntityImpl <em>Entity</em>}' class.

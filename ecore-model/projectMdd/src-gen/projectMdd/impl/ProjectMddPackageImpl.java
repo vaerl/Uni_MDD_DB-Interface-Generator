@@ -234,6 +234,26 @@ public class ProjectMddPackageImpl extends EPackageImpl implements ProjectMddPac
 	 * @generated
 	 */
 	@Override
+	public EAttribute getBackend_ProjectName() {
+		return (EAttribute) backendEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getBackend_ProjectDescription() {
+		return (EAttribute) backendEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getEntity() {
 		return entityEClass;
 	}
@@ -542,6 +562,8 @@ public class ProjectMddPackageImpl extends EPackageImpl implements ProjectMddPac
 		createEReference(backendEClass, BACKEND__ENTITIES);
 		createEReference(backendEClass, BACKEND__RELATION);
 		createEReference(backendEClass, BACKEND__DATABASE);
+		createEAttribute(backendEClass, BACKEND__PROJECT_NAME);
+		createEAttribute(backendEClass, BACKEND__PROJECT_DESCRIPTION);
 
 		entityEClass = createEClass(ENTITY);
 		createEAttribute(entityEClass, ENTITY__NAME);
@@ -635,6 +657,11 @@ public class ProjectMddPackageImpl extends EPackageImpl implements ProjectMddPac
 		initEReference(getBackend_Database(), this.getDatabase(), null, "database", null, 1, 1, Backend.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBackend_ProjectName(), ecorePackage.getEString(), "projectName", null, 1, 1, Backend.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBackend_ProjectDescription(), ecorePackage.getEString(), "projectDescription", null, 1, 1,
+				Backend.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(entityEClass, Entity.class, "Entity", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getEntity_Name(), ecorePackage.getEString(), "name", null, 0, 1, Entity.class, !IS_TRANSIENT,

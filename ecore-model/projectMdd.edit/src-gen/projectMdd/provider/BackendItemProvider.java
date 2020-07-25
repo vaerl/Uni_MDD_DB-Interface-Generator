@@ -11,12 +11,14 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.ResourceLocator;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
+import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import projectMdd.Backend;
@@ -52,8 +54,42 @@ public class BackendItemProvider extends ItemProviderAdapter implements IEditing
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
+			addProjectNamePropertyDescriptor(object);
+			addProjectDescriptionPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
+	}
+
+	/**
+	 * This adds a property descriptor for the Project Name feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addProjectNamePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_Backend_projectName_feature"),
+						getString("_UI_PropertyDescriptor_description", "_UI_Backend_projectName_feature",
+								"_UI_Backend_type"),
+						ProjectMddPackage.Literals.BACKEND__PROJECT_NAME, true, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Project Description feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addProjectDescriptionPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_Backend_projectDescription_feature"),
+						getString("_UI_PropertyDescriptor_description", "_UI_Backend_projectDescription_feature",
+								"_UI_Backend_type"),
+						ProjectMddPackage.Literals.BACKEND__PROJECT_DESCRIPTION, true, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -117,7 +153,9 @@ public class BackendItemProvider extends ItemProviderAdapter implements IEditing
 	 */
 	@Override
 	public String getText(Object object) {
-		return getString("_UI_Backend_type");
+		String label = ((Backend) object).getProjectName();
+		return label == null || label.length() == 0 ? getString("_UI_Backend_type")
+				: getString("_UI_Backend_type") + " " + label;
 	}
 
 	/**
@@ -132,6 +170,10 @@ public class BackendItemProvider extends ItemProviderAdapter implements IEditing
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Backend.class)) {
+		case ProjectMddPackage.BACKEND__PROJECT_NAME:
+		case ProjectMddPackage.BACKEND__PROJECT_DESCRIPTION:
+			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+			return;
 		case ProjectMddPackage.BACKEND__ENTITIES:
 		case ProjectMddPackage.BACKEND__RELATION:
 		case ProjectMddPackage.BACKEND__DATABASE:
