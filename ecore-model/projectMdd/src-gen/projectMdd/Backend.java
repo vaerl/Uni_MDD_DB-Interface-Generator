@@ -17,6 +17,8 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link projectMdd.Backend#getEntities <em>Entities</em>}</li>
  *   <li>{@link projectMdd.Backend#getRelation <em>Relation</em>}</li>
  *   <li>{@link projectMdd.Backend#getDatabase <em>Database</em>}</li>
+ *   <li>{@link projectMdd.Backend#getProjectName <em>Project Name</em>}</li>
+ *   <li>{@link projectMdd.Backend#getProjectDescription <em>Project Description</em>}</li>
  * </ul>
  *
  * @see projectMdd.ProjectMddPackage#getBackend()
@@ -70,4 +72,48 @@ public interface Backend extends EObject {
 	 * @generated
 	 */
 	void setDatabase(Database value);
+
+	/**
+	 * Returns the value of the '<em><b>Project Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Project Name</em>' attribute.
+	 * @see #setProjectName(String)
+	 * @see projectMdd.ProjectMddPackage#getBackend_ProjectName()
+	 * @model required="true"
+	 * @generated
+	 */
+	String getProjectName();
+
+	/**
+	 * Sets the value of the '{@link projectMdd.Backend#getProjectName <em>Project Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Project Name</em>' attribute.
+	 * @see #getProjectName()
+	 * @generated
+	 */
+	void setProjectName(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Project Description</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Project Description</em>' attribute.
+	 * @see #setProjectDescription(String)
+	 * @see projectMdd.ProjectMddPackage#getBackend_ProjectDescription()
+	 * @model required="true"
+	 * @generated
+	 */
+	String getProjectDescription();
+
+	/**
+	 * Sets the value of the '{@link projectMdd.Backend#getProjectDescription <em>Project Description</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Project Description</em>' attribute.
+	 * @see #getProjectDescription()
+	 * @generated
+	 */
+	void setProjectDescription(String value);
 } // Backend

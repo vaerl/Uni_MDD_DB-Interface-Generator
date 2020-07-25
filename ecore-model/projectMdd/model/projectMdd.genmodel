@@ -25,6 +25,8 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference projectMdd.ecore#//Backend/entities"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference projectMdd.ecore#//Backend/relation"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference projectMdd.ecore#//Backend/database"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Backend/projectName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Backend/projectDescription"/>
     </genClasses>
     <genClasses ecoreClass="projectMdd.ecore#//Entity">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Entity/name"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<projectMdd:Backend xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:projectMdd="http://www.example.org/projectMdd">
+<projectMdd:Backend xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:projectMdd="http://www.example.org/projectMdd" projectName="Klostertrophy" projectDescription="DB-Interface für die Klostertrophy">
   <entities outwardRelations="//@relation.0" name="Team">
     <attributes xsi:type="projectMdd:EnumAttribute" name="status">
       <values>done</values>

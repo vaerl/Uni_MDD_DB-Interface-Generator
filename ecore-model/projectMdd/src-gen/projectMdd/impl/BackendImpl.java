@@ -31,6 +31,8 @@ import projectMdd.Relation;
  *   <li>{@link projectMdd.impl.BackendImpl#getEntities <em>Entities</em>}</li>
  *   <li>{@link projectMdd.impl.BackendImpl#getRelation <em>Relation</em>}</li>
  *   <li>{@link projectMdd.impl.BackendImpl#getDatabase <em>Database</em>}</li>
+ *   <li>{@link projectMdd.impl.BackendImpl#getProjectName <em>Project Name</em>}</li>
+ *   <li>{@link projectMdd.impl.BackendImpl#getProjectDescription <em>Project Description</em>}</li>
  * </ul>
  *
  * @generated
@@ -64,6 +66,44 @@ public class BackendImpl extends MinimalEObjectImpl.Container implements Backend
 	 * @ordered
 	 */
 	protected Database database;
+
+	/**
+	 * The default value of the '{@link #getProjectName() <em>Project Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProjectName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String PROJECT_NAME_EDEFAULT = null;
+	/**
+	 * The cached value of the '{@link #getProjectName() <em>Project Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProjectName()
+	 * @generated
+	 * @ordered
+	 */
+	protected String projectName = PROJECT_NAME_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getProjectDescription() <em>Project Description</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProjectDescription()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String PROJECT_DESCRIPTION_EDEFAULT = null;
+	/**
+	 * The cached value of the '{@link #getProjectDescription() <em>Project Description</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProjectDescription()
+	 * @generated
+	 * @ordered
+	 */
+	protected String projectDescription = PROJECT_DESCRIPTION_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -168,6 +208,54 @@ public class BackendImpl extends MinimalEObjectImpl.Container implements Backend
 	 * @generated
 	 */
 	@Override
+	public String getProjectName() {
+		return projectName;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setProjectName(String newProjectName) {
+		String oldProjectName = projectName;
+		projectName = newProjectName;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ProjectMddPackage.BACKEND__PROJECT_NAME,
+					oldProjectName, projectName));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getProjectDescription() {
+		return projectDescription;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setProjectDescription(String newProjectDescription) {
+		String oldProjectDescription = projectDescription;
+		projectDescription = newProjectDescription;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ProjectMddPackage.BACKEND__PROJECT_DESCRIPTION,
+					oldProjectDescription, projectDescription));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ProjectMddPackage.BACKEND__ENTITIES:
@@ -194,6 +282,10 @@ public class BackendImpl extends MinimalEObjectImpl.Container implements Backend
 			return getRelation();
 		case ProjectMddPackage.BACKEND__DATABASE:
 			return getDatabase();
+		case ProjectMddPackage.BACKEND__PROJECT_NAME:
+			return getProjectName();
+		case ProjectMddPackage.BACKEND__PROJECT_DESCRIPTION:
+			return getProjectDescription();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -218,6 +310,12 @@ public class BackendImpl extends MinimalEObjectImpl.Container implements Backend
 		case ProjectMddPackage.BACKEND__DATABASE:
 			setDatabase((Database) newValue);
 			return;
+		case ProjectMddPackage.BACKEND__PROJECT_NAME:
+			setProjectName((String) newValue);
+			return;
+		case ProjectMddPackage.BACKEND__PROJECT_DESCRIPTION:
+			setProjectDescription((String) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -239,6 +337,12 @@ public class BackendImpl extends MinimalEObjectImpl.Container implements Backend
 		case ProjectMddPackage.BACKEND__DATABASE:
 			setDatabase((Database) null);
 			return;
+		case ProjectMddPackage.BACKEND__PROJECT_NAME:
+			setProjectName(PROJECT_NAME_EDEFAULT);
+			return;
+		case ProjectMddPackage.BACKEND__PROJECT_DESCRIPTION:
+			setProjectDescription(PROJECT_DESCRIPTION_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -257,8 +361,32 @@ public class BackendImpl extends MinimalEObjectImpl.Container implements Backend
 			return relation != null && !relation.isEmpty();
 		case ProjectMddPackage.BACKEND__DATABASE:
 			return database != null;
+		case ProjectMddPackage.BACKEND__PROJECT_NAME:
+			return PROJECT_NAME_EDEFAULT == null ? projectName != null : !PROJECT_NAME_EDEFAULT.equals(projectName);
+		case ProjectMddPackage.BACKEND__PROJECT_DESCRIPTION:
+			return PROJECT_DESCRIPTION_EDEFAULT == null ? projectDescription != null
+					: !PROJECT_DESCRIPTION_EDEFAULT.equals(projectDescription);
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (projectName: ");
+		result.append(projectName);
+		result.append(", projectDescription: ");
+		result.append(projectDescription);
+		result.append(')');
+		return result.toString();
 	}
 
 } //BackendImpl

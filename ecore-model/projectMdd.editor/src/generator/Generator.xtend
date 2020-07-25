@@ -59,27 +59,8 @@ class Generator {
 			iFile.delete(true, null);
 		}
 		if (!iFile.exists) {
-			// process the code
-			var String formattedCode;
-			if (fileName.endsWith(".java")) {
-				// organize imports
-				// var String sourceWithImports = importFinder.getWithImports(content.toString);
-				// format the code
-				// formattedCode = JavaFormatter.format(sourceWithImports);
-			} else if (fileName.endsWith(".xml")) {
-				// format the code
-				// formattedCode = XmlFormatter.format(content.toString)
-			}
-
-			var byte[] bytes
-			if (formattedCode !== null) { // has the code been formatted?
-				bytes = formattedCode.getBytes();
-			} else { // code could not be formatted
-				bytes = content.toString.bytes;
-				System.err.println("File " + fileName + " could not be formatted.");
-			}
 			// save the file
-			var InputStream source = new ByteArrayInputStream(bytes);
+			var InputStream source = new ByteArrayInputStream(content.toString.bytes);
 			iFile.create(source, true, null);
 		}
 	}
@@ -131,7 +112,7 @@ class Generator {
 	def void doGenerate(IProject project, EObject rootElement, IProgressMonitor progressMonitor) {
 		// setup
 		var Backend backend = rootElement as Backend;
-		var IFolder sourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH);
+		var IFolder sourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH.split("/").get(0));
 		var IFolder resourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + "/resources");
 		var IFolder packageFolder = project.getAndCreateFolder(COMPLETE_PATH);
 		var IFolder entityFolder = project.getAndCreateFolder(COMPLETE_PATH + "/entities");
@@ -139,7 +120,7 @@ class Generator {
 		var IFolder pageFolder = project.getAndCreateFolder(COMPLETE_PATH + "/pages");
 		var IFolder gridFolder = project.getAndCreateFolder(COMPLETE_PATH + "/grids");
 
-		// TODO add contents, update outputFolder
+		// TODO add contents
 		// create pom.xml
 		createFile(sourceFolder, "pom.xml", true, backend.genPom, progressMonitor);
 
@@ -181,6 +162,104 @@ class Generator {
 
 	def genPom(Backend backend) {
 		'''
+			<?xml version="1.0" encoding="UTF-8"?>
+			<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+				<modelVersion>4.0.0</modelVersion>
+				<parent>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-parent</artifactId>
+					<version>2.3.1.RELEASE</version>
+					<relativePath/>
+				</parent>
+				<groupId>«backend.projectName»</groupId>
+				<artifactId>«backend.projectName»</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<packaging>war</packaging>
+				<name>«backend.projectName»</name>
+				<description>«backend.projectDescription»</description>
+			
+				<properties>
+					<java.version>14</java.version>
+					<vaadin.version>16.0.1</vaadin.version>
+				</properties>
+			
+				<dependencies>
+					<!-- Spring -->
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-data-jpa</artifactId>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-security</artifactId>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-tomcat</artifactId>
+						<scope>provided</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-test</artifactId>
+						<scope>test</scope>
+						<exclusions>
+							<exclusion>
+								<groupId>org.junit.vintage</groupId>
+								<artifactId>junit-vintage-engine</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework.security</groupId>
+						<artifactId>spring-security-test</artifactId>
+						<scope>test</scope>
+					</dependency>
+					
+					<!-- vaadin -->
+					<dependency>
+						<groupId>com.vaadin</groupId>
+						<artifactId>vaadin-spring-boot-starter</artifactId>
+					</dependency>
+					
+					<!-- database -->
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<scope>runtime</scope>
+					</dependency>
+					
+					<!-- miscellaneous -->
+					<dependency>
+					    <groupId>org.projectlombok</groupId>
+					    <artifactId>lombok</artifactId>
+					    <version>1.18.12</version>
+					    <scope>provided</scope>
+					</dependency>
+				</dependencies>
+			
+				<dependencyManagement>
+					<dependencies>
+						<dependency>
+							<groupId>com.vaadin</groupId>
+							<artifactId>vaadin-bom</artifactId>
+							<version>${vaadin.version}</version>
+							<type>pom</type>
+							<scope>import</scope>
+						</dependency>
+					</dependencies>
+				</dependencyManagement>
+			
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-maven-plugin</artifactId>
+						</plugin>
+					</plugins>
+				</build>
+			
+			</project>
 		'''
 	}
 
