@@ -26,7 +26,7 @@ public class Generator {
   /**
    * The path where to generate the Java files.
    */
-  public static final String SOURCE_FOLDER_PATH = "src-gen/main/";
+  public static final String SOURCE_FOLDER_PATH = "src-gen/main";
   
   /**
    * The base package name. Needs the succeeding dot!
@@ -94,20 +94,15 @@ public class Generator {
     try {
       progressMonitor.beginTask("Generating Java code.", 2);
       progressMonitor.subTask("Creating folders.");
-      IFolder folder = project.getFolder(Generator.SOURCE_FOLDER_PATH);
-      String[] _split = Generator.PACKAGE.split(".");
+      String path = "";
+      String[] _split = Generator.COMPLETE_PATH.split("/");
       for (final String subPath : _split) {
         {
-          boolean _exists = folder.exists();
-          boolean _not = (!_exists);
-          if (_not) {
-            folder.create(true, true, null);
-          }
-          folder = project.getFolder((Generator.SOURCE_FOLDER_PATH + subPath));
+          String _path = path;
+          path = (_path + (subPath + "/"));
+          this.getAndCreateFolder(project, path);
         }
       }
-      folder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "entities"));
-      this.makeProgressAndCheckCanceled(progressMonitor);
       progressMonitor.subTask("Generating Entities");
       this.doGenerate(project, IteratorExtensions.<Backend>head(Iterators.<Backend>filter(resourceEcore.getAllContents(), Backend.class)), progressMonitor);
       this.makeProgressAndCheckCanceled(progressMonitor);
@@ -147,11 +142,11 @@ public class Generator {
   public void doGenerate(final IProject project, final EObject rootElement, final IProgressMonitor progressMonitor) {
     Backend backend = ((Backend) rootElement);
     IFolder sourceFolder = this.getAndCreateFolder(project, Generator.SOURCE_FOLDER_PATH);
-    IFolder resourceFolder = this.getAndCreateFolder(project, (Generator.SOURCE_FOLDER_PATH + "resources"));
-    IFolder entityFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "entities"));
-    IFolder repoFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "repos"));
-    IFolder pageFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "pages"));
-    IFolder gridFolder = this.getAndCreateFolder(project, ((Generator.SOURCE_FOLDER_PATH + Generator.PACKAGE_PATH) + "grids"));
+    IFolder resourceFolder = this.getAndCreateFolder(project, (Generator.SOURCE_FOLDER_PATH + "/resources"));
+    IFolder entityFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/entities"));
+    IFolder repoFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/repos"));
+    IFolder pageFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/pages"));
+    IFolder gridFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/grids"));
     this.createFile(sourceFolder, "pom.xml", true, this.genPom(backend), progressMonitor);
     this.createFile(resourceFolder, "application.properties", true, this.genApplicationProperties(backend), progressMonitor);
     EList<Entity> _entities = backend.getEntities();
@@ -167,7 +162,7 @@ public class Generator {
           String _plus_1 = (_name_1 + "Gen.java");
           this.createFile(entityFolder, _plus_1, true, this.genEntityClass(entity), progressMonitor);
           String _name_2 = entity.getName();
-          String _plus_2 = (_name_2 + ".java");
+          String _plus_2 = (_name_2 + "Repo.java");
           this.createFile(repoFolder, _plus_2, true, this.genEntityRepo(entity), progressMonitor);
           boolean _isDisplay = entity.isDisplay();
           if (_isDisplay) {

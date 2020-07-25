@@ -24,15 +24,13 @@ class Generator {
 	/**
 	 * The path where to generate the Java files.
 	 */
-	public static final String SOURCE_FOLDER_PATH = "src-gen/main/";
+	public static final String SOURCE_FOLDER_PATH = "src-gen/main";
 
 	/**
 	 * The base package name. Needs the succeeding dot!
 	 */
 	public static final String PACKAGE = "de.thm.dbiGenerator.";
-
 	public static final String PACKAGE_PATH = "/" + PACKAGE.replaceAll("\\.", "/");
-
 	public static final String COMPLETE_PATH = SOURCE_FOLDER_PATH + PACKAGE_PATH;
 
 	// Ecore
@@ -94,20 +92,13 @@ class Generator {
 			progressMonitor.beginTask("Generating Java code.", 2);
 
 			progressMonitor.subTask("Creating folders.");
-			// create deeper folders
-			var IFolder folder = project.getFolder(SOURCE_FOLDER_PATH);
 
-			// automate folder creation
-			for (String subPath : PACKAGE.split(".")) {
-				if (!folder.exists()) {
-					folder.create(true, true, null);
-				}
-				folder = project.getFolder(SOURCE_FOLDER_PATH + subPath);
+			// create folders
+			var path = "";
+			for (String subPath : COMPLETE_PATH.split("/")) {
+				path += subPath + "/";
+				project.getAndCreateFolder(path);
 			}
-
-			// create entity package folder
-			folder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + PACKAGE_PATH + "entities");
-			makeProgressAndCheckCanceled(progressMonitor);
 
 			// create application
 			progressMonitor.subTask("Generating Entities");
@@ -140,11 +131,11 @@ class Generator {
 		// setup
 		var Backend backend = rootElement as Backend;
 		var IFolder sourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH);
-		var IFolder resourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + "resources");
-		var IFolder entityFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + PACKAGE_PATH + "entities");
-		var IFolder repoFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + PACKAGE_PATH + "repos");
-		var IFolder pageFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + PACKAGE_PATH + "pages");
-		var IFolder gridFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + PACKAGE_PATH + "grids");
+		var IFolder resourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + "/resources");
+		var IFolder entityFolder = project.getAndCreateFolder(COMPLETE_PATH + "/entities");
+		var IFolder repoFolder = project.getAndCreateFolder(COMPLETE_PATH + "/repos");
+		var IFolder pageFolder = project.getAndCreateFolder(COMPLETE_PATH + "/pages");
+		var IFolder gridFolder = project.getAndCreateFolder(COMPLETE_PATH + "/grids");
 
 		// TODO add contents, update outputFolder
 		// create pom.xml
@@ -152,12 +143,9 @@ class Generator {
 
 		// create application.properties
 		createFile(resourceFolder, "application.properties", true, backend.genApplicationProperties, progressMonitor);
-		
-		// create Application.class with exemplary data
-		
 
+		// create Application.class with exemplary data
 		// TODO create ui-base: login, logout and tab-switcher
-		
 		// create entity-classes
 		for (Entity entity : backend.entities) {
 			// create extension-file
@@ -168,7 +156,7 @@ class Generator {
 				createFile(entityFolder, entity.name + "Gen.java", true, entity.genEntityClass, progressMonitor);
 
 				// create repositories
-				createFile(repoFolder, entity.name + ".java", true, entity.genEntityRepo, progressMonitor);
+				createFile(repoFolder, entity.name + "Repo.java", true, entity.genEntityRepo, progressMonitor);
 
 				if (entity.display) {
 					// create page, f.e. gamesGridPage in klostertrophy
