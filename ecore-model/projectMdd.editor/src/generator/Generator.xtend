@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EcorePackage
 import org.eclipse.emf.ecore.resource.Resource
 import projectMdd.Backend
 import projectMdd.Entity
+import org.eclipse.emf.common.util.EList
 
 /**
  * The generator for ecore files.
@@ -132,6 +133,7 @@ class Generator {
 		var Backend backend = rootElement as Backend;
 		var IFolder sourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH);
 		var IFolder resourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + "/resources");
+		var IFolder packageFolder = project.getAndCreateFolder(COMPLETE_PATH);
 		var IFolder entityFolder = project.getAndCreateFolder(COMPLETE_PATH + "/entities");
 		var IFolder repoFolder = project.getAndCreateFolder(COMPLETE_PATH + "/repos");
 		var IFolder pageFolder = project.getAndCreateFolder(COMPLETE_PATH + "/pages");
@@ -146,6 +148,10 @@ class Generator {
 
 		// create Application.class with exemplary data
 		// TODO create ui-base: login, logout and tab-switcher
+		createFile(packageFolder, "MainView.java", true, backend.genMainView, progressMonitor);
+		createFile(packageFolder, "ChangeHandler.java", true, genChangeHandler, progressMonitor);
+		createFile(packageFolder, "AccessDeniedView.java", true, genAccessDenied, progressMonitor);
+		createFile(packageFolder, "LoginView.java", true, genLoginView, progressMonitor);
 		// create entity-classes
 		for (Entity entity : backend.entities) {
 			// create extension-file
@@ -180,6 +186,273 @@ class Generator {
 
 	def genApplicationProperties(Backend backend) {
 		'''
+		'''
+	}
+	
+	def genMainView(Backend backend) {
+		'''
+			package «PACKAGE»;
+			
+			import com.vaadin.flow.component.ClickEvent;
+			import com.vaadin.flow.component.ComponentEventListener;
+			import com.vaadin.flow.component.UI;
+			import com.vaadin.flow.component.button.Button;
+			import com.vaadin.flow.component.button.ButtonVariant;
+			import com.vaadin.flow.component.icon.VaadinIcon;
+			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+			import com.vaadin.flow.component.tabs.Tab;
+			import com.vaadin.flow.component.tabs.Tabs;
+			import com.vaadin.flow.router.BeforeEnterListener;
+			import com.vaadin.flow.router.Route;
+			import com.vaadin.flow.router.RouteAlias;
+			import com.vaadin.flow.spring.annotation.UIScope;
+			import org.springframework.beans.factory.annotation.Autowired;
+			import org.springframework.security.core.context.SecurityContextHolder;
+			import org.springframework.stereotype.Component;
+			«FOR e : backend.entities»
+				import «PACKAGE».pages.«e.name.toFirstUpper»GridPage;
+			«ENDFOR»
+			
+			
+			import javax.servlet.http.HttpServletRequest;
+			import java.util.HashMap;
+			import java.util.Map;
+			
+			@Route("")
+			@RouteAlias("main")
+			@UIScope
+			@Component
+			public class MainView extends VerticalLayout {
+				
+				private HttpServletRequest request;
+				
+				@Autowired
+				    MainView(HttpServletRequest request, «FOR e : backend.entities SEPARATOR ', '»«e.name.toFirstUpper»GridPage «e.name»page«ENDFOR») {
+				    	super();
+				    	this.request = request;
+				    	
+				    	Button logout = new Button(VaadinIcon.SIGN_OUT.create());
+				    	logout.getStyle().set("font-size", "48px");
+				    	logout.setHeight("96px");
+				    	logout.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+				    	logout.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+				    		requestLogout();
+				    	});
+				    	
+				    	HorizontalLayout logoutWrapper = new HorizontalLayout();
+				    	logoutWrapper.add(logout);
+				    	logoutWrapper.setWidth("8%");
+				    	logoutWrapper.setJustifyContentMode(JustifyContentMode.END);
+				    	«FOR e : backend.entities»
+				    		Tab «e.name» = new Tab("«e.name.toFirstUpper»");
+				    		        «e.name».getStyle().set("font-size", "48px");
+				    	«ENDFOR»
+				    	Tabs tabs = new Tabs(«FOR e : backend.entities SEPARATOR ', '»«e.name»«ENDFOR»);
+				    	tabs.setSelectedTab(«backend.entities.get(0).name»);
+				    	tabs.setFlexGrowForEnclosedTabs(1);
+				    	tabs.setWidthFull();
+				    	
+				    	HorizontalLayout tabWrapper = new HorizontalLayout(tabs);
+				    	tabWrapper.setWidth("92%");
+				    	tabWrapper.setJustifyContentMode(JustifyContentMode.START);
+				    	
+				    	HorizontalLayout bar = new HorizontalLayout(tabWrapper, logoutWrapper);
+				    	bar.setWidthFull();
+				    	
+				    	Map<Tab, VerticalLayout> tabsToPages = new HashMap<>();
+				    	«FOR e : backend.entities»
+				    		tabsToPages.put(«e.name», «e.name»Page);
+				    	«ENDFOR»
+				    	
+				    	tabs.addSelectedChangeListener(event -> {
+				    	     removeAll();
+				    	     add(bar, tabsToPages.get(tabs.getSelectedTab()));
+				    	});
+				    	
+				    	setSizeFull();
+				    	add(bar);
+				    	
+				    	UI.getCurrent().addBeforeEnterListener((BeforeEnterListener) beforeEnterEvent -> {
+				    	     if (beforeEnterEvent.getNavigationTarget() != AccessDeniedView.class && // This is to avoid a
+				    	     // loop if DeniedAccessView is the target
+				    	     !this.request.isUserInRole("ADMIN")) {
+				    	     	beforeEnterEvent.rerouteTo(AccessDeniedView.class);
+				    	     }
+				    	});
+			}
+			
+			void requestLogout() {
+			        //https://stackoverflow.com/a/5727444/1572286
+			        SecurityContextHolder.clearContext();
+			        request.getSession(false).invalidate();
+			
+			        // And this is similar to how logout is handled in Vaadin 8:
+			        // https://vaadin.com/docs/v8/framework/articles/HandlingLogout.html
+			        UI.getCurrent().getSession().close();
+			        UI.getCurrent().getPage().reload();// to redirect user to the login page
+			    }
+		'''
+	}
+	
+	def genChangeHandler() {
+		'''
+		package «PACKAGE»;
+		
+		public interface ChangeHandler {
+			void onChange();
+			}
+		'''
+	}
+	
+	def genAccessDenied() {
+		'''
+			package «PACKAGE»;
+						
+			import com.vaadin.flow.component.formlayout.FormLayout;
+			import com.vaadin.flow.component.html.Label;
+			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+			import com.vaadin.flow.router.Route;
+			
+			@Route("accessDenied")
+			public class AccessDeniedView extends VerticalLayout {
+			    AccessDeniedView() {
+			        FormLayout formLayout = new FormLayout();
+			        formLayout.add(new Label("Access denied!"));
+			        add(formLayout);
+			    }
+			}
+		'''
+	}
+	
+	def genLoginView() {
+		'''
+		package «PACKAGE»;
+		
+		import com.vaadin.flow.component.ClickEvent;
+		import com.vaadin.flow.component.ComponentEventListener;
+		import com.vaadin.flow.component.Key;
+		import com.vaadin.flow.component.KeyDownEvent;
+		import com.vaadin.flow.component.applayout.AppLayout;
+		import com.vaadin.flow.component.button.Button;
+		import com.vaadin.flow.component.formlayout.FormLayout;
+		import com.vaadin.flow.component.html.Label;
+		import com.vaadin.flow.component.orderedlayout.FlexComponent;
+		import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+		import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+		import com.vaadin.flow.component.textfield.PasswordField;
+		import com.vaadin.flow.component.textfield.TextField;
+		import com.vaadin.flow.router.BeforeEnterEvent;
+		import com.vaadin.flow.router.BeforeEnterObserver;
+		import com.vaadin.flow.router.Route;
+		import org.apache.commons.lang3.StringUtils;
+		import org.springframework.beans.factory.annotation.Autowired;
+		import org.springframework.security.authentication.AnonymousAuthenticationToken;
+		import org.springframework.security.authentication.AuthenticationManager;
+		import org.springframework.security.authentication.BadCredentialsException;
+		import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+		import org.springframework.security.core.Authentication;
+		import org.springframework.security.core.context.SecurityContext;
+		import org.springframework.security.core.context.SecurityContextHolder;
+		import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+		
+		import javax.servlet.http.HttpServletRequest;
+		import javax.servlet.http.HttpSession;
+		
+		@Route("login")
+		public class LoginView extends AppLayout implements BeforeEnterObserver {
+			
+			private final Label label;
+			private final TextField userNameTextField;
+			private final PasswordField passwordField;
+			
+			/**
+			* AuthenticationManager is already exposed in WebSecurityConfig
+			*/
+			@Autowired
+			private AuthenticationManager authManager;
+			
+			@Autowired
+			private HttpServletRequest req;
+			
+			LoginView() {
+			    label = new Label("Bitte anmelden:");
+			
+			    userNameTextField = new TextField();
+			    userNameTextField.setPlaceholder("Benutzename");
+			    userNameTextField.setWidth("90%");
+			    //UiUtils.makeFirstInputTextAutoFocus(Collections.singletonList(userNameTextField));
+			
+			    passwordField = new PasswordField();
+			    passwordField.setPlaceholder("Passwort");
+			    passwordField.setWidth("90%");
+			    passwordField.addKeyDownListener(Key.ENTER, (ComponentEventListener<KeyDownEvent>) keyDownEvent -> authenticateAndNavigate());
+			
+			    Button submitButton = new Button("Anmelden");
+			    submitButton.setWidth("90%");
+			    submitButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+			        authenticateAndNavigate();
+			    });
+			
+			    FormLayout formLayout = new FormLayout();
+			    formLayout.add(label, userNameTextField, passwordField, submitButton);
+			
+			    VerticalLayout verticalLayout = new VerticalLayout(label, userNameTextField, passwordField, submitButton);
+			    verticalLayout.setHeightFull();
+			    verticalLayout.setMaxWidth("50%");
+			    verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			    verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+			
+			    HorizontalLayout horizontalLayout = new HorizontalLayout(verticalLayout);
+			    horizontalLayout.setSizeFull();
+			    horizontalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+			
+			    this.setContent(horizontalLayout);
+		   }
+			
+			private void authenticateAndNavigate() {
+			    /*
+			    Set an authenticated user in Spring Security and Spring MVC
+			    spring-security
+			    */
+			    UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(userNameTextField.getValue(), passwordField.getValue());
+			    try {
+			        // Set authentication
+			        Authentication auth = authManager.authenticate(authReq);
+			        SecurityContext sc = SecurityContextHolder.getContext();
+			        sc.setAuthentication(auth);
+			
+			        /*
+			        Navigate to the requested page:
+			        This is to redirect a user back to the originally requested URL – after they log in as we are not using
+			        Spring's AuthenticationSuccessHandler.
+			        */
+			        HttpSession session = req.getSession(false);
+			        DefaultSavedRequest savedRequest = (DefaultSavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+			        //String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : Application.APP_URL;
+			        String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : "main";
+			
+			        this.getUI().ifPresent(ui -> ui.navigate(StringUtils.removeStart(requestedURI, "/")));
+			    } catch (BadCredentialsException e) {
+			        label.setText("Ungültiger Benutzername oder ungültiges Passwort. Bitte nochmal versuchen.");
+			    }
+			}
+			
+			/**
+			 * This is to redirect user to the main URL context if (s)he has already logged in and tries to open /login
+			 *
+			 * @param beforeEnterEvent
+			 */
+			@Override
+			public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+			    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			    //Anonymous Authentication is enabled in our Spring Security conf
+			    if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+			        //https://vaadin.com/docs/flow/routing/tutorial-routing-lifecycle.html
+			        beforeEnterEvent.rerouteTo("");
+			    }
+			}
+		}
 		'''
 	}
 
