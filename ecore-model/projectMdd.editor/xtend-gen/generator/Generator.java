@@ -12,6 +12,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import org.eclipse.xtext.xbase.lib.StringExtensions;
 import projectMdd.Backend;
@@ -516,8 +518,11 @@ public class Generator {
     _builder.append("import org.springframework.stereotype.Component;");
     _builder.newLine();
     {
-      EList<Entity> _entities = backend.getEntities();
-      for(final Entity e : _entities) {
+      final Function1<Entity, Boolean> _function = (Entity it) -> {
+        return Boolean.valueOf(it.isDisplay());
+      };
+      Iterable<Entity> _filter = IterableExtensions.<Entity>filter(backend.getEntities(), _function);
+      for(final Entity e : _filter) {
         _builder.append("import ");
         _builder.append(Generator.PACKAGE);
         _builder.append(".pages.");
@@ -559,9 +564,12 @@ public class Generator {
     _builder.append("\t    ");
     _builder.append("MainView(HttpServletRequest request, ");
     {
-      EList<Entity> _entities_1 = backend.getEntities();
+      final Function1<Entity, Boolean> _function_1 = (Entity it) -> {
+        return Boolean.valueOf(it.isDisplay());
+      };
+      Iterable<Entity> _filter_1 = IterableExtensions.<Entity>filter(backend.getEntities(), _function_1);
       boolean _hasElements = false;
-      for(final Entity e_1 : _entities_1) {
+      for(final Entity e_1 : _filter_1) {
         if (!_hasElements) {
           _hasElements = true;
         } else {
@@ -621,8 +629,11 @@ public class Generator {
     _builder.append("logoutWrapper.setJustifyContentMode(JustifyContentMode.END);");
     _builder.newLine();
     {
-      EList<Entity> _entities_2 = backend.getEntities();
-      for(final Entity e_2 : _entities_2) {
+      final Function1<Entity, Boolean> _function_2 = (Entity it) -> {
+        return Boolean.valueOf(it.isDisplay());
+      };
+      Iterable<Entity> _filter_2 = IterableExtensions.<Entity>filter(backend.getEntities(), _function_2);
+      for(final Entity e_2 : _filter_2) {
         _builder.append("\t    \t");
         _builder.append("Tab ");
         String _name_1 = e_2.getName();
@@ -643,9 +654,12 @@ public class Generator {
     _builder.append("\t    \t");
     _builder.append("Tabs tabs = new Tabs(");
     {
-      EList<Entity> _entities_3 = backend.getEntities();
+      final Function1<Entity, Boolean> _function_3 = (Entity it) -> {
+        return Boolean.valueOf(it.isDisplay());
+      };
+      Iterable<Entity> _filter_3 = IterableExtensions.<Entity>filter(backend.getEntities(), _function_3);
       boolean _hasElements_1 = false;
-      for(final Entity e_3 : _entities_3) {
+      for(final Entity e_3 : _filter_3) {
         if (!_hasElements_1) {
           _hasElements_1 = true;
         } else {
@@ -694,8 +708,11 @@ public class Generator {
     _builder.append("Map<Tab, VerticalLayout> tabsToPages = new HashMap<>();");
     _builder.newLine();
     {
-      EList<Entity> _entities_4 = backend.getEntities();
-      for(final Entity e_4 : _entities_4) {
+      final Function1<Entity, Boolean> _function_4 = (Entity it) -> {
+        return Boolean.valueOf(it.isDisplay());
+      };
+      Iterable<Entity> _filter_4 = IterableExtensions.<Entity>filter(backend.getEntities(), _function_4);
+      for(final Entity e_4 : _filter_4) {
         _builder.append("\t    \t");
         _builder.append("tabsToPages.put(");
         String _name_5 = e_4.getName();

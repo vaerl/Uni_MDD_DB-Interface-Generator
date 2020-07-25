@@ -289,7 +289,7 @@ class Generator {
 			import org.springframework.beans.factory.annotation.Autowired;
 			import org.springframework.security.core.context.SecurityContextHolder;
 			import org.springframework.stereotype.Component;
-			«FOR e : backend.entities»
+			«FOR e : backend.entities.filter[it.display]»
 				import «PACKAGE».pages.«e.name.toFirstUpper»GridPage;
 			«ENDFOR»
 			
@@ -307,7 +307,7 @@ class Generator {
 				private HttpServletRequest request;
 				
 				@Autowired
-				    MainView(HttpServletRequest request, «FOR e : backend.entities SEPARATOR ', '»«e.name.toFirstUpper»GridPage «e.name»page«ENDFOR») {
+				    MainView(HttpServletRequest request, «FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name.toFirstUpper»GridPage «e.name»page«ENDFOR») {
 				    	super();
 				    	this.request = request;
 				    	
@@ -323,11 +323,11 @@ class Generator {
 				    	logoutWrapper.add(logout);
 				    	logoutWrapper.setWidth("8%");
 				    	logoutWrapper.setJustifyContentMode(JustifyContentMode.END);
-				    	«FOR e : backend.entities»
+				    	«FOR e : backend.entities.filter[it.display]»
 				    		Tab «e.name» = new Tab("«e.name.toFirstUpper»");
 				    		        «e.name».getStyle().set("font-size", "48px");
 				    	«ENDFOR»
-				    	Tabs tabs = new Tabs(«FOR e : backend.entities SEPARATOR ', '»«e.name»«ENDFOR»);
+				    	Tabs tabs = new Tabs(«FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name»«ENDFOR»);
 				    	tabs.setSelectedTab(«backend.entities.get(0).name»);
 				    	tabs.setFlexGrowForEnclosedTabs(1);
 				    	tabs.setWidthFull();
@@ -340,7 +340,7 @@ class Generator {
 				    	bar.setWidthFull();
 				    	
 				    	Map<Tab, VerticalLayout> tabsToPages = new HashMap<>();
-				    	«FOR e : backend.entities»
+				    	«FOR e : backend.entities.filter[it.display]»
 				    		tabsToPages.put(«e.name», «e.name»Page);
 				    	«ENDFOR»
 				    	
