@@ -13,9 +13,11 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link projectMdd.Database#getUrl <em>Url</em>}</li>
+ *   <li>{@link projectMdd.Database#getHost <em>Host</em>}</li>
  *   <li>{@link projectMdd.Database#getUsername <em>Username</em>}</li>
  *   <li>{@link projectMdd.Database#getPassword <em>Password</em>}</li>
+ *   <li>{@link projectMdd.Database#getSchema <em>Schema</em>}</li>
+ *   <li>{@link projectMdd.Database#getPort <em>Port</em>}</li>
  * </ul>
  *
  * @see projectMdd.ProjectMddPackage#getDatabase()
@@ -24,26 +26,26 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface Database extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Url</b></em>' attribute.
+	 * Returns the value of the '<em><b>Host</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Url</em>' attribute.
-	 * @see #setUrl(String)
-	 * @see projectMdd.ProjectMddPackage#getDatabase_Url()
+	 * @return the value of the '<em>Host</em>' attribute.
+	 * @see #setHost(String)
+	 * @see projectMdd.ProjectMddPackage#getDatabase_Host()
 	 * @model required="true"
 	 * @generated
 	 */
-	String getUrl();
+	String getHost();
 
 	/**
-	 * Sets the value of the '{@link projectMdd.Database#getUrl <em>Url</em>}' attribute.
+	 * Sets the value of the '{@link projectMdd.Database#getHost <em>Host</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Url</em>' attribute.
-	 * @see #getUrl()
+	 * @param value the new value of the '<em>Host</em>' attribute.
+	 * @see #getHost()
 	 * @generated
 	 */
-	void setUrl(String value);
+	void setHost(String value);
 
 	/**
 	 * Returns the value of the '<em><b>Username</b></em>' attribute.
@@ -88,5 +90,49 @@ public interface Database extends EObject {
 	 * @generated
 	 */
 	void setPassword(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Schema</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Schema</em>' attribute.
+	 * @see #setSchema(String)
+	 * @see projectMdd.ProjectMddPackage#getDatabase_Schema()
+	 * @model required="true"
+	 * @generated
+	 */
+	String getSchema();
+
+	/**
+	 * Sets the value of the '{@link projectMdd.Database#getSchema <em>Schema</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Schema</em>' attribute.
+	 * @see #getSchema()
+	 * @generated
+	 */
+	void setSchema(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Port</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Port</em>' attribute.
+	 * @see #setPort(String)
+	 * @see projectMdd.ProjectMddPackage#getDatabase_Port()
+	 * @model required="true"
+	 * @generated
+	 */
+	String getPort();
+
+	/**
+	 * Sets the value of the '{@link projectMdd.Database#getPort <em>Port</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Port</em>' attribute.
+	 * @see #getPort()
+	 * @generated
+	 */
+	void setPort(String value);
 
 } // Database

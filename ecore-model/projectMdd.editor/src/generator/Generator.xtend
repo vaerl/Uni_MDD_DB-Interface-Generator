@@ -259,6 +259,15 @@ class Generator {
 
 	def genApplicationProperties(Backend backend) {
 		'''
+		# DATABASE
+		spring.jpa.hibernate.ddl-auto=create
+		spring.datasource.url=jdbc:mysql://«backend.database.host»:«backend.database.port»/«backend.database.schema»?useSSL=false&allowPublicKeyRetrieval=true
+		spring.datasource.username=«backend.database.username»
+		spring.datasource.password=«backend.database.password»
+		
+		# LOGGING
+		logging.level.root=DEBUG
+		org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG
 		'''
 	}
 

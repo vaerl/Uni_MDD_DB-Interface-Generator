@@ -444,7 +444,7 @@ public class ProjectMddPackageImpl extends EPackageImpl implements ProjectMddPac
 	 * @generated
 	 */
 	@Override
-	public EAttribute getDatabase_Url() {
+	public EAttribute getDatabase_Host() {
 		return (EAttribute) databaseEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -466,6 +466,26 @@ public class ProjectMddPackageImpl extends EPackageImpl implements ProjectMddPac
 	@Override
 	public EAttribute getDatabase_Password() {
 		return (EAttribute) databaseEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDatabase_Schema() {
+		return (EAttribute) databaseEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDatabase_Port() {
+		return (EAttribute) databaseEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -591,9 +611,11 @@ public class ProjectMddPackageImpl extends EPackageImpl implements ProjectMddPac
 		createEAttribute(displayableEClass, DISPLAYABLE__DISPLAY);
 
 		databaseEClass = createEClass(DATABASE);
-		createEAttribute(databaseEClass, DATABASE__URL);
+		createEAttribute(databaseEClass, DATABASE__HOST);
 		createEAttribute(databaseEClass, DATABASE__USERNAME);
 		createEAttribute(databaseEClass, DATABASE__PASSWORD);
+		createEAttribute(databaseEClass, DATABASE__SCHEMA);
+		createEAttribute(databaseEClass, DATABASE__PORT);
 
 		enumAttributeEClass = createEClass(ENUM_ATTRIBUTE);
 		createEAttribute(enumAttributeEClass, ENUM_ATTRIBUTE__VALUES);
@@ -713,12 +735,16 @@ public class ProjectMddPackageImpl extends EPackageImpl implements ProjectMddPac
 
 		initEClass(databaseEClass, Database.class, "Database", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getDatabase_Url(), ecorePackage.getEString(), "url", null, 1, 1, Database.class, !IS_TRANSIENT,
+		initEAttribute(getDatabase_Host(), ecorePackage.getEString(), "host", null, 1, 1, Database.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDatabase_Username(), ecorePackage.getEString(), "username", null, 1, 1, Database.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDatabase_Password(), ecorePackage.getEString(), "password", null, 1, 1, Database.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDatabase_Schema(), ecorePackage.getEString(), "schema", null, 1, 1, Database.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDatabase_Port(), ecorePackage.getEString(), "port", null, 1, 1, Database.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(enumAttributeEClass, EnumAttribute.class, "EnumAttribute", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

@@ -465,6 +465,36 @@ public class Generator {
   
   public CharSequence genApplicationProperties(final Backend backend) {
     StringConcatenation _builder = new StringConcatenation();
+    _builder.append("# DATABASE");
+    _builder.newLine();
+    _builder.append("spring.jpa.hibernate.ddl-auto=create");
+    _builder.newLine();
+    _builder.append("spring.datasource.url=jdbc:mysql://");
+    String _host = backend.getDatabase().getHost();
+    _builder.append(_host);
+    _builder.append(":");
+    String _port = backend.getDatabase().getPort();
+    _builder.append(_port);
+    _builder.append("/");
+    String _schema = backend.getDatabase().getSchema();
+    _builder.append(_schema);
+    _builder.append("?useSSL=false&allowPublicKeyRetrieval=true");
+    _builder.newLineIfNotEmpty();
+    _builder.append("spring.datasource.username=");
+    String _username = backend.getDatabase().getUsername();
+    _builder.append(_username);
+    _builder.newLineIfNotEmpty();
+    _builder.append("spring.datasource.password=");
+    String _password = backend.getDatabase().getPassword();
+    _builder.append(_password);
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("# LOGGING");
+    _builder.newLine();
+    _builder.append("logging.level.root=DEBUG");
+    _builder.newLine();
+    _builder.append("org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG");
+    _builder.newLine();
     return _builder;
   }
   

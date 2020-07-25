@@ -33,4 +33,5 @@
     <attributes xsi:type="projectMdd:TypeAttribute" name="password"/>
   </entities>
   <relation start="//@entities.0" name="TeamGame" end="//@entities.1" type="ManyToMany"/>
+  <database host="localhost" username="root" password="1234klostertrophy" schema="trophy" port="3306"/>
 </projectMdd:Backend>

@@ -508,13 +508,13 @@ public interface ProjectMddPackage extends EPackage {
 	int DATABASE = 8;
 
 	/**
-	 * The feature id for the '<em><b>Url</b></em>' attribute.
+	 * The feature id for the '<em><b>Host</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DATABASE__URL = 0;
+	int DATABASE__HOST = 0;
 
 	/**
 	 * The feature id for the '<em><b>Username</b></em>' attribute.
@@ -535,13 +535,31 @@ public interface ProjectMddPackage extends EPackage {
 	int DATABASE__PASSWORD = 2;
 
 	/**
+	 * The feature id for the '<em><b>Schema</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATABASE__SCHEMA = 3;
+
+	/**
+	 * The feature id for the '<em><b>Port</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATABASE__PORT = 4;
+
+	/**
 	 * The number of structural features of the '<em>Database</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DATABASE_FEATURE_COUNT = 3;
+	int DATABASE_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>Database</em>' class.
@@ -967,15 +985,15 @@ public interface ProjectMddPackage extends EPackage {
 	EClass getDatabase();
 
 	/**
-	 * Returns the meta object for the attribute '{@link projectMdd.Database#getUrl <em>Url</em>}'.
+	 * Returns the meta object for the attribute '{@link projectMdd.Database#getHost <em>Host</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Url</em>'.
-	 * @see projectMdd.Database#getUrl()
+	 * @return the meta object for the attribute '<em>Host</em>'.
+	 * @see projectMdd.Database#getHost()
 	 * @see #getDatabase()
 	 * @generated
 	 */
-	EAttribute getDatabase_Url();
+	EAttribute getDatabase_Host();
 
 	/**
 	 * Returns the meta object for the attribute '{@link projectMdd.Database#getUsername <em>Username</em>}'.
@@ -998,6 +1016,28 @@ public interface ProjectMddPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getDatabase_Password();
+
+	/**
+	 * Returns the meta object for the attribute '{@link projectMdd.Database#getSchema <em>Schema</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Schema</em>'.
+	 * @see projectMdd.Database#getSchema()
+	 * @see #getDatabase()
+	 * @generated
+	 */
+	EAttribute getDatabase_Schema();
+
+	/**
+	 * Returns the meta object for the attribute '{@link projectMdd.Database#getPort <em>Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Port</em>'.
+	 * @see projectMdd.Database#getPort()
+	 * @see #getDatabase()
+	 * @generated
+	 */
+	EAttribute getDatabase_Port();
 
 	/**
 	 * Returns the meta object for class '{@link projectMdd.EnumAttribute <em>Enum Attribute</em>}'.
@@ -1303,12 +1343,12 @@ public interface ProjectMddPackage extends EPackage {
 		EClass DATABASE = eINSTANCE.getDatabase();
 
 		/**
-		 * The meta object literal for the '<em><b>Url</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Host</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute DATABASE__URL = eINSTANCE.getDatabase_Url();
+		EAttribute DATABASE__HOST = eINSTANCE.getDatabase_Host();
 
 		/**
 		 * The meta object literal for the '<em><b>Username</b></em>' attribute feature.
@@ -1325,6 +1365,22 @@ public interface ProjectMddPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute DATABASE__PASSWORD = eINSTANCE.getDatabase_Password();
+
+		/**
+		 * The meta object literal for the '<em><b>Schema</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DATABASE__SCHEMA = eINSTANCE.getDatabase_Schema();
+
+		/**
+		 * The meta object literal for the '<em><b>Port</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DATABASE__PORT = eINSTANCE.getDatabase_Port();
 
 		/**
 		 * The meta object literal for the '{@link projectMdd.impl.EnumAttributeImpl <em>Enum Attribute</em>}' class.
