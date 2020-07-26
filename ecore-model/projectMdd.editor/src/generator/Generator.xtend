@@ -670,7 +670,7 @@ class Generator {
 
 	def genEntityPage(Entity entity) {
 		'''
-		package «PACKAGE»;
+		package «PACKAGE».frontend.pages.grids;
 		
 		import com.vaadin.flow.component.button.Button;
 		import com.vaadin.flow.component.grid.Grid;
@@ -830,6 +830,52 @@ class Generator {
 		            });
 		            return evaluate;
 		        });
+		    }
+		}
+		
+		'''
+	}
+	
+	def genEntityDetails(Entity entity) {
+		'''
+		package «PACKAGE».frontend.details;
+		
+		import com.vaadin.flow.component.dialog.Dialog;
+		import com.vaadin.flow.component.grid.Grid;
+		import com.vaadin.flow.component.grid.GridSortOrder;
+		import com.vaadin.flow.component.grid.GridVariant;
+		import com.vaadin.flow.data.provider.SortDirection;
+		import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+		// import «PACKAGE».backend.entities.Team;   // welches andere Entity??
+		
+		import java.util.Collections;
+		
+		public class «entity.name.toFirstUpper»Details extends Dialog {
+		
+		    protected «entity.name.toFirstUpper»<Team> grid; // <<-- "Team"
+		
+		    public «entity.name.toFirstUpper»Details() {
+		        super();
+		
+		        grid = new Grid<>(Team.class);
+		        grid.setMultiSort(true);
+		        // style
+		        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+		        //TODO: check if height scales accordingly; maybe find better method for setting size in general
+		        grid.setWidth("400px");
+		
+		        //set columns
+		        grid.removeAllColumns();
+		        grid.addColumn(Team::getId).setHeader("ID").setSortable(true);
+		        grid.addColumn(Team::getName).setHeader("Teamname").setSortable(true).setKey("name");
+		        grid.sort(Collections.singletonList(new GridSortOrder<Team>(grid.getColumnByKey("name"), SortDirection.ASCENDING)));
+		
+		        add(grid);
+		    }
+		
+		    public void open(Game game){
+		        grid.setItems(game.getFinished());
+		        open();
 		    }
 		}
 		
