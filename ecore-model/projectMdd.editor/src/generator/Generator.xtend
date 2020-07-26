@@ -128,6 +128,8 @@ class Generator {
 		createFile(resourceFolder, "application.properties", true, backend.genApplicationProperties, progressMonitor);
 
 		// create Application.class with exemplary data
+		createFile(entityFolder, backend.projectName + "Application.java", true, backend.genApplicationClass, progressMonitor);
+		
 		// TODO create ui-base: login, logout and tab-switcher
 		createFile(packageFolder, "MainView.java", true, backend.genMainView, progressMonitor);
 		createFile(packageFolder, "ChangeHandler.java", true, genChangeHandler, progressMonitor);
@@ -264,6 +266,20 @@ class Generator {
 	}
 
 	def genApplicationProperties(Backend backend) {
+		'''
+		# DATABASE
+		spring.jpa.hibernate.ddl-auto=create
+		spring.datasource.url=jdbc:mysql://«backend.database.host»:«backend.database.port»/«backend.database.schema»?useSSL=false&allowPublicKeyRetrieval=true
+		spring.datasource.username=«backend.database.username»
+		spring.datasource.password=«backend.database.password»
+		
+		# LOGGING
+		logging.level.root=DEBUG
+		org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG
+		'''
+	}
+	
+	def genApplicationClass(Backend backend){
 		'''
 		'''
 	}

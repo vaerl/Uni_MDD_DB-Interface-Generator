@@ -53,26 +53,28 @@ public class DatabaseItemProvider extends ItemProviderAdapter implements IEditin
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addUrlPropertyDescriptor(object);
+			addHostPropertyDescriptor(object);
 			addUsernamePropertyDescriptor(object);
 			addPasswordPropertyDescriptor(object);
+			addSchemaPropertyDescriptor(object);
+			addPortPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
 
 	/**
-	 * This adds a property descriptor for the Url feature.
+	 * This adds a property descriptor for the Host feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addUrlPropertyDescriptor(Object object) {
+	protected void addHostPropertyDescriptor(Object object) {
 		itemPropertyDescriptors
 				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_Database_url_feature"),
-						getString("_UI_PropertyDescriptor_description", "_UI_Database_url_feature",
+						getResourceLocator(), getString("_UI_Database_host_feature"),
+						getString("_UI_PropertyDescriptor_description", "_UI_Database_host_feature",
 								"_UI_Database_type"),
-						ProjectMddPackage.Literals.DATABASE__URL, true, false, false,
+						ProjectMddPackage.Literals.DATABASE__HOST, true, false, false,
 						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
@@ -105,6 +107,38 @@ public class DatabaseItemProvider extends ItemProviderAdapter implements IEditin
 						getString("_UI_PropertyDescriptor_description", "_UI_Database_password_feature",
 								"_UI_Database_type"),
 						ProjectMddPackage.Literals.DATABASE__PASSWORD, true, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Schema feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addSchemaPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_Database_schema_feature"),
+						getString("_UI_PropertyDescriptor_description", "_UI_Database_schema_feature",
+								"_UI_Database_type"),
+						ProjectMddPackage.Literals.DATABASE__SCHEMA, true, false, false,
+						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Port feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addPortPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_Database_port_feature"),
+						getString("_UI_PropertyDescriptor_description", "_UI_Database_port_feature",
+								"_UI_Database_type"),
+						ProjectMddPackage.Literals.DATABASE__PORT, true, false, false,
 						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
@@ -154,9 +188,11 @@ public class DatabaseItemProvider extends ItemProviderAdapter implements IEditin
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Database.class)) {
-		case ProjectMddPackage.DATABASE__URL:
+		case ProjectMddPackage.DATABASE__HOST:
 		case ProjectMddPackage.DATABASE__USERNAME:
 		case ProjectMddPackage.DATABASE__PASSWORD:
+		case ProjectMddPackage.DATABASE__SCHEMA:
+		case ProjectMddPackage.DATABASE__PORT:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		}

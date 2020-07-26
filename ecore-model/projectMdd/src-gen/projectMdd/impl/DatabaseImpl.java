@@ -20,33 +20,35 @@ import projectMdd.ProjectMddPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link projectMdd.impl.DatabaseImpl#getUrl <em>Url</em>}</li>
+ *   <li>{@link projectMdd.impl.DatabaseImpl#getHost <em>Host</em>}</li>
  *   <li>{@link projectMdd.impl.DatabaseImpl#getUsername <em>Username</em>}</li>
  *   <li>{@link projectMdd.impl.DatabaseImpl#getPassword <em>Password</em>}</li>
+ *   <li>{@link projectMdd.impl.DatabaseImpl#getSchema <em>Schema</em>}</li>
+ *   <li>{@link projectMdd.impl.DatabaseImpl#getPort <em>Port</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class DatabaseImpl extends MinimalEObjectImpl.Container implements Database {
 	/**
-	 * The default value of the '{@link #getUrl() <em>Url</em>}' attribute.
+	 * The default value of the '{@link #getHost() <em>Host</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getUrl()
+	 * @see #getHost()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String URL_EDEFAULT = null;
+	protected static final String HOST_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getUrl() <em>Url</em>}' attribute.
+	 * The cached value of the '{@link #getHost() <em>Host</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getUrl()
+	 * @see #getHost()
 	 * @generated
 	 * @ordered
 	 */
-	protected String url = URL_EDEFAULT;
+	protected String host = HOST_EDEFAULT;
 
 	/**
 	 * The default value of the '{@link #getUsername() <em>Username</em>}' attribute.
@@ -89,6 +91,46 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 	protected String password = PASSWORD_EDEFAULT;
 
 	/**
+	 * The default value of the '{@link #getSchema() <em>Schema</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getSchema()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String SCHEMA_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getSchema() <em>Schema</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getSchema()
+	 * @generated
+	 * @ordered
+	 */
+	protected String schema = SCHEMA_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getPort() <em>Port</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getPort()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String PORT_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getPort() <em>Port</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getPort()
+	 * @generated
+	 * @ordered
+	 */
+	protected String port = PORT_EDEFAULT;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -113,8 +155,8 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 	 * @generated
 	 */
 	@Override
-	public String getUrl() {
-		return url;
+	public String getHost() {
+		return host;
 	}
 
 	/**
@@ -123,11 +165,11 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 	 * @generated
 	 */
 	@Override
-	public void setUrl(String newUrl) {
-		String oldUrl = url;
-		url = newUrl;
+	public void setHost(String newHost) {
+		String oldHost = host;
+		host = newHost;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectMddPackage.DATABASE__URL, oldUrl, url));
+			eNotify(new ENotificationImpl(this, Notification.SET, ProjectMddPackage.DATABASE__HOST, oldHost, host));
 	}
 
 	/**
@@ -184,14 +226,65 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 	 * @generated
 	 */
 	@Override
+	public String getSchema() {
+		return schema;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setSchema(String newSchema) {
+		String oldSchema = schema;
+		schema = newSchema;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ProjectMddPackage.DATABASE__SCHEMA, oldSchema,
+					schema));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getPort() {
+		return port;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setPort(String newPort) {
+		String oldPort = port;
+		port = newPort;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ProjectMddPackage.DATABASE__PORT, oldPort, port));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case ProjectMddPackage.DATABASE__URL:
-			return getUrl();
+		case ProjectMddPackage.DATABASE__HOST:
+			return getHost();
 		case ProjectMddPackage.DATABASE__USERNAME:
 			return getUsername();
 		case ProjectMddPackage.DATABASE__PASSWORD:
 			return getPassword();
+		case ProjectMddPackage.DATABASE__SCHEMA:
+			return getSchema();
+		case ProjectMddPackage.DATABASE__PORT:
+			return getPort();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -204,14 +297,20 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case ProjectMddPackage.DATABASE__URL:
-			setUrl((String) newValue);
+		case ProjectMddPackage.DATABASE__HOST:
+			setHost((String) newValue);
 			return;
 		case ProjectMddPackage.DATABASE__USERNAME:
 			setUsername((String) newValue);
 			return;
 		case ProjectMddPackage.DATABASE__PASSWORD:
 			setPassword((String) newValue);
+			return;
+		case ProjectMddPackage.DATABASE__SCHEMA:
+			setSchema((String) newValue);
+			return;
+		case ProjectMddPackage.DATABASE__PORT:
+			setPort((String) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -225,14 +324,20 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case ProjectMddPackage.DATABASE__URL:
-			setUrl(URL_EDEFAULT);
+		case ProjectMddPackage.DATABASE__HOST:
+			setHost(HOST_EDEFAULT);
 			return;
 		case ProjectMddPackage.DATABASE__USERNAME:
 			setUsername(USERNAME_EDEFAULT);
 			return;
 		case ProjectMddPackage.DATABASE__PASSWORD:
 			setPassword(PASSWORD_EDEFAULT);
+			return;
+		case ProjectMddPackage.DATABASE__SCHEMA:
+			setSchema(SCHEMA_EDEFAULT);
+			return;
+		case ProjectMddPackage.DATABASE__PORT:
+			setPort(PORT_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -246,12 +351,16 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case ProjectMddPackage.DATABASE__URL:
-			return URL_EDEFAULT == null ? url != null : !URL_EDEFAULT.equals(url);
+		case ProjectMddPackage.DATABASE__HOST:
+			return HOST_EDEFAULT == null ? host != null : !HOST_EDEFAULT.equals(host);
 		case ProjectMddPackage.DATABASE__USERNAME:
 			return USERNAME_EDEFAULT == null ? username != null : !USERNAME_EDEFAULT.equals(username);
 		case ProjectMddPackage.DATABASE__PASSWORD:
 			return PASSWORD_EDEFAULT == null ? password != null : !PASSWORD_EDEFAULT.equals(password);
+		case ProjectMddPackage.DATABASE__SCHEMA:
+			return SCHEMA_EDEFAULT == null ? schema != null : !SCHEMA_EDEFAULT.equals(schema);
+		case ProjectMddPackage.DATABASE__PORT:
+			return PORT_EDEFAULT == null ? port != null : !PORT_EDEFAULT.equals(port);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -267,12 +376,16 @@ public class DatabaseImpl extends MinimalEObjectImpl.Container implements Databa
 			return super.toString();
 
 		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (url: ");
-		result.append(url);
+		result.append(" (host: ");
+		result.append(host);
 		result.append(", username: ");
 		result.append(username);
 		result.append(", password: ");
 		result.append(password);
+		result.append(", schema: ");
+		result.append(schema);
+		result.append(", port: ");
+		result.append(port);
 		result.append(')');
 		return result.toString();
 	}

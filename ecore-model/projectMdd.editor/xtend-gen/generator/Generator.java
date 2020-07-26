@@ -147,30 +147,30 @@ public class Generator {
     for (final Entity entity : _entities) {
       {
         String _name = entity.getName();
-        String _plus = (_name + ".java");
-        this.createFile(entityFolder, _plus, true, this.genEntityExtensionClass(entity), progressMonitor);
+        String _plus_1 = (_name + ".java");
+        this.createFile(entityFolder, _plus_1, true, this.genEntityExtensionClass(entity), progressMonitor);
         boolean _isTransient = entity.isTransient();
         boolean _not = (!_isTransient);
         if (_not) {
           String _name_1 = entity.getName();
-          String _plus_1 = (_name_1 + "Gen.java");
-          this.createFile(entityFolder, _plus_1, true, this.genEntityClass(entity), progressMonitor);
+          String _plus_2 = (_name_1 + "Gen.java");
+          this.createFile(entityFolder, _plus_2, true, this.genEntityClass(entity), progressMonitor);
           String _name_2 = entity.getName();
-          String _plus_2 = (_name_2 + "Repo.java");
-          this.createFile(repoFolder, _plus_2, true, this.genEntityRepo(entity), progressMonitor);
+          String _plus_3 = (_name_2 + "Repo.java");
+          this.createFile(repoFolder, _plus_3, true, this.genEntityRepo(entity), progressMonitor);
           boolean _isDisplay = entity.isDisplay();
           if (_isDisplay) {
             String _name_3 = entity.getName();
-            String _plus_3 = (_name_3 + "Page.java");
-            this.createFile(pageFolder, _plus_3, true, this.genEntityPage(entity), progressMonitor);
+            String _plus_4 = (_name_3 + "Page.java");
+            this.createFile(pageFolder, _plus_4, true, this.genEntityPage(entity), progressMonitor);
             String _name_4 = entity.getName();
-            String _plus_4 = (_name_4 + "Grid.java");
-            this.createFile(gridFolder, _plus_4, true, this.genEntityGrid(entity), progressMonitor);
+            String _plus_5 = (_name_4 + "Grid.java");
+            this.createFile(gridFolder, _plus_5, true, this.genEntityGrid(entity), progressMonitor);
           }
         } else {
           String _name_5 = entity.getName();
-          String _plus_5 = (_name_5 + "Gen.java");
-          this.createFile(entityFolder, _plus_5, true, this.genTransientEntityClass(entity), progressMonitor);
+          String _plus_6 = (_name_5 + "Gen.java");
+          this.createFile(entityFolder, _plus_6, true, this.genTransientEntityClass(entity), progressMonitor);
         }
       }
     }
@@ -472,6 +472,41 @@ public class Generator {
   }
   
   public CharSequence genApplicationProperties(final Backend backend) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("# DATABASE");
+    _builder.newLine();
+    _builder.append("spring.jpa.hibernate.ddl-auto=create");
+    _builder.newLine();
+    _builder.append("spring.datasource.url=jdbc:mysql://");
+    String _host = backend.getDatabase().getHost();
+    _builder.append(_host);
+    _builder.append(":");
+    String _port = backend.getDatabase().getPort();
+    _builder.append(_port);
+    _builder.append("/");
+    String _schema = backend.getDatabase().getSchema();
+    _builder.append(_schema);
+    _builder.append("?useSSL=false&allowPublicKeyRetrieval=true");
+    _builder.newLineIfNotEmpty();
+    _builder.append("spring.datasource.username=");
+    String _username = backend.getDatabase().getUsername();
+    _builder.append(_username);
+    _builder.newLineIfNotEmpty();
+    _builder.append("spring.datasource.password=");
+    String _password = backend.getDatabase().getPassword();
+    _builder.append(_password);
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("# LOGGING");
+    _builder.newLine();
+    _builder.append("logging.level.root=DEBUG");
+    _builder.newLine();
+    _builder.append("org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence genApplicationClass(final Backend backend) {
     StringConcatenation _builder = new StringConcatenation();
     return _builder;
   }

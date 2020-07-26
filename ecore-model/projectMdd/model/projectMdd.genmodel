@@ -54,9 +54,11 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Displayable/display"/>
     </genClasses>
     <genClasses ecoreClass="projectMdd.ecore#//Database">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/url"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/host"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/username"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/password"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/schema"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/port"/>
     </genClasses>
     <genClasses ecoreClass="projectMdd.ecore#//EnumAttribute">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//EnumAttribute/values"/>
