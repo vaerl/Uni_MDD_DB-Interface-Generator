@@ -636,6 +636,169 @@ class Generator {
 
 	def genEntityPage(Entity entity) {
 		'''
+		package «PACKAGE»;
+		
+		import com.vaadin.flow.component.button.Button;
+		import com.vaadin.flow.component.grid.Grid;
+		import com.vaadin.flow.component.grid.GridVariant;
+		import com.vaadin.flow.component.icon.VaadinIcon;
+		import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+		import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+		import com.vaadin.flow.component.page.Push;
+		import com.vaadin.flow.component.textfield.TextField;
+		import com.vaadin.flow.data.value.ValueChangeMode;
+		import com.vaadin.flow.spring.annotation.UIScope;
+		import «PACKAGE».KlostertrophyApplication;
+		import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+		import «PACKAGE».backend.repos.«entity.name.toFirstUpper»Repository;
+		// import de.klostertrophy.backend.repos.TeamRepository;	// ??
+		import «PACKAGE».frontend.details.«entity.name.toFirstUpper»Details;
+		import «PACKAGE».frontend.editors.«entity.name.toFirstUpper»Editor;
+		import «PACKAGE».frontend.play.«entity.name.toFirstUpper»PlayDialog;		// Alle PLAY-Komponenten entfernen? (inkl. button, dialog, etc.)
+		import org.slf4j.Logger;
+		import org.slf4j.LoggerFactory;
+		import org.springframework.beans.factory.annotation.Autowired;
+		import org.springframework.stereotype.Component;
+		import org.springframework.transaction.annotation.Transactional;
+		import org.springframework.util.StringUtils;
+		
+		@Component
+		@Transactional
+		@UIScope
+		public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
+		
+		    private static final long serialVersionUID = -8733687422451328748L;
+		    private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
+		
+		    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
+		    private Grid<«entity.name.toFirstUpper»> grid;
+		    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
+		    private «entity.name.toFirstUpper»PlayDialog «entity.name»PlayDialog;
+		
+		    private TextField filter;
+		
+		    private Button evaluate;
+		
+		    @Autowired
+		    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»PlayDialog «entity.name»PlayDialog, «entity.name.toFirstUpper»Editor «entity.name»Editor) {  // TeamRepository entfernt
+		        super();
+		        this.«entity.name»Repository = «entity.name»Repository;
+		        this.«entity.name»PlayDialog = «entity.name»PlayDialog;
+		        this.«entity.name»Editor = «entity.name»Editor;
+		
+		        filter = new TextField();
+		        HorizontalLayout actions = new HorizontalLayout();
+		
+		        // grid
+		        grid = new Grid<>(«entity.name.toFirstUpper».class);
+		        grid.setItems(«entity.name»Repository.findAll());
+		        grid.setMultiSort(true);
+		        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
+		                GridVariant.LUMO_ROW_STRIPES);
+		        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+		        // add Columns
+		        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+		        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+		        //add Columns
+		        setColumns();
+		
+		        // actions
+		        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
+		        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»("", null, null))); 		// "", null, null noch richtig?
+		
+		        // filter
+		        filter.setPlaceholder("Nach Namen filtern");
+		        filter.setValueChangeMode(ValueChangeMode.EAGER);
+		        filter.addValueChangeListener(e -> listValues(e.getValue()));
+		
+		        // editor
+		        «entity.name»Editor.setChangeHandler(() -> {
+		            «entity.name»Editor.close();
+		            listValues(filter.getValue());
+		        });
+		
+		        // playDialog
+		        «entity.name»PlayDialog.setChangeHandler(() -> {
+		            «entity.name»PlayDialog.close();
+		            «entity.name»PlayDialog.reset();
+		            listValues(filter.getValue());
+		        });
+		
+		        actions.add(filter, addNew);
+		        add(actions, grid, this.«entity.name»Editor);
+		        listValues(null);
+		    }
+		
+		    void listValues(String filterText) {
+		        if (StringUtils.isEmpty(filterText)) {
+		            grid.setItems(«entity.name»Repository.findAll());
+		        } else {
+		            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
+		        }
+		    }
+		
+		    private void setColumns() {
+		        // remove unwanted columns
+		        grid.removeAllColumns();
+		        // add Columns		// TODO: Mittels FOR-Schleife alle Attribute hinzufügen?
+		        grid.addColumn(«entity.name.toFirstUpper»::getName).setHeader("Name").setSortable(true);
+		        grid.addColumn(«entity.name.toFirstUpper»::getId).setHeader("ID").setSortable(true);
+		        // grid.addColumn(«entity.name.toFirstUpper»::getInputType).setHeader("Punkt-Typ").setSortable(true);
+		        // grid.addColumn(«entity.name.toFirstUpper»::isDoneString).setHeader("Status").setSortable(true);
+		
+		        // add standard-columns
+		        grid.addComponentColumn(value -> {
+		            Button play = new Button("Spielen");
+		            play.addClassName("play");
+		            play.addClickListener(e -> {
+		                «entity.name»PlayDialog.edit(value);
+		            });
+		            if (value.getTeams().isEmpty()) {
+		                play.setEnabled(false);
+		            } else {
+		                play.setEnabled(true);
+		            }
+		            return play;
+		        });
+		
+		        grid.addComponentColumn(value -> {
+		            Button details = new Button("Fertig");
+		            details.addClassName("details");
+		            details.addClickListener(e -> {
+		                var «entity.name»Details = new «entity.name.toFirstUpper»Details();
+		                «entity.name»Details.open(value);
+		            });
+		            if (value.getFinished().isEmpty()) {
+		                log.info("Finished is empty.");
+		                details.setEnabled(false);
+		            } else {
+		                log.info("Finished will be displayed.");
+		                details.setEnabled(true);
+		            }
+		            return details;
+		        });
+		
+		        grid.addComponentColumn(value -> {
+		            Button edit = new Button("Bearbeiten");
+		            edit.addClassName("edit");
+		            edit.addClickListener(e -> {
+		                «entity.name»Editor.edit(value);
+		            });
+		            return edit;
+		        });
+		
+		        grid.addComponentColumn(value -> {			// Wie Play, auch entfernen?
+		            evaluate = new Button("Auswerten");
+		            evaluate.setEnabled(false);
+		            evaluate.addClassName("evaluate");
+		            evaluate.addClickListener(e -> {
+		                System.out.println("EVALUIEREN");
+		            });
+		            return evaluate;
+		        });
+		    }
+		}
+		
 		'''
 	}
 
