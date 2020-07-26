@@ -647,6 +647,24 @@ class Generator {
 
 	def genEntityRepo(Entity entity) {
 		'''
+		package «PACKAGE».backend.repos;
+		
+		import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+		import org.springframework.data.jpa.repository.JpaRepository;
+		import org.springframework.stereotype.Repository;
+		
+		import java.util.List;
+		
+		@Repository
+		public interface «entity.name.toFirstUpper»Repository extends JpaRepository<«entity.name.toFirstUpper», Long> {
+		
+		    List<«entity.name.toFirstUpper»> findAll();
+		
+		    List<«entity.name.toFirstUpper»> findByNameStartsWithIgnoreCase(String name);
+		
+		    List<«entity.name.toFirstUpper»> findByDoneIs(boolean b);
+		
+		}
 		'''
 	}
 
