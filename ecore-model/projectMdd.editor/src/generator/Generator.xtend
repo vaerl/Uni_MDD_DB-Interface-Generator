@@ -126,6 +126,8 @@ class Generator {
 		createFile(resourceFolder, "application.properties", true, backend.genApplicationProperties, progressMonitor);
 
 		// create Application.class with exemplary data
+		createFile(entityFolder, backend.projectName + "Application.java", true, backend.genApplicationClass, progressMonitor);
+		
 		// TODO create ui-base: login, logout and tab-switcher
 		// create entity-classes
 		for (Entity entity : backend.entities) {
@@ -268,6 +270,11 @@ class Generator {
 		# LOGGING
 		logging.level.root=DEBUG
 		org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG
+		'''
+	}
+	
+	def genApplicationClass(Backend backend){
+		'''
 		'''
 	}
 
