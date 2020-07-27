@@ -2961,16 +2961,17 @@ public class Generator {
         return Boolean.valueOf((it instanceof EnumAttribute));
       };
       Iterable<Attribute> _filter = IterableExtensions.<Attribute>filter(entity.getAttributes(), _function);
-      for(final Attribute enum : _filter) {
+      for(final Attribute e : _filter) {
         _builder.append("\t");
         _builder.append("Select<");
-        String _name_1 = entity.getName();
-        _builder.append(_name_1, "\t");
-        String _firstUpper_6 = StringExtensions.toFirstUpper(enum.getName());
+        String _firstUpper_6 = StringExtensions.toFirstUpper(entity.getName());
         _builder.append(_firstUpper_6, "\t");
+        _builder.append(".");
+        String _firstUpper_7 = StringExtensions.toFirstUpper(e.getName());
+        _builder.append(_firstUpper_7, "\t");
         _builder.append("> ");
-        String _name_2 = enum.getName();
-        _builder.append(_name_2, "\t");
+        String _name_1 = e.getName();
+        _builder.append(_name_1, "\t");
         _builder.append(" = new Select<>();");
         _builder.newLineIfNotEmpty();
       }
@@ -2983,25 +2984,25 @@ public class Generator {
       };
       Iterable<Attribute> _filter_1 = IterableExtensions.<Attribute>filter(entity.getAttributes(), _function_1);
       boolean _hasElements = false;
-      for(final Attribute enum_1 : _filter_1) {
+      for(final Attribute e_1 : _filter_1) {
         if (!_hasElements) {
           _hasElements = true;
         } else {
           _builder.appendImmediate(", ", "\t");
         }
-        String _name_3 = enum_1.getName();
-        _builder.append(_name_3, "\t");
+        String _name_2 = e_1.getName();
+        _builder.append(_name_2, "\t");
       }
     }
     _builder.append(");");
     _builder.newLineIfNotEmpty();
     _builder.append("\t");
     _builder.append("Binder<");
-    String _firstUpper_7 = StringExtensions.toFirstUpper(entity.getName());
-    _builder.append(_firstUpper_7, "\t");
-    _builder.append("> binder = new Binder<>(");
     String _firstUpper_8 = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper_8, "\t");
+    _builder.append("> binder = new Binder<>(");
+    String _firstUpper_9 = StringExtensions.toFirstUpper(entity.getName());
+    _builder.append(_firstUpper_9, "\t");
     _builder.append(".class);");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
@@ -3010,14 +3011,14 @@ public class Generator {
     _builder.newLine();
     _builder.append("    ");
     _builder.append("public ");
-    String _firstUpper_9 = StringExtensions.toFirstUpper(entity.getName());
-    _builder.append(_firstUpper_9, "    ");
-    _builder.append("Editor(");
     String _firstUpper_10 = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper_10, "    ");
+    _builder.append("Editor(");
+    String _firstUpper_11 = StringExtensions.toFirstUpper(entity.getName());
+    _builder.append(_firstUpper_11, "    ");
     _builder.append("Repository ");
-    String _name_4 = entity.getName();
-    _builder.append(_name_4, "    ");
+    String _name_3 = entity.getName();
+    _builder.append(_name_3, "    ");
     _builder.append("Repository) {");
     _builder.newLineIfNotEmpty();
     _builder.append("\t   \t");
@@ -3025,11 +3026,11 @@ public class Generator {
     _builder.newLine();
     _builder.append("   \t    ");
     _builder.append("this.");
+    String _name_4 = entity.getName();
+    _builder.append(_name_4, "   \t    ");
+    _builder.append("Repository = ");
     String _name_5 = entity.getName();
     _builder.append(_name_5, "   \t    ");
-    _builder.append("Repository = ");
-    String _name_6 = entity.getName();
-    _builder.append(_name_6, "   \t    ");
     _builder.append("Repository;");
     _builder.newLineIfNotEmpty();
     _builder.append("   \t    ");
@@ -3076,29 +3077,35 @@ public class Generator {
         return Boolean.valueOf((it instanceof EnumAttribute));
       };
       Iterable<Attribute> _filter_2 = IterableExtensions.<Attribute>filter(entity.getAttributes(), _function_2);
-      for(final Attribute enum_2 : _filter_2) {
+      for(final Attribute e_2 : _filter_2) {
         _builder.append("        ");
-        String _name_7 = enum_2.getName();
-        _builder.append(_name_7, "        ");
+        String _name_6 = e_2.getName();
+        _builder.append(_name_6, "        ");
         _builder.append(".setLabel(\"");
-        String _firstUpper_11 = StringExtensions.toFirstUpper(enum_2.getName());
-        _builder.append(_firstUpper_11, "        ");
+        String _firstUpper_12 = StringExtensions.toFirstUpper(e_2.getName());
+        _builder.append(_firstUpper_12, "        ");
         _builder.append("\");");
         _builder.newLineIfNotEmpty();
         _builder.append("        ");
-        String _name_8 = enum_2.getName();
-        _builder.append(_name_8, "        ");
+        String _name_7 = e_2.getName();
+        _builder.append(_name_7, "        ");
         _builder.append(".setItemLabelGenerator(");
-        String _firstUpper_12 = StringExtensions.toFirstUpper(enum_2.getName());
-        _builder.append(_firstUpper_12, "        ");
+        String _firstUpper_13 = StringExtensions.toFirstUpper(entity.getName());
+        _builder.append(_firstUpper_13, "        ");
+        _builder.append(".");
+        String _firstUpper_14 = StringExtensions.toFirstUpper(e_2.getName());
+        _builder.append(_firstUpper_14, "        ");
         _builder.append("::toString);");
         _builder.newLineIfNotEmpty();
         _builder.append("        ");
-        String _name_9 = enum_2.getName();
-        _builder.append(_name_9, "        ");
+        String _name_8 = e_2.getName();
+        _builder.append(_name_8, "        ");
         _builder.append(".setItems(new ArrayList<>(EnumSet.allOf(");
-        String _firstUpper_13 = StringExtensions.toFirstUpper(enum_2.getName());
-        _builder.append(_firstUpper_13, "        ");
+        String _firstUpper_15 = StringExtensions.toFirstUpper(entity.getName());
+        _builder.append(_firstUpper_15, "        ");
+        _builder.append(".");
+        String _firstUpper_16 = StringExtensions.toFirstUpper(e_2.getName());
+        _builder.append(_firstUpper_16, "        ");
         _builder.append(".class)));");
         _builder.newLineIfNotEmpty();
       }
@@ -3112,17 +3119,17 @@ public class Generator {
     _builder.newLine();
     _builder.append("    ");
     _builder.append("public final void edit(");
-    String _firstUpper_14 = StringExtensions.toFirstUpper(entity.getName());
-    _builder.append(_firstUpper_14, "    ");
+    String _firstUpper_17 = StringExtensions.toFirstUpper(entity.getName());
+    _builder.append(_firstUpper_17, "    ");
     _builder.append(" ");
-    String _name_10 = entity.getName();
-    _builder.append(_name_10, "    ");
+    String _name_9 = entity.getName();
+    _builder.append(_name_9, "    ");
     _builder.append(") {");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");
     _builder.append("if (");
-    String _name_11 = entity.getName();
-    _builder.append(_name_11, "        ");
+    String _name_10 = entity.getName();
+    _builder.append(_name_10, "        ");
     _builder.append(" == null) {");
     _builder.newLineIfNotEmpty();
     _builder.append("            ");
@@ -3137,8 +3144,8 @@ public class Generator {
     _builder.newLine();
     _builder.append("        ");
     _builder.append("final boolean persisted = ");
-    String _name_12 = entity.getName();
-    _builder.append(_name_12, "        ");
+    String _name_11 = entity.getName();
+    _builder.append(_name_11, "        ");
     _builder.append(".getId() != null;");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");
@@ -3149,14 +3156,14 @@ public class Generator {
     _builder.newLine();
     _builder.append("            ");
     _builder.append("this.");
+    String _name_12 = entity.getName();
+    _builder.append(_name_12, "            ");
+    _builder.append(" = ");
     String _name_13 = entity.getName();
     _builder.append(_name_13, "            ");
-    _builder.append(" = ");
+    _builder.append("Repository.findById(");
     String _name_14 = entity.getName();
     _builder.append(_name_14, "            ");
-    _builder.append("Repository.findById(");
-    String _name_15 = entity.getName();
-    _builder.append(_name_15, "            ");
     _builder.append(".getId()).get();");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");
@@ -3167,11 +3174,11 @@ public class Generator {
     _builder.newLine();
     _builder.append("            ");
     _builder.append("this.");
+    String _name_15 = entity.getName();
+    _builder.append(_name_15, "            ");
+    _builder.append(" = ");
     String _name_16 = entity.getName();
     _builder.append(_name_16, "            ");
-    _builder.append(" = ");
-    String _name_17 = entity.getName();
-    _builder.append(_name_17, "            ");
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");
@@ -3180,8 +3187,8 @@ public class Generator {
     _builder.newLine();
     _builder.append("        ");
     _builder.append("this.binder.setBean(this.");
-    String _name_18 = entity.getName();
-    _builder.append(_name_18, "        ");
+    String _name_17 = entity.getName();
+    _builder.append(_name_17, "        ");
     _builder.append(");");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");
@@ -3205,18 +3212,18 @@ public class Generator {
       };
       Iterable<Attribute> _filter_3 = IterableExtensions.<Attribute>filter(entity.getAttributes(), _function_3);
       boolean _hasElements_1 = false;
-      for(final Attribute enum_3 : _filter_3) {
+      for(final Attribute e_3 : _filter_3) {
         if (!_hasElements_1) {
           _hasElements_1 = true;
         } else {
           _builder.appendImmediate(" || ", "        ");
         }
         _builder.append("this.");
-        String _name_19 = entity.getName();
-        _builder.append(_name_19, "        ");
+        String _name_18 = entity.getName();
+        _builder.append(_name_18, "        ");
         _builder.append(".get");
-        String _firstUpper_15 = StringExtensions.toFirstUpper(enum_3.getName());
-        _builder.append(_firstUpper_15, "        ");
+        String _firstUpper_18 = StringExtensions.toFirstUpper(e_3.getName());
+        _builder.append(_firstUpper_18, "        ");
         _builder.append("() == null");
       }
     }
@@ -3231,8 +3238,8 @@ public class Generator {
       }
     }
     _builder.append("this.");
-    String _name_20 = entity.getName();
-    _builder.append(_name_20, "        ");
+    String _name_19 = entity.getName();
+    _builder.append(_name_19, "        ");
     _builder.append(".getName() == null){");
     _builder.newLineIfNotEmpty();
     _builder.append("            ");
@@ -3242,11 +3249,11 @@ public class Generator {
     _builder.append("}");
     _builder.newLine();
     _builder.append("        ");
+    String _name_20 = entity.getName();
+    _builder.append(_name_20, "        ");
+    _builder.append("Repository.save(this.");
     String _name_21 = entity.getName();
     _builder.append(_name_21, "        ");
-    _builder.append("Repository.save(this.");
-    String _name_22 = entity.getName();
-    _builder.append(_name_22, "        ");
     _builder.append(");");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");
@@ -3260,11 +3267,11 @@ public class Generator {
     _builder.append("void delete() {");
     _builder.newLine();
     _builder.append("       ");
+    String _name_22 = entity.getName();
+    _builder.append(_name_22, "       ");
+    _builder.append("Repository.delete(this.");
     String _name_23 = entity.getName();
     _builder.append(_name_23, "       ");
-    _builder.append("Repository.delete(this.");
-    String _name_24 = entity.getName();
-    _builder.append(_name_24, "       ");
     _builder.append(");");
     _builder.newLineIfNotEmpty();
     _builder.append("       ");

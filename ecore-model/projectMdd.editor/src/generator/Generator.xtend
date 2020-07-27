@@ -1094,10 +1094,10 @@ class Generator {
 			
 			    //fields to edit
 			    TextField name = new TextField("«entity.name.toFirstUpper»-Name");
-				«FOR enum : entity.attributes.filter[it instanceof EnumAttribute]»
-					Select<«entity.name»«enum.name.toFirstUpper»> «enum.name» = new Select<>();
+				«FOR e : entity.attributes.filter[it instanceof EnumAttribute]»
+					Select<«entity.name.toFirstUpper».«e.name.toFirstUpper»> «e.name» = new Select<>();
 				«ENDFOR»
-				HorizontalLayout fields = new HorizontalLayout(name, «FOR enum : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ', '»«enum.name»«ENDFOR»);
+				HorizontalLayout fields = new HorizontalLayout(name, «FOR e : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ', '»«e.name»«ENDFOR»);
 				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
 			
 			    @Autowired
@@ -1119,10 +1119,10 @@ class Generator {
 			        cancel.addClickListener(e -> changeHandler.onChange());
 			
 			        //fields
-			        «FOR enum : entity.attributes.filter[it instanceof EnumAttribute]»
-			        	«enum.name».setLabel("«enum.name.toFirstUpper»");
-			        	«enum.name».setItemLabelGenerator(«enum.name.toFirstUpper»::toString);
-			        	«enum.name».setItems(new ArrayList<>(EnumSet.allOf(«enum.name.toFirstUpper».class)));
+			        «FOR e : entity.attributes.filter[it instanceof EnumAttribute]»
+			        	«e.name».setLabel("«e.name.toFirstUpper»");
+			        	«e.name».setItemLabelGenerator(«entity.name.toFirstUpper».«e.name.toFirstUpper»::toString);
+			        	«e.name».setItems(new ArrayList<>(EnumSet.allOf(«entity.name.toFirstUpper».«e.name.toFirstUpper».class)));
 			        «ENDFOR»
 			        actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 			    }
@@ -1148,7 +1148,7 @@ class Generator {
 			    }
 			
 			    void save() {
-			        if («FOR enum : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ' || '»this.«entity.name».get«enum.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter[it instanceof EnumAttribute].size > 0» || «ENDIF»this.«entity.name».getName() == null){
+			        if («FOR e : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ' || '»this.«entity.name».get«e.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter[it instanceof EnumAttribute].size > 0» || «ENDIF»this.«entity.name».getName() == null){
 			            return;
 			        }
 			        «entity.name»Repository.save(this.«entity.name»);
