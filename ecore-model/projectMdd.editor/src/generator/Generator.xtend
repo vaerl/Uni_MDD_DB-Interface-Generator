@@ -1056,6 +1056,119 @@ class Generator {
 
 	def genEntityEditor(Entity entity) {
 		'''
+			package «PACKAGE».editors;
+			
+			import com.vaadin.flow.component.Key;
+			import com.vaadin.flow.component.KeyNotifier;
+			import com.vaadin.flow.component.button.Button;
+			import com.vaadin.flow.component.dialog.Dialog;
+			import com.vaadin.flow.component.icon.VaadinIcon;
+			import com.vaadin.flow.component.orderedlayout.FlexComponent;
+			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+			import com.vaadin.flow.component.select.Select;
+			import com.vaadin.flow.component.textfield.TextField;
+			import com.vaadin.flow.data.binder.Binder;
+			import com.vaadin.flow.spring.annotation.UIScope;
+			import «PACKAGE».entities.«entity.name.toFirstUpper»;
+			«FOR enum : entity.attributes.filter[it instanceof EnumAttribute]»
+			import «PACKAGE».entities.«enum.name.toFirstUpper»;
+			«ENDFOR»
+			import «PACKAGE».repos.«entity.name.toFirstUpper»Repository;
+			import «PACKAGE».ChangeHandler;
+			import org.springframework.beans.factory.annotation.Autowired;
+			import org.springframework.stereotype.Component;
+			
+			import java.util.ArrayList;
+			import java.util.EnumSet;
+			
+			@Component
+			@UIScope
+			public class «entity.name.toFirstUpper»Editor extends Dialog implements KeyNotifier {
+			
+			    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
+			    private ChangeHandler changeHandler;
+			    private «entity.name.toFirstUpper» game;
+			
+			    //buttons
+			    Button save = new Button("Speichern", VaadinIcon.CHECK.create());
+			    Button cancel = new Button("Abbrechen");
+			    Button delete = new Button("Löschen", VaadinIcon.TRASH.create());
+			    HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
+			
+			    //fields to edit
+			    TextField name = new TextField("«entity.name.toFirstUpper»-Name");
+				«FOR enum : entity.attributes.filter[it instanceof EnumAttribute]»
+					Select<«enum.name.toFirstUpper»> «enum.name» = new Select<>();
+				«ENDFOR»
+				HorizontalLayout fields = new HorizontalLayout(name, «FOR enum : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ', '»«enum.name»«ENDFOR»);
+				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
+			
+			    @Autowired
+			    public «entity.name.toFirstUpper»Editor(«entity.name.toFirstUpper»Repository «entity.name»Repository) {
+				   	super();
+			   	    this.«entity.name»Repository = «entity.name»Repository;
+			   	    add(fields, actions);
+			
+			        // bind using naming convention
+			        binder.bindInstanceFields(this);
+			
+			        //actions
+			        save.getElement().getThemeList().add("primary");
+			        delete.getElement().getThemeList().add("error");
+			        addKeyPressListener(Key.ENTER, e -> save());
+			        // wire action buttons to save, delete and reset
+			        save.addClickListener(e -> save());
+			        delete.addClickListener(e -> delete());
+			        cancel.addClickListener(e -> changeHandler.onChange());
+			
+			        //fields
+			        «FOR enum : entity.attributes.filter[it instanceof EnumAttribute]»
+			        	«enum.name».setLabel("«enum.name.toFirstUpper»");
+			        	«enum.name».setItemLabelGenerator(«enum.name.toFirstUpper»::toString);
+			        	«enum.name».setItems(new ArrayList<>(EnumSet.allOf(«enum.name.toFirstUpper».class)));
+			        «ENDFOR»
+			        actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+			    }
+			
+			    public final void edit(«entity.name.toFirstUpper» «entity.name») {
+			        if («entity.name» == null) {
+			            close();
+			            return;
+			        }
+			
+			        final boolean persisted = «entity.name».getId() != null;
+			        if (persisted) {
+			            // Find fresh entity for editing
+			            this.«entity.name» = «entity.name»Repository.findById(«entity.name».getId()).get();
+			        }
+			        else {
+			            this.«entity.name» = «entity.name»;
+			        }
+			
+			        this.binder.setBean(this.«entity.name»);
+			        open();
+			        this.name.focus();
+			    }
+			
+			    void save() {
+			        if (this.«entity.name».getSortOrder() == null || this.«entity.name».getInputType() == null || this.«entity.name».getName() == null){
+			            return;
+			        }
+			        «entity.name»Repository.save(this.«entity.name»);
+			        this.changeHandler.onChange();
+			    }
+			
+				void delete() {
+			       «entity.name»Repository.delete(this.«entity.name»);
+			       this.changeHandler.onChange();
+			   }
+			
+			    public void setChangeHandler(ChangeHandler h) {
+			        // ChangeHandler is notified when either save or delete is clicked
+			        this.changeHandler = h;
+			    }
+			
+			}
 		'''
 	}
 
