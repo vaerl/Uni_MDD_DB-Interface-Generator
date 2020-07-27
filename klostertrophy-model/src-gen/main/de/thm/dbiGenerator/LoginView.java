@@ -79,7 +79,7 @@ public class LoginView extends AppLayout implements BeforeEnterObserver {
 	    horizontalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 	
 	    this.setContent(horizontalLayout);
-   }
+	  }
 	
 	private void authenticateAndNavigate() {
 	    /*

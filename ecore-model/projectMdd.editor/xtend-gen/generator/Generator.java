@@ -1,6 +1,7 @@
 package generator;
 
 import com.google.common.collect.Iterators;
+import generator.Helpers;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import org.eclipse.core.resources.IFile;
@@ -16,6 +17,7 @@ import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import org.eclipse.xtext.xbase.lib.StringExtensions;
+import projectMdd.Attribute;
 import projectMdd.Backend;
 import projectMdd.Entity;
 
@@ -136,12 +138,13 @@ public class Generator {
     IFolder entityFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/entities"));
     IFolder repoFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/repositories"));
     IFolder pageFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/pages"));
-    IFolder gridFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/grids"));
+    IFolder editorFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/editors"));
     this.createFile(sourceFolder, "pom.xml", true, this.genPom(backend), progressMonitor);
     this.createFile(resourceFolder, "application.properties", true, this.genApplicationProperties(backend), progressMonitor);
     String _projectName = backend.getProjectName();
     String _plus = (_projectName + "Application.java");
-    this.createFile(entityFolder, _plus, true, this.genApplicationClass(backend), progressMonitor);
+    this.createFile(packageFolder, _plus, true, this.genApplicationClass(backend), progressMonitor);
+    this.createFile(packageFolder, "WebSecurityConfig.java", true, this.genWebsecurity(backend), progressMonitor);
     this.createFile(packageFolder, "MainView.java", true, this.genMainView(backend), progressMonitor);
     this.createFile(packageFolder, "ChangeHandler.java", true, this.genChangeHandler(), progressMonitor);
     this.createFile(packageFolder, "AccessDeniedView.java", true, this.genAccessDenied(), progressMonitor);
@@ -159,16 +162,16 @@ public class Generator {
           String _plus_2 = (_name_1 + "Gen.java");
           this.createFile(entityFolder, _plus_2, true, this.genEntityClass(entity), progressMonitor);
           String _name_2 = entity.getName();
-          String _plus_3 = (_name_2 + "Repo.java");
+          String _plus_3 = (_name_2 + "Repository.java");
           this.createFile(repoFolder, _plus_3, true, this.genEntityRepo(entity), progressMonitor);
           boolean _isDisplay = entity.isDisplay();
           if (_isDisplay) {
             String _name_3 = entity.getName();
-            String _plus_4 = (_name_3 + "Page.java");
-            this.createFile(pageFolder, _plus_4, true, this.genEntityPage(entity), progressMonitor);
+            String _plus_4 = (_name_3 + "GridPage.java");
+            this.createFile(pageFolder, _plus_4, true, this.genEntityGridPage(entity), progressMonitor);
             String _name_4 = entity.getName();
-            String _plus_5 = (_name_4 + "Grid.java");
-            this.createFile(gridFolder, _plus_5, true, this.genEntityGrid(entity), progressMonitor);
+            String _plus_5 = (_name_4 + "Editor.java");
+            this.createFile(editorFolder, _plus_5, true, this.genEntityEditor(entity), progressMonitor);
           }
         } else {
           String _name_5 = entity.getName();
@@ -516,31 +519,12 @@ public class Generator {
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
-    {
-      EList<Entity> _entities = backend.getEntities();
-      for(final Entity entity : _entities) {
-        {
-          boolean _isTransient = entity.isTransient();
-          boolean _not = (!_isTransient);
-          if (_not) {
-            _builder.append("import ");
-            _builder.append(Generator.PACKAGE);
-            _builder.append(".entities.");
-            String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
-            _builder.append(_firstUpper);
-            _builder.append(";");
-            _builder.newLineIfNotEmpty();
-            _builder.append("import ");
-            _builder.append(Generator.PACKAGE);
-            _builder.append(".entities.");
-            String _firstUpper_1 = StringExtensions.toFirstUpper(entity.getName());
-            _builder.append(_firstUpper_1);
-            _builder.append("Repository;");
-            _builder.newLineIfNotEmpty();
-          }
-        }
-      }
-    }
+    CharSequence _entitiesAsImports = Helpers.getEntitiesAsImports(backend, Generator.PACKAGE);
+    _builder.append(_entitiesAsImports);
+    _builder.newLineIfNotEmpty();
+    CharSequence _reposAsImports = Helpers.getReposAsImports(backend, Generator.PACKAGE);
+    _builder.append(_reposAsImports);
+    _builder.newLineIfNotEmpty();
     _builder.append("import org.slf4j.Logger;");
     _builder.newLine();
     _builder.append("import org.slf4j.LoggerFactory;");
@@ -562,14 +546,17 @@ public class Generator {
     _builder.append("@SpringBootApplication");
     _builder.newLine();
     _builder.append("public class ");
-    String _firstUpper_2 = StringExtensions.toFirstUpper(backend.getProjectName());
-    _builder.append(_firstUpper_2);
+    String _firstUpper = StringExtensions.toFirstUpper(backend.getProjectName());
+    _builder.append(_firstUpper);
     _builder.append("Application {");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
     _builder.append("    ");
-    _builder.append("private static final Logger log = LoggerFactory.getLogger(this.getClass());");
-    _builder.newLine();
+    _builder.append("private static final Logger log = LoggerFactory.getLogger(");
+    String _firstUpper_1 = StringExtensions.toFirstUpper(backend.getProjectName());
+    _builder.append(_firstUpper_1, "    ");
+    _builder.append("Application.class);");
+    _builder.newLineIfNotEmpty();
     _builder.append("    ");
     _builder.newLine();
     _builder.append("    ");
@@ -601,8 +588,11 @@ public class Generator {
     _builder.append("startMySQLContainer(CONTAINER_DATABASE_NAME);");
     _builder.newLine();
     _builder.append("     \t");
-    _builder.append("SpringApplication.run(Application.class, args);");
-    _builder.newLine();
+    _builder.append("SpringApplication.run(");
+    String _firstUpper_2 = StringExtensions.toFirstUpper(backend.getProjectName());
+    _builder.append(_firstUpper_2, "     \t");
+    _builder.append("Application.class, args);");
+    _builder.newLineIfNotEmpty();
     _builder.append("    ");
     _builder.append("}");
     _builder.newLine();
@@ -708,41 +698,249 @@ public class Generator {
     _builder.newLine();
     _builder.append("    ");
     _builder.append("public CommandLineRunner loadData(");
-    _builder.newLine();
-    {
-      EList<Entity> _entities_1 = backend.getEntities();
-      boolean _hasElements = false;
-      for(final Entity entity_1 : _entities_1) {
-        if (!_hasElements) {
-          _hasElements = true;
-        } else {
-          _builder.appendImmediate(", ", "    ");
-        }
-        _builder.append("    ");
-        String _firstUpper_3 = StringExtensions.toFirstUpper(entity_1.getName());
-        _builder.append(_firstUpper_3, "    ");
-        _builder.append("Repository ");
-        String _name = entity_1.getName();
-        _builder.append(_name, "    ");
-        _builder.append("Repository");
-        _builder.newLineIfNotEmpty();
-        _builder.append("\t\t    ");
-      }
-    }
+    CharSequence _reposAsParams = Helpers.getReposAsParams(backend);
+    _builder.append(_reposAsParams, "    ");
     _builder.append(") {");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");
     _builder.append("return (args) -> {");
     _builder.newLine();
     _builder.append("            ");
-    _builder.append("// TODO generate Values");
-    _builder.newLine();
+    int counter = 1;
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Entity> _entities = backend.getEntities();
+      for(final Entity entity : _entities) {
+        _builder.append("            ");
+        String _firstLower = StringExtensions.toFirstLower(entity.getName());
+        String _plus = (_firstLower + Integer.valueOf(counter));
+        CharSequence _createNewEntity = Helpers.createNewEntity(entity, _plus);
+        _builder.append(_createNewEntity, "            ");
+        _builder.newLineIfNotEmpty();
+        {
+          EList<Attribute> _attributes = entity.getAttributes();
+          for(final Attribute attribute : _attributes) {
+            _builder.append("            ");
+            String _firstLower_1 = StringExtensions.toFirstLower(entity.getName());
+            String _plus_1 = (_firstLower_1 + Integer.valueOf(counter));
+            CharSequence _setRandomValue = Helpers.setRandomValue(attribute, _plus_1);
+            _builder.append(_setRandomValue, "            ");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("            ");
+        String _firstLower_2 = StringExtensions.toFirstLower(entity.getName());
+        int _plusPlus = counter++;
+        String _plus_2 = (_firstLower_2 + Integer.valueOf(_plusPlus));
+        CharSequence _saveInRepo = Helpers.saveInRepo(entity, _plus_2);
+        _builder.append(_saveInRepo, "            ");
+        _builder.newLineIfNotEmpty();
+        _builder.append("            ");
+        _builder.newLine();
+      }
+    }
     _builder.append("        ");
     _builder.append("};");
     _builder.newLine();
     _builder.append("    ");
     _builder.append("}");
     _builder.newLine();
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence genWebsecurity(final Backend backend) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package ");
+    _builder.append(Generator.PACKAGE);
+    _builder.append(";");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("import ");
+    _builder.append(Generator.PACKAGE);
+    _builder.append(".repositories.AdminRepository;");
+    _builder.newLineIfNotEmpty();
+    _builder.append("import ");
+    _builder.append(Generator.PACKAGE);
+    _builder.append(".entities.Admin;");
+    _builder.newLineIfNotEmpty();
+    _builder.append("import org.springframework.beans.factory.annotation.Autowired;");
+    _builder.newLine();
+    _builder.append("import org.springframework.context.annotation.Bean;");
+    _builder.newLine();
+    _builder.append("import org.springframework.context.annotation.Configuration;");
+    _builder.newLine();
+    _builder.append("import org.springframework.http.HttpMethod;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.authentication.AuthenticationManager;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.config.BeanIds;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.config.annotation.web.builders.HttpSecurity;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;");
+    _builder.newLine();
+    _builder.append("import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("@Configuration");
+    _builder.newLine();
+    _builder.append("@EnableWebSecurity");
+    _builder.newLine();
+    _builder.append("public class WebSecurityConfig extends WebSecurityConfigurerAdapter {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private AdminRepository adminRepository;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@Autowired");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public WebSecurityConfig(AdminRepository adminRepository){");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.adminRepository = adminRepository;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("@Override");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("protected void configure(HttpSecurity http) throws Exception {");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("http");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".csrf().disable() // CSRF is handled by Vaadin: https://vaadin.com/framework/security");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".exceptionHandling().accessDeniedPage(\"/accessDenied\")");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(\"/login\"))");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".and().logout().logoutSuccessUrl(\"/\")");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".and()");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".authorizeRequests()");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("// allow Vaadin URLs and the login URL without authentication");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".regexMatchers(\"/login.*\", \"/accessDenied\", \"/VAADIN/.*\", \"/favicon.ico\", \"/robots.txt\", \"/manifest.webmanifest\",");
+    _builder.newLine();
+    _builder.append("                        ");
+    _builder.append("\"/sw.js\", \"/offline-page.html\", \"/frontend/.*\", \"/webjars/.*\", \"/frontend-es5/.*\", \"/frontend-es6/.*\").permitAll()");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".regexMatchers(HttpMethod.POST, \"/\\\\?v-r=.*\").permitAll()");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("// deny any other URL until authenticated");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append(".antMatchers(\"/**\").fullyAuthenticated()");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("/*");
+    _builder.newLine();
+    _builder.append("             ");
+    _builder.append("Note that anonymous authentication is enabled by default, therefore;");
+    _builder.newLine();
+    _builder.append("             ");
+    _builder.append("SecurityContextHolder.getContext().getAuthentication().isAuthenticated() always will return true.");
+    _builder.newLine();
+    _builder.append("             ");
+    _builder.append("Look at LoginView.beforeEnter method.");
+    _builder.newLine();
+    _builder.append("             ");
+    _builder.append("more info: https://docs.spring.io/spring-security/site/docs/4.0.x/reference/html/anonymous.html");
+    _builder.newLine();
+    _builder.append("             ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append(";");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("@Autowired");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("for(Admin admin:adminRepository.findAll()){");
+    _builder.newLine();
+    _builder.append("        \t");
+    _builder.append("auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder())");
+    _builder.newLine();
+    _builder.append("        \t\t");
+    _builder.append(".withUser(admin.getName()).password(admin.getPassword()).roles(\"ADMIN\");");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append("     ");
+    _builder.append("* Expose the AuthenticationManager (to be used in LoginView)");
+    _builder.newLine();
+    _builder.append("     ");
+    _builder.append("*");
+    _builder.newLine();
+    _builder.append("     ");
+    _builder.append("* @return");
+    _builder.newLine();
+    _builder.append("     ");
+    _builder.append("* @throws Exception");
+    _builder.newLine();
+    _builder.append("     ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("@Bean(name = BeanIds.AUTHENTICATION_MANAGER)");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("@Override");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("public AuthenticationManager authenticationManagerBean() throws Exception {");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("return super.authenticationManagerBean();");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("}");
     _builder.newLine();
     _builder.append("}");
     _builder.newLine();
@@ -1333,7 +1531,7 @@ public class Generator {
     _builder.append("\t    ");
     _builder.append("this.setContent(horizontalLayout);");
     _builder.newLine();
-    _builder.append("   ");
+    _builder.append("\t  ");
     _builder.append("}");
     _builder.newLine();
     _builder.append("\t");
@@ -1479,7 +1677,15 @@ public class Generator {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package ");
     _builder.append(Generator.PACKAGE);
-    _builder.append("entities;");
+    _builder.append(".entities;");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("import ");
+    _builder.append(Generator.PACKAGE);
+    _builder.append(".entities.");
+    String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
+    _builder.append(_firstUpper);
+    _builder.append("Gen;");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
     _builder.append("public class ");
@@ -1501,12 +1707,12 @@ public class Generator {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".backend.repos;");
+    _builder.append(".repositories;");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
     _builder.append("import ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".backend.entities.");
+    _builder.append(".entities.");
     String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper);
     _builder.append(";");
@@ -1556,11 +1762,11 @@ public class Generator {
     return _builder;
   }
   
-  public CharSequence genEntityPage(final Entity entity) {
+  public CharSequence genEntityGridPage(final Entity entity) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".frontend.pages.grids;");
+    _builder.append(".grids;");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
     _builder.append("import com.vaadin.flow.component.button.Button;");
@@ -1585,18 +1791,14 @@ public class Generator {
     _builder.newLine();
     _builder.append("import ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".KlostertrophyApplication;");
-    _builder.newLineIfNotEmpty();
-    _builder.append("import ");
-    _builder.append(Generator.PACKAGE);
-    _builder.append(".backend.entities.");
+    _builder.append(".entities.");
     String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper);
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.append("import ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".backend.repos.");
+    _builder.append(".repos.");
     String _firstUpper_1 = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper_1);
     _builder.append("Repository;");
@@ -1605,21 +1807,21 @@ public class Generator {
     _builder.newLine();
     _builder.append("import ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".frontend.details.");
+    _builder.append(".details.");
     String _firstUpper_2 = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper_2);
     _builder.append("Details;");
     _builder.newLineIfNotEmpty();
     _builder.append("import ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".frontend.editors.");
+    _builder.append(".editors.");
     String _firstUpper_3 = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper_3);
     _builder.append("Editor;");
     _builder.newLineIfNotEmpty();
     _builder.append("import ");
     _builder.append(Generator.PACKAGE);
-    _builder.append(".frontend.play.");
+    _builder.append(".play.");
     String _firstUpper_4 = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper_4);
     _builder.append("PlayDialog;\t\t// Alle PLAY-Komponenten entfernen? (inkl. button, dialog, etc.)");
@@ -2138,6 +2340,11 @@ public class Generator {
     return _builder;
   }
   
+  public CharSequence genEntityEditor(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    return _builder;
+  }
+  
   public CharSequence genEntityDetails(final Entity entity) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package ");
@@ -2250,11 +2457,6 @@ public class Generator {
     _builder.append("}");
     _builder.newLine();
     _builder.newLine();
-    return _builder;
-  }
-  
-  public CharSequence genEntityGrid(final Entity entity) {
-    StringConcatenation _builder = new StringConcatenation();
     return _builder;
   }
 }
