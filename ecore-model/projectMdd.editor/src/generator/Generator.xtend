@@ -11,6 +11,8 @@ import org.eclipse.emf.ecore.resource.Resource
 import projectMdd.Backend
 import projectMdd.Entity
 import static extension generator.Helpers.*;
+import projectMdd.TypeAttribute
+import projectMdd.EnumAttribute
 
 /**
  * The generator for ecore files.
@@ -125,7 +127,8 @@ class Generator {
 		createFile(resourceFolder, "application.properties", true, backend.genApplicationProperties, progressMonitor);
 
 		// create Application.class with exemplary data
-		createFile(packageFolder, backend.projectName + "Application.java", true, backend.genApplicationClass, progressMonitor);
+		createFile(packageFolder, backend.projectName + "Application.java", true, backend.genApplicationClass,
+			progressMonitor);
 
 		// create base-ui
 		createFile(packageFolder, "MainView.java", true, backend.genMainView, progressMonitor);
@@ -264,92 +267,100 @@ class Generator {
 
 	def genApplicationProperties(Backend backend) {
 		'''
-		# DATABASE
-		spring.jpa.hibernate.ddl-auto=create
-		spring.datasource.url=jdbc:mysql://«backend.database.host»:«backend.database.port»/«backend.database.schema»?useSSL=false&allowPublicKeyRetrieval=true
-		spring.datasource.username=«backend.database.username»
-		spring.datasource.password=«backend.database.password»
-		
-		# LOGGING
-		logging.level.root=DEBUG
-		org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG
+			# DATABASE
+			spring.jpa.hibernate.ddl-auto=create
+			spring.datasource.url=jdbc:mysql://«backend.database.host»:«backend.database.port»/«backend.database.schema»?useSSL=false&allowPublicKeyRetrieval=true
+			spring.datasource.username=«backend.database.username»
+			spring.datasource.password=«backend.database.password»
+			
+			# LOGGING
+			logging.level.root=DEBUG
+			org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG
 		'''
 	}
-	
-	def genApplicationClass(Backend backend){
+
+	def genApplicationClass(Backend backend) {
 		'''
-		package «PACKAGE»;
-		
-		«backend.getEntitiesAsImports(PACKAGE)»
-		«backend.getReposAsImports(PACKAGE)»
-		import org.slf4j.Logger;
-		import org.slf4j.LoggerFactory;
-		import org.springframework.boot.CommandLineRunner;
-		import org.springframework.boot.SpringApplication;
-		import org.springframework.boot.autoconfigure.SpringBootApplication;
-		import org.springframework.context.annotation.Bean;
-		
-		import java.io.IOException;
-		import java.util.HashSet;
-		
-		@SpringBootApplication
-		public class «backend.projectName.toFirstUpper»Application {
-		
-		    private static final Logger log = LoggerFactory.getLogger(this.getClass());
-		    
-		    private static final String CONTAINER_NAME = "«backend.projectName»";
-		    private static final String CONTAINER_DATABASE_PASSWORD = "«backend.database.password»";
-		    private static final String CONTAINER_DATABASE_NAME = "«backend.database.schema»";
-		
-		    public static void main(String[] args) {
-		        createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
-		        startMySQLContainer(CONTAINER_DATABASE_NAME);
-		     	SpringApplication.run(Application.class, args);
-		    }
-		
-		    public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {
-		            try {
-		                log.info("Checking if container {} exists.", containerName);
-		                Process check = Runtime.getRuntime().exec("docker inspect -f '{{.State.Running}}' " + containerName);
-		                String res = String.valueOf(check.getInputStream());
-		                log.info("Container exists: {}", res);
-		                check.getOutputStream().close();
-		                if (!res.contains("true")) {
-		                    log.info("Creating container {}.", containerName);
-		                    Process run = Runtime.getRuntime()
-		                            .exec("docker run -p «backend.database.port»:3306 --name " + containerName + " -e MYSQL_ROOT_PASSWORD="
-		                                    + databasePassword + " -e MYSQL_DATABASE=" + databaseName + " -d mysql:latest");
-		                    run.getOutputStream().close();
-		                    log.info("Created docker-container with name: {}", containerName);
-		                }
-		            } catch (IOException e) {
-		                e.printStackTrace();
-		                log.error("Could not create docker-container with name: {}", containerName);
-		            }
-		        }
-		    
-		        private static void startMySQLContainer(String containerName) {
-		            try {
-		                Process start = Runtime.getRuntime().exec("docker start " + containerName);
-		                start.getOutputStream().close();
-		                log.info("Started docker-container with name: {}", containerName);
-		            } catch (IOException e) {
-		                e.printStackTrace();
-		                log.error("Could'nt start docker-container with name: {}", containerName);
-		            }
-		        }
-		
-		    @Bean
-		    public CommandLineRunner loadData(«backend.getReposAsParams») {
-		        return (args) -> {
-		            // TODO generate Values
-		        };
-		    }
-		
-		}
+			package «PACKAGE»;
+			
+			«backend.getEntitiesAsImports(PACKAGE)»
+			«backend.getReposAsImports(PACKAGE)»
+			import org.slf4j.Logger;
+			import org.slf4j.LoggerFactory;
+			import org.springframework.boot.CommandLineRunner;
+			import org.springframework.boot.SpringApplication;
+			import org.springframework.boot.autoconfigure.SpringBootApplication;
+			import org.springframework.context.annotation.Bean;
+			
+			import java.io.IOException;
+			import java.util.HashSet;
+			
+			@SpringBootApplication
+			public class «backend.projectName.toFirstUpper»Application {
+			
+			    private static final Logger log = LoggerFactory.getLogger(this.getClass());
+			    
+			    private static final String CONTAINER_NAME = "«backend.projectName»";
+			    private static final String CONTAINER_DATABASE_PASSWORD = "«backend.database.password»";
+			    private static final String CONTAINER_DATABASE_NAME = "«backend.database.schema»";
+			
+			    public static void main(String[] args) {
+			        createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
+			        startMySQLContainer(CONTAINER_DATABASE_NAME);
+			     	SpringApplication.run(Application.class, args);
+			    }
+			
+			    public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {
+			            try {
+			                log.info("Checking if container {} exists.", containerName);
+			                Process check = Runtime.getRuntime().exec("docker inspect -f '{{.State.Running}}' " + containerName);
+			                String res = String.valueOf(check.getInputStream());
+			                log.info("Container exists: {}", res);
+			                check.getOutputStream().close();
+			                if (!res.contains("true")) {
+			                    log.info("Creating container {}.", containerName);
+			                    Process run = Runtime.getRuntime()
+			                            .exec("docker run -p «backend.database.port»:3306 --name " + containerName + " -e MYSQL_ROOT_PASSWORD="
+			                                    + databasePassword + " -e MYSQL_DATABASE=" + databaseName + " -d mysql:latest");
+			                    run.getOutputStream().close();
+			                    log.info("Created docker-container with name: {}", containerName);
+			                }
+			            } catch (IOException e) {
+			                e.printStackTrace();
+			                log.error("Could not create docker-container with name: {}", containerName);
+			            }
+			        }
+			    
+			        private static void startMySQLContainer(String containerName) {
+			            try {
+			                Process start = Runtime.getRuntime().exec("docker start " + containerName);
+			                start.getOutputStream().close();
+			                log.info("Started docker-container with name: {}", containerName);
+			            } catch (IOException e) {
+			                e.printStackTrace();
+			                log.error("Could'nt start docker-container with name: {}", containerName);
+			            }
+			        }
+			
+			    @Bean
+			    public CommandLineRunner loadData(«backend.getReposAsParams») {
+			        return (args) -> {
+			            «var counter = 1»
+			            «FOR entity : backend.entities»
+			            	«entity.createNewEntity(entity.name.toFirstLower  + counter)»
+			            	«FOR attribute:entity.attributes»
+			            		«attribute.setRandomValue(entity.name + counter)»
+			            	«ENDFOR»
+			            	«entity.saveInRepo(entity.name.toFirstLower  + counter++)»
+			            	
+			            «ENDFOR»
+			        };
+			    }
+			
+			}
 		'''
 	}
-	
+
 	def genMainView(Backend backend) {
 		'''
 			package «PACKAGE»;
@@ -455,17 +466,17 @@ class Generator {
 			    }
 		'''
 	}
-	
+
 	def genChangeHandler() {
 		'''
-		package «PACKAGE»;
-		
-		public interface ChangeHandler {
-			void onChange();
-			}
+			package «PACKAGE»;
+			
+			public interface ChangeHandler {
+				void onChange();
+				}
 		'''
 	}
-	
+
 	def genAccessDenied() {
 		'''
 			package «PACKAGE»;
@@ -485,135 +496,135 @@ class Generator {
 			}
 		'''
 	}
-	
+
 	def genLoginView() {
 		'''
-		package «PACKAGE»;
-		
-		import com.vaadin.flow.component.ClickEvent;
-		import com.vaadin.flow.component.ComponentEventListener;
-		import com.vaadin.flow.component.Key;
-		import com.vaadin.flow.component.KeyDownEvent;
-		import com.vaadin.flow.component.applayout.AppLayout;
-		import com.vaadin.flow.component.button.Button;
-		import com.vaadin.flow.component.formlayout.FormLayout;
-		import com.vaadin.flow.component.html.Label;
-		import com.vaadin.flow.component.orderedlayout.FlexComponent;
-		import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-		import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-		import com.vaadin.flow.component.textfield.PasswordField;
-		import com.vaadin.flow.component.textfield.TextField;
-		import com.vaadin.flow.router.BeforeEnterEvent;
-		import com.vaadin.flow.router.BeforeEnterObserver;
-		import com.vaadin.flow.router.Route;
-		import org.apache.commons.lang3.StringUtils;
-		import org.springframework.beans.factory.annotation.Autowired;
-		import org.springframework.security.authentication.AnonymousAuthenticationToken;
-		import org.springframework.security.authentication.AuthenticationManager;
-		import org.springframework.security.authentication.BadCredentialsException;
-		import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-		import org.springframework.security.core.Authentication;
-		import org.springframework.security.core.context.SecurityContext;
-		import org.springframework.security.core.context.SecurityContextHolder;
-		import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-		
-		import javax.servlet.http.HttpServletRequest;
-		import javax.servlet.http.HttpSession;
-		
-		@Route("login")
-		public class LoginView extends AppLayout implements BeforeEnterObserver {
+			package «PACKAGE»;
 			
-			private final Label label;
-			private final TextField userNameTextField;
-			private final PasswordField passwordField;
+			import com.vaadin.flow.component.ClickEvent;
+			import com.vaadin.flow.component.ComponentEventListener;
+			import com.vaadin.flow.component.Key;
+			import com.vaadin.flow.component.KeyDownEvent;
+			import com.vaadin.flow.component.applayout.AppLayout;
+			import com.vaadin.flow.component.button.Button;
+			import com.vaadin.flow.component.formlayout.FormLayout;
+			import com.vaadin.flow.component.html.Label;
+			import com.vaadin.flow.component.orderedlayout.FlexComponent;
+			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+			import com.vaadin.flow.component.textfield.PasswordField;
+			import com.vaadin.flow.component.textfield.TextField;
+			import com.vaadin.flow.router.BeforeEnterEvent;
+			import com.vaadin.flow.router.BeforeEnterObserver;
+			import com.vaadin.flow.router.Route;
+			import org.apache.commons.lang3.StringUtils;
+			import org.springframework.beans.factory.annotation.Autowired;
+			import org.springframework.security.authentication.AnonymousAuthenticationToken;
+			import org.springframework.security.authentication.AuthenticationManager;
+			import org.springframework.security.authentication.BadCredentialsException;
+			import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+			import org.springframework.security.core.Authentication;
+			import org.springframework.security.core.context.SecurityContext;
+			import org.springframework.security.core.context.SecurityContextHolder;
+			import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 			
-			/**
-			* AuthenticationManager is already exposed in WebSecurityConfig
-			*/
-			@Autowired
-			private AuthenticationManager authManager;
+			import javax.servlet.http.HttpServletRequest;
+			import javax.servlet.http.HttpSession;
 			
-			@Autowired
-			private HttpServletRequest req;
-			
-			LoginView() {
-			    label = new Label("Bitte anmelden:");
-			
-			    userNameTextField = new TextField();
-			    userNameTextField.setPlaceholder("Benutzename");
-			    userNameTextField.setWidth("90%");
-			    //UiUtils.makeFirstInputTextAutoFocus(Collections.singletonList(userNameTextField));
-			
-			    passwordField = new PasswordField();
-			    passwordField.setPlaceholder("Passwort");
-			    passwordField.setWidth("90%");
-			    passwordField.addKeyDownListener(Key.ENTER, (ComponentEventListener<KeyDownEvent>) keyDownEvent -> authenticateAndNavigate());
-			
-			    Button submitButton = new Button("Anmelden");
-			    submitButton.setWidth("90%");
-			    submitButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
-			        authenticateAndNavigate();
-			    });
-			
-			    FormLayout formLayout = new FormLayout();
-			    formLayout.add(label, userNameTextField, passwordField, submitButton);
-			
-			    VerticalLayout verticalLayout = new VerticalLayout(label, userNameTextField, passwordField, submitButton);
-			    verticalLayout.setHeightFull();
-			    verticalLayout.setMaxWidth("50%");
-			    verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-			    verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-			
-			    HorizontalLayout horizontalLayout = new HorizontalLayout(verticalLayout);
-			    horizontalLayout.setSizeFull();
-			    horizontalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-			
-			    this.setContent(horizontalLayout);
-		   }
-			
-			private void authenticateAndNavigate() {
-			    /*
-			    Set an authenticated user in Spring Security and Spring MVC
-			    spring-security
-			    */
-			    UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(userNameTextField.getValue(), passwordField.getValue());
-			    try {
-			        // Set authentication
-			        Authentication auth = authManager.authenticate(authReq);
-			        SecurityContext sc = SecurityContextHolder.getContext();
-			        sc.setAuthentication(auth);
-			
-			        /*
-			        Navigate to the requested page:
-			        This is to redirect a user back to the originally requested URL – after they log in as we are not using
-			        Spring's AuthenticationSuccessHandler.
-			        */
-			        HttpSession session = req.getSession(false);
-			        DefaultSavedRequest savedRequest = (DefaultSavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-			        //String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : Application.APP_URL;
-			        String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : "main";
-			
-			        this.getUI().ifPresent(ui -> ui.navigate(StringUtils.removeStart(requestedURI, "/")));
-			    } catch (BadCredentialsException e) {
-			        label.setText("Ungültiger Benutzername oder ungültiges Passwort. Bitte nochmal versuchen.");
-			    }
+			@Route("login")
+			public class LoginView extends AppLayout implements BeforeEnterObserver {
+				
+				private final Label label;
+				private final TextField userNameTextField;
+				private final PasswordField passwordField;
+				
+				/**
+				* AuthenticationManager is already exposed in WebSecurityConfig
+				*/
+				@Autowired
+				private AuthenticationManager authManager;
+				
+				@Autowired
+				private HttpServletRequest req;
+				
+				LoginView() {
+				    label = new Label("Bitte anmelden:");
+				
+				    userNameTextField = new TextField();
+				    userNameTextField.setPlaceholder("Benutzename");
+				    userNameTextField.setWidth("90%");
+				    //UiUtils.makeFirstInputTextAutoFocus(Collections.singletonList(userNameTextField));
+				
+				    passwordField = new PasswordField();
+				    passwordField.setPlaceholder("Passwort");
+				    passwordField.setWidth("90%");
+				    passwordField.addKeyDownListener(Key.ENTER, (ComponentEventListener<KeyDownEvent>) keyDownEvent -> authenticateAndNavigate());
+				
+				    Button submitButton = new Button("Anmelden");
+				    submitButton.setWidth("90%");
+				    submitButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+				        authenticateAndNavigate();
+				    });
+				
+				    FormLayout formLayout = new FormLayout();
+				    formLayout.add(label, userNameTextField, passwordField, submitButton);
+				
+				    VerticalLayout verticalLayout = new VerticalLayout(label, userNameTextField, passwordField, submitButton);
+				    verticalLayout.setHeightFull();
+				    verticalLayout.setMaxWidth("50%");
+				    verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+				    verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+				
+				    HorizontalLayout horizontalLayout = new HorizontalLayout(verticalLayout);
+				    horizontalLayout.setSizeFull();
+				    horizontalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+				
+				    this.setContent(horizontalLayout);
+				  }
+				
+				private void authenticateAndNavigate() {
+				    /*
+				    Set an authenticated user in Spring Security and Spring MVC
+				    spring-security
+				    */
+				    UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(userNameTextField.getValue(), passwordField.getValue());
+				    try {
+				        // Set authentication
+				        Authentication auth = authManager.authenticate(authReq);
+				        SecurityContext sc = SecurityContextHolder.getContext();
+				        sc.setAuthentication(auth);
+				
+				        /*
+				        Navigate to the requested page:
+				        This is to redirect a user back to the originally requested URL – after they log in as we are not using
+				        Spring's AuthenticationSuccessHandler.
+				        */
+				        HttpSession session = req.getSession(false);
+				        DefaultSavedRequest savedRequest = (DefaultSavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+				        //String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : Application.APP_URL;
+				        String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : "main";
+				
+				        this.getUI().ifPresent(ui -> ui.navigate(StringUtils.removeStart(requestedURI, "/")));
+				    } catch (BadCredentialsException e) {
+				        label.setText("Ungültiger Benutzername oder ungültiges Passwort. Bitte nochmal versuchen.");
+				    }
+				}
+				
+				/**
+				 * This is to redirect user to the main URL context if (s)he has already logged in and tries to open /login
+				 *
+				 * @param beforeEnterEvent
+				 */
+				@Override
+				public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+				    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				    //Anonymous Authentication is enabled in our Spring Security conf
+				    if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+				        //https://vaadin.com/docs/flow/routing/tutorial-routing-lifecycle.html
+				        beforeEnterEvent.rerouteTo("");
+				    }
+				}
 			}
-			
-			/**
-			 * This is to redirect user to the main URL context if (s)he has already logged in and tries to open /login
-			 *
-			 * @param beforeEnterEvent
-			 */
-			@Override
-			public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-			    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			    //Anonymous Authentication is enabled in our Spring Security conf
-			    if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-			        //https://vaadin.com/docs/flow/routing/tutorial-routing-lifecycle.html
-			        beforeEnterEvent.rerouteTo("");
-			    }
-			}
-		}
 		'''
 	}
 
@@ -713,238 +724,238 @@ class Generator {
 
 	def genEntityRepo(Entity entity) {
 		'''
-		package «PACKAGE».backend.repos;
-		
-		import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
-		import org.springframework.data.jpa.repository.JpaRepository;
-		import org.springframework.stereotype.Repository;
-		
-		import java.util.List;
-		
-		@Repository
-		public interface «entity.name.toFirstUpper»Repository extends JpaRepository<«entity.name.toFirstUpper», Long> {
-		
-		    List<«entity.name.toFirstUpper»> findAll();
-		
-		    List<«entity.name.toFirstUpper»> findByNameStartsWithIgnoreCase(String name);
-		
-		    List<«entity.name.toFirstUpper»> findByDoneIs(boolean b);
-		
-		}
+			package «PACKAGE».backend.repos;
+			
+			import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+			import org.springframework.data.jpa.repository.JpaRepository;
+			import org.springframework.stereotype.Repository;
+			
+			import java.util.List;
+			
+			@Repository
+			public interface «entity.name.toFirstUpper»Repository extends JpaRepository<«entity.name.toFirstUpper», Long> {
+			
+			    List<«entity.name.toFirstUpper»> findAll();
+			
+			    List<«entity.name.toFirstUpper»> findByNameStartsWithIgnoreCase(String name);
+			
+			    List<«entity.name.toFirstUpper»> findByDoneIs(boolean b);
+			
+			}
 		'''
 	}
 
 	def genEntityPage(Entity entity) {
 		'''
-		package «PACKAGE».frontend.pages.grids;
-		
-		import com.vaadin.flow.component.button.Button;
-		import com.vaadin.flow.component.grid.Grid;
-		import com.vaadin.flow.component.grid.GridVariant;
-		import com.vaadin.flow.component.icon.VaadinIcon;
-		import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-		import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-		import com.vaadin.flow.component.page.Push;
-		import com.vaadin.flow.component.textfield.TextField;
-		import com.vaadin.flow.data.value.ValueChangeMode;
-		import com.vaadin.flow.spring.annotation.UIScope;
-		import «PACKAGE».KlostertrophyApplication;
-		import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
-		import «PACKAGE».backend.repos.«entity.name.toFirstUpper»Repository;
-		// import de.klostertrophy.backend.repos.TeamRepository;	// ??
-		import «PACKAGE».frontend.details.«entity.name.toFirstUpper»Details;
-		import «PACKAGE».frontend.editors.«entity.name.toFirstUpper»Editor;
-		import «PACKAGE».frontend.play.«entity.name.toFirstUpper»PlayDialog;		// Alle PLAY-Komponenten entfernen? (inkl. button, dialog, etc.)
-		import org.slf4j.Logger;
-		import org.slf4j.LoggerFactory;
-		import org.springframework.beans.factory.annotation.Autowired;
-		import org.springframework.stereotype.Component;
-		import org.springframework.transaction.annotation.Transactional;
-		import org.springframework.util.StringUtils;
-		
-		@Component
-		@Transactional
-		@UIScope
-		public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
-		
-		    private static final long serialVersionUID = -8733687422451328748L;
-		    private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
-		
-		    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
-		    private Grid<«entity.name.toFirstUpper»> grid;
-		    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
-		    private «entity.name.toFirstUpper»PlayDialog «entity.name»PlayDialog;
-		
-		    private TextField filter;
-		
-		    private Button evaluate;
-		
-		    @Autowired
-		    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»PlayDialog «entity.name»PlayDialog, «entity.name.toFirstUpper»Editor «entity.name»Editor) {  // TeamRepository entfernt
-		        super();
-		        this.«entity.name»Repository = «entity.name»Repository;
-		        this.«entity.name»PlayDialog = «entity.name»PlayDialog;
-		        this.«entity.name»Editor = «entity.name»Editor;
-		
-		        filter = new TextField();
-		        HorizontalLayout actions = new HorizontalLayout();
-		
-		        // grid
-		        grid = new Grid<>(«entity.name.toFirstUpper».class);
-		        grid.setItems(«entity.name»Repository.findAll());
-		        grid.setMultiSort(true);
-		        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
-		                GridVariant.LUMO_ROW_STRIPES);
-		        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
-		        // add Columns
-		        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-		        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
-		        //add Columns
-		        setColumns();
-		
-		        // actions
-		        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
-		        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»("", null, null))); 		// "", null, null noch richtig?
-		
-		        // filter
-		        filter.setPlaceholder("Nach Namen filtern");
-		        filter.setValueChangeMode(ValueChangeMode.EAGER);
-		        filter.addValueChangeListener(e -> listValues(e.getValue()));
-		
-		        // editor
-		        «entity.name»Editor.setChangeHandler(() -> {
-		            «entity.name»Editor.close();
-		            listValues(filter.getValue());
-		        });
-		
-		        // playDialog
-		        «entity.name»PlayDialog.setChangeHandler(() -> {
-		            «entity.name»PlayDialog.close();
-		            «entity.name»PlayDialog.reset();
-		            listValues(filter.getValue());
-		        });
-		
-		        actions.add(filter, addNew);
-		        add(actions, grid, this.«entity.name»Editor);
-		        listValues(null);
-		    }
-		
-		    void listValues(String filterText) {
-		        if (StringUtils.isEmpty(filterText)) {
-		            grid.setItems(«entity.name»Repository.findAll());
-		        } else {
-		            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
-		        }
-		    }
-		
-		    private void setColumns() {
-		        // remove unwanted columns
-		        grid.removeAllColumns();
-		        // add Columns		// TODO: Mittels FOR-Schleife alle Attribute hinzufügen?
-		        grid.addColumn(«entity.name.toFirstUpper»::getName).setHeader("Name").setSortable(true);
-		        grid.addColumn(«entity.name.toFirstUpper»::getId).setHeader("ID").setSortable(true);
-		        // grid.addColumn(«entity.name.toFirstUpper»::getInputType).setHeader("Punkt-Typ").setSortable(true);
-		        // grid.addColumn(«entity.name.toFirstUpper»::isDoneString).setHeader("Status").setSortable(true);
-		
-		        // add standard-columns
-		        grid.addComponentColumn(value -> {
-		            Button play = new Button("Spielen");
-		            play.addClassName("play");
-		            play.addClickListener(e -> {
-		                «entity.name»PlayDialog.edit(value);
-		            });
-		            if (value.getTeams().isEmpty()) {
-		                play.setEnabled(false);
-		            } else {
-		                play.setEnabled(true);
-		            }
-		            return play;
-		        });
-		
-		        grid.addComponentColumn(value -> {
-		            Button details = new Button("Fertig");
-		            details.addClassName("details");
-		            details.addClickListener(e -> {
-		                var «entity.name»Details = new «entity.name.toFirstUpper»Details();
-		                «entity.name»Details.open(value);
-		            });
-		            if (value.getFinished().isEmpty()) {
-		                log.info("Finished is empty.");
-		                details.setEnabled(false);
-		            } else {
-		                log.info("Finished will be displayed.");
-		                details.setEnabled(true);
-		            }
-		            return details;
-		        });
-		
-		        grid.addComponentColumn(value -> {
-		            Button edit = new Button("Bearbeiten");
-		            edit.addClassName("edit");
-		            edit.addClickListener(e -> {
-		                «entity.name»Editor.edit(value);
-		            });
-		            return edit;
-		        });
-		
-		        grid.addComponentColumn(value -> {			// Wie Play, auch entfernen?
-		            evaluate = new Button("Auswerten");
-		            evaluate.setEnabled(false);
-		            evaluate.addClassName("evaluate");
-		            evaluate.addClickListener(e -> {
-		                System.out.println("EVALUIEREN");
-		            });
-		            return evaluate;
-		        });
-		    }
-		}
-		
+			package «PACKAGE».frontend.pages.grids;
+			
+			import com.vaadin.flow.component.button.Button;
+			import com.vaadin.flow.component.grid.Grid;
+			import com.vaadin.flow.component.grid.GridVariant;
+			import com.vaadin.flow.component.icon.VaadinIcon;
+			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+			import com.vaadin.flow.component.page.Push;
+			import com.vaadin.flow.component.textfield.TextField;
+			import com.vaadin.flow.data.value.ValueChangeMode;
+			import com.vaadin.flow.spring.annotation.UIScope;
+			import «PACKAGE».KlostertrophyApplication;
+			import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+			import «PACKAGE».backend.repos.«entity.name.toFirstUpper»Repository;
+			// import de.klostertrophy.backend.repos.TeamRepository;	// ??
+			import «PACKAGE».frontend.details.«entity.name.toFirstUpper»Details;
+			import «PACKAGE».frontend.editors.«entity.name.toFirstUpper»Editor;
+			import «PACKAGE».frontend.play.«entity.name.toFirstUpper»PlayDialog;		// Alle PLAY-Komponenten entfernen? (inkl. button, dialog, etc.)
+			import org.slf4j.Logger;
+			import org.slf4j.LoggerFactory;
+			import org.springframework.beans.factory.annotation.Autowired;
+			import org.springframework.stereotype.Component;
+			import org.springframework.transaction.annotation.Transactional;
+			import org.springframework.util.StringUtils;
+			
+			@Component
+			@Transactional
+			@UIScope
+			public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
+			
+			    private static final long serialVersionUID = -8733687422451328748L;
+			    private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
+			
+			    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
+			    private Grid<«entity.name.toFirstUpper»> grid;
+			    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
+			    private «entity.name.toFirstUpper»PlayDialog «entity.name»PlayDialog;
+			
+			    private TextField filter;
+			
+			    private Button evaluate;
+			
+			    @Autowired
+			    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»PlayDialog «entity.name»PlayDialog, «entity.name.toFirstUpper»Editor «entity.name»Editor) {  // TeamRepository entfernt
+			        super();
+			        this.«entity.name»Repository = «entity.name»Repository;
+			        this.«entity.name»PlayDialog = «entity.name»PlayDialog;
+			        this.«entity.name»Editor = «entity.name»Editor;
+			
+			        filter = new TextField();
+			        HorizontalLayout actions = new HorizontalLayout();
+			
+			        // grid
+			        grid = new Grid<>(«entity.name.toFirstUpper».class);
+			        grid.setItems(«entity.name»Repository.findAll());
+			        grid.setMultiSort(true);
+			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
+			                GridVariant.LUMO_ROW_STRIPES);
+			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+			        // add Columns
+			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+			        //add Columns
+			        setColumns();
+			
+			        // actions
+			        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
+			        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»("", null, null))); 		// "", null, null noch richtig?
+			
+			        // filter
+			        filter.setPlaceholder("Nach Namen filtern");
+			        filter.setValueChangeMode(ValueChangeMode.EAGER);
+			        filter.addValueChangeListener(e -> listValues(e.getValue()));
+			
+			        // editor
+			        «entity.name»Editor.setChangeHandler(() -> {
+			            «entity.name»Editor.close();
+			            listValues(filter.getValue());
+			        });
+			
+			        // playDialog
+			        «entity.name»PlayDialog.setChangeHandler(() -> {
+			            «entity.name»PlayDialog.close();
+			            «entity.name»PlayDialog.reset();
+			            listValues(filter.getValue());
+			        });
+			
+			        actions.add(filter, addNew);
+			        add(actions, grid, this.«entity.name»Editor);
+			        listValues(null);
+			    }
+			
+			    void listValues(String filterText) {
+			        if (StringUtils.isEmpty(filterText)) {
+			            grid.setItems(«entity.name»Repository.findAll());
+			        } else {
+			            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
+			        }
+			    }
+			
+			    private void setColumns() {
+			        // remove unwanted columns
+			        grid.removeAllColumns();
+			        // add Columns		// TODO: Mittels FOR-Schleife alle Attribute hinzufügen?
+			        grid.addColumn(«entity.name.toFirstUpper»::getName).setHeader("Name").setSortable(true);
+			        grid.addColumn(«entity.name.toFirstUpper»::getId).setHeader("ID").setSortable(true);
+			        // grid.addColumn(«entity.name.toFirstUpper»::getInputType).setHeader("Punkt-Typ").setSortable(true);
+			        // grid.addColumn(«entity.name.toFirstUpper»::isDoneString).setHeader("Status").setSortable(true);
+			
+			        // add standard-columns
+			        grid.addComponentColumn(value -> {
+			            Button play = new Button("Spielen");
+			            play.addClassName("play");
+			            play.addClickListener(e -> {
+			                «entity.name»PlayDialog.edit(value);
+			            });
+			            if (value.getTeams().isEmpty()) {
+			                play.setEnabled(false);
+			            } else {
+			                play.setEnabled(true);
+			            }
+			            return play;
+			        });
+			
+			        grid.addComponentColumn(value -> {
+			            Button details = new Button("Fertig");
+			            details.addClassName("details");
+			            details.addClickListener(e -> {
+			                var «entity.name»Details = new «entity.name.toFirstUpper»Details();
+			                «entity.name»Details.open(value);
+			            });
+			            if (value.getFinished().isEmpty()) {
+			                log.info("Finished is empty.");
+			                details.setEnabled(false);
+			            } else {
+			                log.info("Finished will be displayed.");
+			                details.setEnabled(true);
+			            }
+			            return details;
+			        });
+			
+			        grid.addComponentColumn(value -> {
+			            Button edit = new Button("Bearbeiten");
+			            edit.addClassName("edit");
+			            edit.addClickListener(e -> {
+			                «entity.name»Editor.edit(value);
+			            });
+			            return edit;
+			        });
+			
+			        grid.addComponentColumn(value -> {			// Wie Play, auch entfernen?
+			            evaluate = new Button("Auswerten");
+			            evaluate.setEnabled(false);
+			            evaluate.addClassName("evaluate");
+			            evaluate.addClickListener(e -> {
+			                System.out.println("EVALUIEREN");
+			            });
+			            return evaluate;
+			        });
+			    }
+			}
+			
 		'''
 	}
-	
+
 	def genEntityDetails(Entity entity) {
 		'''
-		package «PACKAGE».frontend.details;
-		
-		import com.vaadin.flow.component.dialog.Dialog;
-		import com.vaadin.flow.component.grid.Grid;
-		import com.vaadin.flow.component.grid.GridSortOrder;
-		import com.vaadin.flow.component.grid.GridVariant;
-		import com.vaadin.flow.data.provider.SortDirection;
-		import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
-		// import «PACKAGE».backend.entities.Team;   // welches andere Entity??
-		
-		import java.util.Collections;
-		
-		public class «entity.name.toFirstUpper»Details extends Dialog {
-		
-		    protected «entity.name.toFirstUpper»<Team> grid; // <<-- "Team"
-		
-		    public «entity.name.toFirstUpper»Details() {
-		        super();
-		
-		        grid = new Grid<>(Team.class);
-		        grid.setMultiSort(true);
-		        // style
-		        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-		        //TODO: check if height scales accordingly; maybe find better method for setting size in general
-		        grid.setWidth("400px");
-		
-		        //set columns
-		        grid.removeAllColumns();
-		        grid.addColumn(Team::getId).setHeader("ID").setSortable(true);
-		        grid.addColumn(Team::getName).setHeader("Teamname").setSortable(true).setKey("name");
-		        grid.sort(Collections.singletonList(new GridSortOrder<Team>(grid.getColumnByKey("name"), SortDirection.ASCENDING)));
-		
-		        add(grid);
-		    }
-		
-		    public void open(Game game){
-		        grid.setItems(game.getFinished());
-		        open();
-		    }
-		}
-		
+			package «PACKAGE».frontend.details;
+			
+			import com.vaadin.flow.component.dialog.Dialog;
+			import com.vaadin.flow.component.grid.Grid;
+			import com.vaadin.flow.component.grid.GridSortOrder;
+			import com.vaadin.flow.component.grid.GridVariant;
+			import com.vaadin.flow.data.provider.SortDirection;
+			import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+			// import «PACKAGE».backend.entities.Team;   // welches andere Entity??
+			
+			import java.util.Collections;
+			
+			public class «entity.name.toFirstUpper»Details extends Dialog {
+			
+			    protected «entity.name.toFirstUpper»<Team> grid; // <<-- "Team"
+			
+			    public «entity.name.toFirstUpper»Details() {
+			        super();
+			
+			        grid = new Grid<>(Team.class);
+			        grid.setMultiSort(true);
+			        // style
+			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+			        //TODO: check if height scales accordingly; maybe find better method for setting size in general
+			        grid.setWidth("400px");
+			
+			        //set columns
+			        grid.removeAllColumns();
+			        grid.addColumn(Team::getId).setHeader("ID").setSortable(true);
+			        grid.addColumn(Team::getName).setHeader("Teamname").setSortable(true).setKey("name");
+			        grid.sort(Collections.singletonList(new GridSortOrder<Team>(grid.getColumnByKey("name"), SortDirection.ASCENDING)));
+			
+			        add(grid);
+			    }
+			
+			    public void open(Game game){
+			        grid.setItems(game.getFinished());
+			        open();
+			    }
+			}
+			
 		'''
 	}
 

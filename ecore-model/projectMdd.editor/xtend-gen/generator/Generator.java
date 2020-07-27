@@ -17,6 +17,7 @@ import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import org.eclipse.xtext.xbase.lib.StringExtensions;
+import projectMdd.Attribute;
 import projectMdd.Backend;
 import projectMdd.Entity;
 
@@ -698,8 +699,39 @@ public class Generator {
     _builder.append("return (args) -> {");
     _builder.newLine();
     _builder.append("            ");
-    _builder.append("// TODO generate Values");
-    _builder.newLine();
+    int counter = 1;
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Entity> _entities = backend.getEntities();
+      for(final Entity entity : _entities) {
+        _builder.append("            ");
+        String _firstLower = StringExtensions.toFirstLower(entity.getName());
+        String _plus = (_firstLower + Integer.valueOf(counter));
+        CharSequence _createNewEntity = Helpers.createNewEntity(entity, _plus);
+        _builder.append(_createNewEntity, "            ");
+        _builder.newLineIfNotEmpty();
+        {
+          EList<Attribute> _attributes = entity.getAttributes();
+          for(final Attribute attribute : _attributes) {
+            _builder.append("            ");
+            String _name = entity.getName();
+            String _plus_1 = (_name + Integer.valueOf(counter));
+            CharSequence _setRandomValue = Helpers.setRandomValue(attribute, _plus_1);
+            _builder.append(_setRandomValue, "            ");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("            ");
+        String _firstLower_1 = StringExtensions.toFirstLower(entity.getName());
+        int _plusPlus = counter++;
+        String _plus_2 = (_firstLower_1 + Integer.valueOf(_plusPlus));
+        CharSequence _saveInRepo = Helpers.saveInRepo(entity, _plus_2);
+        _builder.append(_saveInRepo, "            ");
+        _builder.newLineIfNotEmpty();
+        _builder.append("            ");
+        _builder.newLine();
+      }
+    }
     _builder.append("        ");
     _builder.append("};");
     _builder.newLine();
@@ -1296,7 +1328,7 @@ public class Generator {
     _builder.append("\t    ");
     _builder.append("this.setContent(horizontalLayout);");
     _builder.newLine();
-    _builder.append("   ");
+    _builder.append("\t  ");
     _builder.append("}");
     _builder.newLine();
     _builder.append("\t");

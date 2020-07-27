@@ -5,8 +5,12 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.StringExtensions;
+import projectMdd.Attribute;
 import projectMdd.Backend;
+import projectMdd.DataType;
 import projectMdd.Entity;
+import projectMdd.EnumAttribute;
+import projectMdd.TypeAttribute;
 
 @SuppressWarnings("all")
 public class Helpers {
@@ -98,6 +102,113 @@ public class Helpers {
         }
       }
     }
+    return _builder;
+  }
+  
+  public static CharSequence createNewEntity(final Entity entity, final String name) {
+    StringConcatenation _builder = new StringConcatenation();
+    String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
+    _builder.append(_firstUpper);
+    _builder.append(" ");
+    _builder.append(name);
+    _builder.append(" = ");
+    String _firstUpper_1 = StringExtensions.toFirstUpper(entity.getName());
+    _builder.append(_firstUpper_1);
+    _builder.append("();");
+    _builder.newLineIfNotEmpty();
+    return _builder;
+  }
+  
+  public static String getRandomValueForType(final Attribute attribute) {
+    String _switchResult = null;
+    boolean _matched = false;
+    if (attribute instanceof TypeAttribute) {
+      int _value = ((TypeAttribute)attribute).getType().getValue();
+      boolean _equals = (_value == DataType.BOOLEAN_VALUE);
+      if (_equals) {
+        _matched=true;
+        _switchResult = "true";
+      }
+    }
+    if (!_matched) {
+      if (attribute instanceof TypeAttribute) {
+        int _value = ((TypeAttribute)attribute).getType().getValue();
+        boolean _equals = (_value == DataType.INTEGER_VALUE);
+        if (_equals) {
+          _matched=true;
+          _switchResult = "-1";
+        }
+      }
+    }
+    if (!_matched) {
+      if (attribute instanceof TypeAttribute) {
+        int _value = ((TypeAttribute)attribute).getType().getValue();
+        boolean _equals = (_value == DataType.CHAR_VALUE);
+        if (_equals) {
+          _matched=true;
+          _switchResult = "\'x\'";
+        }
+      }
+    }
+    if (!_matched) {
+      if (attribute instanceof TypeAttribute) {
+        int _value = ((TypeAttribute)attribute).getType().getValue();
+        boolean _equals = (_value == DataType.DOUBLE_VALUE);
+        if (_equals) {
+          _matched=true;
+          _switchResult = "-2.0";
+        }
+      }
+    }
+    if (!_matched) {
+      if (attribute instanceof TypeAttribute) {
+        int _value = ((TypeAttribute)attribute).getType().getValue();
+        boolean _equals = (_value == DataType.STRING_VALUE);
+        if (_equals) {
+          _matched=true;
+          _switchResult = "\"asdf\"";
+        }
+      }
+    }
+    if (!_matched) {
+      if (attribute instanceof EnumAttribute) {
+        if (true) {
+          _matched=true;
+          String _firstUpper = StringExtensions.toFirstUpper(((EnumAttribute)attribute).getName());
+          String _plus = (_firstUpper + ".");
+          String _firstUpper_1 = StringExtensions.toFirstUpper(((EnumAttribute)attribute).getValues().get(0));
+          _switchResult = (_plus + _firstUpper_1);
+        }
+      }
+    }
+    if (!_matched) {
+      _switchResult = "null";
+    }
+    return _switchResult;
+  }
+  
+  public static CharSequence setRandomValue(final Attribute attribute, final String entityName) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append(entityName);
+    _builder.append(".set");
+    String _firstUpper = StringExtensions.toFirstUpper(attribute.getName());
+    _builder.append(_firstUpper);
+    _builder.append("(");
+    String _randomValueForType = Helpers.getRandomValueForType(attribute);
+    _builder.append(_randomValueForType);
+    _builder.append(");");
+    _builder.newLineIfNotEmpty();
+    return _builder;
+  }
+  
+  public static CharSequence saveInRepo(final Entity entity, final String name) {
+    StringConcatenation _builder = new StringConcatenation();
+    String _firstLower = StringExtensions.toFirstLower(entity.getName());
+    _builder.append(_firstLower);
+    _builder.append("Repository.save(");
+    _builder.append(name);
+    _builder.append(");");
+    _builder.newLineIfNotEmpty();
     return _builder;
   }
 }

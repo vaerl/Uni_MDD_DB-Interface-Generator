@@ -17,40 +17,40 @@ import java.util.HashSet;
 @SpringBootApplication
 public class KlostertrophyApplication {
 
-	private static final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(this.getClass());
+    
+    private static final String CONTAINER_NAME = "Klostertrophy";
+    private static final String CONTAINER_DATABASE_PASSWORD = "1234klostertrophy";
+    private static final String CONTAINER_DATABASE_NAME = "trophy";
 
-	private static final String CONTAINER_NAME = "Klostertrophy";
-	private static final String CONTAINER_DATABASE_PASSWORD = "1234klostertrophy";
-	private static final String CONTAINER_DATABASE_NAME = "trophy";
+    public static void main(String[] args) {
+        createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
+        startMySQLContainer(CONTAINER_DATABASE_NAME);
+     	SpringApplication.run(Application.class, args);
+    }
 
-	public static void main(String[] args) {
-		createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
-		startMySQLContainer(CONTAINER_DATABASE_NAME);
-		SpringApplication.run(Application.class, args);
-	}
-
-	public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {
-		try {
-			log.info("Checking if container {} exists.", containerName);
-			Process check = Runtime.getRuntime().exec("docker inspect -f '{{.State.Running}}' " + containerName);
-			String res = String.valueOf(check.getInputStream());
-			log.info("Container exists: {}", res);
-			check.getOutputStream().close();
-			if (!res.contains("true")) {
-				log.info("Creating container {}.", containerName);
-				Process run = Runtime.getRuntime()
-						.exec("docker run -p 3306:3306 --name " + containerName + " -e MYSQL_ROOT_PASSWORD="
-								+ databasePassword + " -e MYSQL_DATABASE=" + databaseName + " -d mysql:latest");
-				run.getOutputStream().close();
-				log.info("Created docker-container with name: {}", containerName);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			log.error("Could not create docker-container with name: {}", containerName);
-		}
-	}
-
-	private static void startMySQLContainer(String containerName) {
+    public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {
+            try {
+                log.info("Checking if container {} exists.", containerName);
+                Process check = Runtime.getRuntime().exec("docker inspect -f '{{.State.Running}}' " + containerName);
+                String res = String.valueOf(check.getInputStream());
+                log.info("Container exists: {}", res);
+                check.getOutputStream().close();
+                if (!res.contains("true")) {
+                    log.info("Creating container {}.", containerName);
+                    Process run = Runtime.getRuntime()
+                            .exec("docker run -p 3306:3306 --name " + containerName + " -e MYSQL_ROOT_PASSWORD="
+                                    + databasePassword + " -e MYSQL_DATABASE=" + databaseName + " -d mysql:latest");
+                    run.getOutputStream().close();
+                    log.info("Created docker-container with name: {}", containerName);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error("Could not create docker-container with name: {}", containerName);
+            }
+        }
+    
+        private static void startMySQLContainer(String containerName) {
             try {
                 Process start = Runtime.getRuntime().exec("docker start " + containerName);
                 start.getOutputStream().close();
@@ -61,12 +61,27 @@ public class KlostertrophyApplication {
             }
         }
 
-	@Bean
+    @Bean
     public CommandLineRunner loadData(TeamRepository TeamRepository, 
     GameRepository GameRepository, 
     ) {
         return (args) -> {
-            // TODO generate Values
+            Team team1 = Team();
+            Team1.setStatus(Status.Done);
+            Team1.setName("asdf");
+            Team1.setPoints(-1);
+            Team1.setGender(Gender.Male);
+            teamRepository.save(team1);
+            Game game2 = Game();
+            Game2.setName("asdf");
+            Game2.setStatus(Status.Done);
+            Game2.setSortOrder(SortOrder.Ascending);
+            Game2.setPointType(PointType.Time);
+            gameRepository.save(game2);
+            Admin admin3 = Admin();
+            Admin3.setUsername("asdf");
+            Admin3.setPassword("asdf");
+            adminRepository.save(admin3);
         };
     }
 
