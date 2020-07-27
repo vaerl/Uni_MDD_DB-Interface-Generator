@@ -1070,9 +1070,6 @@ class Generator {
 			import com.vaadin.flow.data.binder.Binder;
 			import com.vaadin.flow.spring.annotation.UIScope;
 			import «PACKAGE».entities.«entity.name.toFirstUpper»;
-			«FOR enum : entity.attributes.filter[it instanceof EnumAttribute]»
-			import «PACKAGE».entities.«enum.name.toFirstUpper»;
-			«ENDFOR»
 			import «PACKAGE».repos.«entity.name.toFirstUpper»Repository;
 			import «PACKAGE».ChangeHandler;
 			import org.springframework.beans.factory.annotation.Autowired;
@@ -1098,7 +1095,7 @@ class Generator {
 			    //fields to edit
 			    TextField name = new TextField("«entity.name.toFirstUpper»-Name");
 				«FOR enum : entity.attributes.filter[it instanceof EnumAttribute]»
-					Select<«enum.name.toFirstUpper»> «enum.name» = new Select<>();
+					Select<«entity.name»«enum.name.toFirstUpper»> «enum.name» = new Select<>();
 				«ENDFOR»
 				HorizontalLayout fields = new HorizontalLayout(name, «FOR enum : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ', '»«enum.name»«ENDFOR»);
 				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
@@ -1151,7 +1148,7 @@ class Generator {
 			    }
 			
 			    void save() {
-			        if (this.«entity.name».getSortOrder() == null || this.«entity.name».getInputType() == null || this.«entity.name».getName() == null){
+			        if («FOR enum : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ' || '»this.«entity.name».get«enum.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter[it instanceof EnumAttribute].size > 0» || «ENDIF»this.«entity.name».getName() == null){
 			            return;
 			        }
 			        «entity.name»Repository.save(this.«entity.name»);
