@@ -30,7 +30,7 @@ class Helpers {
 		'''
 			«FOR entity : backend.entities»
 				«IF !entity.transient»
-					import «PACKAGE».entities.«entity.name.toFirstUpper»Repository;
+					import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
 				«ENDIF»
 			«ENDFOR»
 		'''
@@ -54,7 +54,7 @@ class Helpers {
 
 	def static createNewEntity(Entity entity, String name) {
 		'''
-			«entity.name.toFirstUpper» «name» = «entity.name.toFirstUpper»();
+			«entity.name.toFirstUpper» «name» = new «entity.name.toFirstUpper»();
 		'''
 	}
 

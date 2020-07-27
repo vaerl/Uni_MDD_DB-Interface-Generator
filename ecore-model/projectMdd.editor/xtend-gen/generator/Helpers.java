@@ -59,7 +59,7 @@ public class Helpers {
           if (_not) {
             _builder.append("import ");
             _builder.append(PACKAGE);
-            _builder.append(".entities.");
+            _builder.append(".repositories.");
             String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
             _builder.append(_firstUpper);
             _builder.append("Repository;");
@@ -111,7 +111,7 @@ public class Helpers {
     _builder.append(_firstUpper);
     _builder.append(" ");
     _builder.append(name);
-    _builder.append(" = ");
+    _builder.append(" = new ");
     String _firstUpper_1 = StringExtensions.toFirstUpper(entity.getName());
     _builder.append(_firstUpper_1);
     _builder.append("();");

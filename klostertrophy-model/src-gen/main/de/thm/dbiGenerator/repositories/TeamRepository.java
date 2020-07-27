@@ -1,6 +1,6 @@
-package de.thm.dbiGenerator.backend.repos;
+package de.thm.dbiGenerator.repositories;
 
-import de.thm.dbiGenerator.backend.entities.Team;
+import de.thm.dbiGenerator.entities.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

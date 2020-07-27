@@ -28,7 +28,7 @@
       <values>points</values>
     </attributes>
   </entities>
-  <entities transient="true" display="false" name="Admin">
+  <entities display="false" name="Admin">
     <attributes xsi:type="projectMdd:TypeAttribute" name="username"/>
     <attributes xsi:type="projectMdd:TypeAttribute" name="password"/>
   </entities>

@@ -2,8 +2,10 @@ package de.thm.dbiGenerator;
 
 import de.thm.dbiGenerator.entities.Team;
 import de.thm.dbiGenerator.entities.Game;
-import de.thm.dbiGenerator.entities.TeamRepository;
-import de.thm.dbiGenerator.entities.GameRepository;
+import de.thm.dbiGenerator.entities.Admin;
+import de.thm.dbiGenerator.repositories.TeamRepository;
+import de.thm.dbiGenerator.repositories.GameRepository;
+import de.thm.dbiGenerator.repositories.AdminRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +19,7 @@ import java.util.HashSet;
 @SpringBootApplication
 public class KlostertrophyApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(KlostertrophyApplication.class);
     
     private static final String CONTAINER_NAME = "Klostertrophy";
     private static final String CONTAINER_DATABASE_PASSWORD = "1234klostertrophy";
@@ -26,7 +28,7 @@ public class KlostertrophyApplication {
     public static void main(String[] args) {
         createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
         startMySQLContainer(CONTAINER_DATABASE_NAME);
-     	SpringApplication.run(Application.class, args);
+     	SpringApplication.run(KlostertrophyApplication.class, args);
     }
 
     public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {
@@ -64,24 +66,28 @@ public class KlostertrophyApplication {
     @Bean
     public CommandLineRunner loadData(TeamRepository TeamRepository, 
     GameRepository GameRepository, 
+    AdminRepository AdminRepository
     ) {
         return (args) -> {
-            Team team1 = Team();
-            Team1.setStatus(Status.Done);
-            Team1.setName("asdf");
-            Team1.setPoints(-1);
-            Team1.setGender(Gender.Male);
+            Team team1 = new Team();
+            team1.setStatus(Status.Done);
+            team1.setName("asdf");
+            team1.setPoints(-1);
+            team1.setGender(Gender.Male);
             teamRepository.save(team1);
-            Game game2 = Game();
-            Game2.setName("asdf");
-            Game2.setStatus(Status.Done);
-            Game2.setSortOrder(SortOrder.Ascending);
-            Game2.setPointType(PointType.Time);
+            
+            Game game2 = new Game();
+            game2.setName("asdf");
+            game2.setStatus(Status.Done);
+            game2.setSortOrder(SortOrder.Ascending);
+            game2.setPointType(PointType.Time);
             gameRepository.save(game2);
-            Admin admin3 = Admin();
-            Admin3.setUsername("asdf");
-            Admin3.setPassword("asdf");
+            
+            Admin admin3 = new Admin();
+            admin3.setUsername("asdf");
+            admin3.setPassword("asdf");
             adminRepository.save(admin3);
+            
         };
     }
 

@@ -117,7 +117,7 @@ class Generator {
 		var IFolder entityFolder = project.getAndCreateFolder(COMPLETE_PATH + "/entities");
 		var IFolder repoFolder = project.getAndCreateFolder(COMPLETE_PATH + "/repositories");
 		var IFolder pageFolder = project.getAndCreateFolder(COMPLETE_PATH + "/pages");
-		var IFolder gridFolder = project.getAndCreateFolder(COMPLETE_PATH + "/grids");
+		var IFolder editorFolder = project.getAndCreateFolder(COMPLETE_PATH + "/editors");
 
 		// TODO add contents
 		// create pom.xml
@@ -128,6 +128,10 @@ class Generator {
 
 		// create Application.class with exemplary data
 		createFile(packageFolder, backend.projectName + "Application.java", true, backend.genApplicationClass,
+			progressMonitor);
+			
+		// create websecurity-class
+		createFile(packageFolder, "WebSecurityConfig.java", true, backend.genWebsecurity,
 			progressMonitor);
 
 		// create base-ui
@@ -145,14 +149,14 @@ class Generator {
 				createFile(entityFolder, entity.name + "Gen.java", true, entity.genEntityClass, progressMonitor);
 
 				// create repositories
-				createFile(repoFolder, entity.name + "Repo.java", true, entity.genEntityRepo, progressMonitor);
+				createFile(repoFolder, entity.name + "Repository.java", true, entity.genEntityRepo, progressMonitor);
 
 				if (entity.display) {
 					// create page, f.e. gamesGridPage in klostertrophy
-					createFile(pageFolder, entity.name + "Page.java", true, entity.genEntityPage, progressMonitor);
+					createFile(pageFolder, entity.name + "GridPage.java", true, entity.genEntityGridPage, progressMonitor);
 					// TODO update method
 					// create editor
-					createFile(gridFolder, entity.name + "Grid.java", true, entity.genEntityGrid, progressMonitor);
+					createFile(editorFolder, entity.name + "Editor.java", true, entity.genEntityEditor, progressMonitor);
 				}
 			} else {
 				// create entity-gen-file
@@ -298,7 +302,7 @@ class Generator {
 			@SpringBootApplication
 			public class «backend.projectName.toFirstUpper»Application {
 			
-			    private static final Logger log = LoggerFactory.getLogger(this.getClass());
+			    private static final Logger log = LoggerFactory.getLogger(«backend.projectName.toFirstUpper»Application.class);
 			    
 			    private static final String CONTAINER_NAME = "«backend.projectName»";
 			    private static final String CONTAINER_DATABASE_PASSWORD = "«backend.database.password»";
@@ -307,7 +311,7 @@ class Generator {
 			    public static void main(String[] args) {
 			        createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
 			        startMySQLContainer(CONTAINER_DATABASE_NAME);
-			     	SpringApplication.run(Application.class, args);
+			     	SpringApplication.run(«backend.projectName.toFirstUpper»Application.class, args);
 			    }
 			
 			    public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {
@@ -349,7 +353,7 @@ class Generator {
 			            «FOR entity : backend.entities»
 			            	«entity.createNewEntity(entity.name.toFirstLower  + counter)»
 			            	«FOR attribute:entity.attributes»
-			            		«attribute.setRandomValue(entity.name + counter)»
+			            		«attribute.setRandomValue(entity.name.toFirstLower + counter)»
 			            	«ENDFOR»
 			            	«entity.saveInRepo(entity.name.toFirstLower  + counter++)»
 			            	
@@ -358,6 +362,83 @@ class Generator {
 			    }
 			
 			}
+		'''
+	}
+	
+	def genWebsecurity(Backend backend){
+		'''
+		package «PACKAGE»;
+		
+		import «PACKAGE».repositories.AdminRepository;
+		import «PACKAGE».entities.Admin;
+		import org.springframework.beans.factory.annotation.Autowired;
+		import org.springframework.context.annotation.Bean;
+		import org.springframework.context.annotation.Configuration;
+		import org.springframework.http.HttpMethod;
+		import org.springframework.security.authentication.AuthenticationManager;
+		import org.springframework.security.config.BeanIds;
+		import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+		import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+		import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+		import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+		import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+		import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+		
+		@Configuration
+		@EnableWebSecurity
+		public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+			
+			private AdminRepository adminRepository;
+			
+			@Autowired
+			public WebSecurityConfig(AdminRepository adminRepository){
+				this.adminRepository = adminRepository;
+			}
+		
+		    @Override
+		    protected void configure(HttpSecurity http) throws Exception {
+		        http
+		                .csrf().disable() // CSRF is handled by Vaadin: https://vaadin.com/framework/security
+		                .exceptionHandling().accessDeniedPage("/accessDenied")
+		                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+		                .and().logout().logoutSuccessUrl("/")
+		                .and()
+		                .authorizeRequests()
+		                // allow Vaadin URLs and the login URL without authentication
+		                .regexMatchers("/login.*", "/accessDenied", "/VAADIN/.*", "/favicon.ico", "/robots.txt", "/manifest.webmanifest",
+		                        "/sw.js", "/offline-page.html", "/frontend/.*", "/webjars/.*", "/frontend-es5/.*", "/frontend-es6/.*").permitAll()
+		                .regexMatchers(HttpMethod.POST, "/\\?v-r=.*").permitAll()
+		                // deny any other URL until authenticated
+		                .antMatchers("/**").fullyAuthenticated()
+		            /*
+		             Note that anonymous authentication is enabled by default, therefore;
+		             SecurityContextHolder.getContext().getAuthentication().isAuthenticated() always will return true.
+		             Look at LoginView.beforeEnter method.
+		             more info: https://docs.spring.io/spring-security/site/docs/4.0.x/reference/html/anonymous.html
+		             */
+		        ;
+		    }
+		
+		    @Autowired
+		    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		        for(Admin admin:adminRepository.findAll()){
+		        	auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder())
+		        		.withUser(admin.getName()).password(admin.getPassword()).roles("ADMIN");
+		        }
+		    }
+		
+		    /**
+		     * Expose the AuthenticationManager (to be used in LoginView)
+		     *
+		     * @return
+		     * @throws Exception
+		     */
+		    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+		    @Override
+		    public AuthenticationManager authenticationManagerBean() throws Exception {
+		        return super.authenticationManagerBean();
+		    }
+		}
 		'''
 	}
 
@@ -714,7 +795,9 @@ class Generator {
 
 	def genEntityExtensionClass(Entity entity) {
 		'''
-			package «PACKAGE»entities;
+			package «PACKAGE».entities;
+			
+			import «PACKAGE».entities.«entity.name.toFirstUpper»Gen;
 			
 			public class «entity.name» extends «entity.name»Gen {
 				
@@ -724,9 +807,9 @@ class Generator {
 
 	def genEntityRepo(Entity entity) {
 		'''
-			package «PACKAGE».backend.repos;
+			package «PACKAGE».repositories;
 			
-			import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+			import «PACKAGE».entities.«entity.name.toFirstUpper»;
 			import org.springframework.data.jpa.repository.JpaRepository;
 			import org.springframework.stereotype.Repository;
 			
@@ -745,9 +828,9 @@ class Generator {
 		'''
 	}
 
-	def genEntityPage(Entity entity) {
+	def genEntityGridPage(Entity entity) {
 		'''
-			package «PACKAGE».frontend.pages.grids;
+			package «PACKAGE».grids;
 			
 			import com.vaadin.flow.component.button.Button;
 			import com.vaadin.flow.component.grid.Grid;
@@ -759,13 +842,12 @@ class Generator {
 			import com.vaadin.flow.component.textfield.TextField;
 			import com.vaadin.flow.data.value.ValueChangeMode;
 			import com.vaadin.flow.spring.annotation.UIScope;
-			import «PACKAGE».KlostertrophyApplication;
-			import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
-			import «PACKAGE».backend.repos.«entity.name.toFirstUpper»Repository;
+			import «PACKAGE».entities.«entity.name.toFirstUpper»;
+			import «PACKAGE».repos.«entity.name.toFirstUpper»Repository;
 			// import de.klostertrophy.backend.repos.TeamRepository;	// ??
-			import «PACKAGE».frontend.details.«entity.name.toFirstUpper»Details;
-			import «PACKAGE».frontend.editors.«entity.name.toFirstUpper»Editor;
-			import «PACKAGE».frontend.play.«entity.name.toFirstUpper»PlayDialog;		// Alle PLAY-Komponenten entfernen? (inkl. button, dialog, etc.)
+			import «PACKAGE».details.«entity.name.toFirstUpper»Details;
+			import «PACKAGE».editors.«entity.name.toFirstUpper»Editor;
+			import «PACKAGE».play.«entity.name.toFirstUpper»PlayDialog;		// Alle PLAY-Komponenten entfernen? (inkl. button, dialog, etc.)
 			import org.slf4j.Logger;
 			import org.slf4j.LoggerFactory;
 			import org.springframework.beans.factory.annotation.Autowired;
@@ -912,6 +994,11 @@ class Generator {
 			
 		'''
 	}
+	
+	def genEntityEditor(Entity entity){
+		'''
+		'''
+	}
 
 	def genEntityDetails(Entity entity) {
 		'''
@@ -956,11 +1043,6 @@ class Generator {
 			    }
 			}
 			
-		'''
-	}
-
-	def genEntityGrid(Entity entity) {
-		'''
 		'''
 	}
 
