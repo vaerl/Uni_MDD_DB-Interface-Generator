@@ -21,23 +21,13 @@
   <component name="ChangeListManager">
     <list default="true" id="06ab4d76-2e9a-4034-b84a-814fcbcda86a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Generator.xtend" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Generator.xtend" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Helpers.xtend" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Helpers.xtend" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Generator.xtendbin" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Generator.xtendbin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Helpers.xtendbin" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Helpers.xtendbin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Generator.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Generator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Helpers.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Helpers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Klostertrophy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Klostertrophy.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/KlostertrophyApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/KlostertrophyApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/MainView.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/MainView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/WebSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/WebSecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/AdminGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/AdminGen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/GameGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/GameGen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/TeamGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/TeamGen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/grids/GameGrid.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/grids/TeamGrid.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +47,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../food-truck/food-truck-be" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -87,7 +77,7 @@
       <workItem from="1595843527377" duration="1555000" />
       <workItem from="1595848414632" duration="945000" />
       <workItem from="1595849428991" duration="475000" />
-      <workItem from="1595849941694" duration="234000" />
+      <workItem from="1595849941694" duration="2789000" />
     </task>
     <servers />
   </component>
@@ -120,10 +110,10 @@
       <screen x="0" y="25" width="1500" height="975" />
     </state>
     <state x="485" y="294" width="525" height="430" key="#com.intellij.ide.util.TreeClassChooserDialog/0.25.1500.975@0.25.1500.975" timestamp="1595849038531" />
-    <state x="534" y="261" width="424" height="497" key="FileChooserDialogImpl" timestamp="1595849521724">
+    <state x="534" y="254" width="424" height="497" key="FileChooserDialogImpl" timestamp="1595852106620">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="534" y="261" width="424" height="497" key="FileChooserDialogImpl/0.25.1500.975@0.25.1500.975" timestamp="1595849521724" />
+    <state x="534" y="254" width="424" height="497" key="FileChooserDialogImpl/0.25.1500.975@0.25.1500.975" timestamp="1595852106620" />
     <state x="236" y="59" width="1024" height="858" key="SettingsEditor" timestamp="1595850019680">
       <screen x="0" y="25" width="1500" height="975" />
     </state>

@@ -713,7 +713,6 @@ class Generator {
 	}
 
 	// TODO we currently don't have inheritance - we probably should.
-	// TODO update this
 	def genEntityClass(Entity entity) {
 		'''
 			package «PACKAGE».entities;
@@ -721,18 +720,18 @@ class Generator {
 			import lombok.Getter;
 			import lombok.NoArgsConstructor;
 			import lombok.Setter;
-			import javax.persistence.Column;
-			import javax.persistence.GeneratedValue;
-			import javax.persistence.Id;
+			import javax.persistence.*;
+			import java.util.Set;
 			
 			@Setter
 			@Getter
 			@NoArgsConstructor
+			@Entity
 			public class «entity.name»Gen {
 				
 				@Id
 				@GeneratedValue
-				@Column(name = "«entity.name»_id")
+				@Column(name = "«entity.name.toFirstLower»_id")
 				private Long id;
 				
 				// attributes
@@ -740,18 +739,42 @@ class Generator {
 					«IF attribute instanceof TypeAttribute»
 						private «attribute.type» «attribute.name»;
 					«ELSEIF attribute instanceof EnumAttribute»
+						@Enumerated(EnumType.STRING)
 						private «attribute.name.toFirstUpper» «attribute.name»;
 					«ENDIF»
 				«ENDFOR»
 				
-				// relations
+				// inward relations
 				«FOR relation : entity.inwardRelations»
 					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
-						
+						@OneToOne(mappedBy = "«relation.start.name.toFirstLower»")
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
 					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
-						
+						@ManyToOne
+						@JoinColumn(name = "«relation.start.name.toFirstLower»_id", nullable = false)
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
 					«ELSE»
-						
+						@ManyToMany(mappedBy = "«relation.end.name.toFirstLower»s")
+						private Set<«relation.start.name.toFirstUpper»> «relation.start.name.toFirstLower»s;
+					«ENDIF»
+				«ENDFOR»
+				
+				// outward relations
+				«FOR relation : entity.outwardRelations»
+					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+						@OneToOne(cascade = CascadeType.ALL)
+						@JoinColumn(name = "«relation.end.name.toFirstLower»_id", referencedColumnName = "«relation.end.name.toFirstLower»_id")
+						private «relation.end.name.toFirstUpper» «relation.end.name.toFirstLower»;
+					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+						@OneToMany(mappedBy = "«relation.start.name.toFirstLower»", cascade = CascadeType.ALL)
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+					«ELSE»
+						@ManyToMany(cascade = CascadeType.ALL)
+						@JoinTable(
+						name = "«relation.start.name.toFirstUpper»«relation.end.name.toFirstUpper»",
+						joinColumns = {@JoinColumn(name = "«relation.start.name.toFirstLower»_id")}, 
+										inverseJoinColumns = {@JoinColumn(name = "«relation.end.name.toFirstLower»_id")})
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
 					«ENDIF»
 				«ENDFOR»
 				
@@ -771,6 +794,61 @@ class Generator {
 
 	def genTransientEntityClass(Entity entity) {
 		'''
+			package «PACKAGE».entities;
+			
+			import lombok.Getter;
+			import lombok.NoArgsConstructor;
+			import lombok.Setter;
+			import javax.persistence.*;
+			import java.util.Set;
+			
+			@Setter
+			@Getter
+			@NoArgsConstructor
+			public class «entity.name»Gen {
+				
+				// attributes
+				«FOR attribute : entity.attributes»
+					«IF attribute instanceof TypeAttribute»
+						private «attribute.type» «attribute.name»;
+					«ELSEIF attribute instanceof EnumAttribute»
+						private «attribute.name.toFirstUpper» «attribute.name»;
+					«ENDIF»
+				«ENDFOR»
+				
+				// inward relations
+				«FOR relation : entity.inwardRelations»
+					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+					«ELSE»
+						private Set<«relation.start.name.toFirstUpper»> «relation.start.name.toFirstLower»s;
+					«ENDIF»
+				«ENDFOR»
+				
+				// outward relations
+				«FOR relation : entity.outwardRelations»
+					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+						private «relation.end.name.toFirstUpper» «relation.end.name.toFirstLower»;
+					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+					«ELSE»
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+					«ENDIF»
+				«ENDFOR»
+				
+				// enums
+				«FOR attribute : entity.attributes»
+					«IF attribute instanceof EnumAttribute»
+						public enum «attribute.name.toFirstUpper»{
+							«FOR value:attribute.values SEPARATOR ", "»
+								«value.toUpperCase»
+							«ENDFOR»
+						}
+					«ENDIF»
+				«ENDFOR»
+			}
 		'''
 	}
 
