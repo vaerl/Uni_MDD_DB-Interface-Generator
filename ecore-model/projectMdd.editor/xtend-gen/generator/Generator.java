@@ -1,6 +1,7 @@
 package generator;
 
 import com.google.common.collect.Iterators;
+import generator.Helpers;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import org.eclipse.core.resources.IFile;
@@ -141,7 +142,7 @@ public class Generator {
     this.createFile(resourceFolder, "application.properties", true, this.genApplicationProperties(backend), progressMonitor);
     String _projectName = backend.getProjectName();
     String _plus = (_projectName + "Application.java");
-    this.createFile(entityFolder, _plus, true, this.genApplicationClass(backend), progressMonitor);
+    this.createFile(packageFolder, _plus, true, this.genApplicationClass(backend), progressMonitor);
     this.createFile(packageFolder, "MainView.java", true, this.genMainView(backend), progressMonitor);
     this.createFile(packageFolder, "ChangeHandler.java", true, this.genChangeHandler(), progressMonitor);
     this.createFile(packageFolder, "AccessDeniedView.java", true, this.genAccessDenied(), progressMonitor);
@@ -516,31 +517,12 @@ public class Generator {
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
-    {
-      EList<Entity> _entities = backend.getEntities();
-      for(final Entity entity : _entities) {
-        {
-          boolean _isTransient = entity.isTransient();
-          boolean _not = (!_isTransient);
-          if (_not) {
-            _builder.append("import ");
-            _builder.append(Generator.PACKAGE);
-            _builder.append(".entities.");
-            String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
-            _builder.append(_firstUpper);
-            _builder.append(";");
-            _builder.newLineIfNotEmpty();
-            _builder.append("import ");
-            _builder.append(Generator.PACKAGE);
-            _builder.append(".entities.");
-            String _firstUpper_1 = StringExtensions.toFirstUpper(entity.getName());
-            _builder.append(_firstUpper_1);
-            _builder.append("Repository;");
-            _builder.newLineIfNotEmpty();
-          }
-        }
-      }
-    }
+    CharSequence _entitiesAsImports = Helpers.getEntitiesAsImports(backend, Generator.PACKAGE);
+    _builder.append(_entitiesAsImports);
+    _builder.newLineIfNotEmpty();
+    CharSequence _reposAsImports = Helpers.getReposAsImports(backend, Generator.PACKAGE);
+    _builder.append(_reposAsImports);
+    _builder.newLineIfNotEmpty();
     _builder.append("import org.slf4j.Logger;");
     _builder.newLine();
     _builder.append("import org.slf4j.LoggerFactory;");
@@ -562,8 +544,8 @@ public class Generator {
     _builder.append("@SpringBootApplication");
     _builder.newLine();
     _builder.append("public class ");
-    String _firstUpper_2 = StringExtensions.toFirstUpper(backend.getProjectName());
-    _builder.append(_firstUpper_2);
+    String _firstUpper = StringExtensions.toFirstUpper(backend.getProjectName());
+    _builder.append(_firstUpper);
     _builder.append("Application {");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
@@ -708,27 +690,8 @@ public class Generator {
     _builder.newLine();
     _builder.append("    ");
     _builder.append("public CommandLineRunner loadData(");
-    _builder.newLine();
-    {
-      EList<Entity> _entities_1 = backend.getEntities();
-      boolean _hasElements = false;
-      for(final Entity entity_1 : _entities_1) {
-        if (!_hasElements) {
-          _hasElements = true;
-        } else {
-          _builder.appendImmediate(", ", "    ");
-        }
-        _builder.append("    ");
-        String _firstUpper_3 = StringExtensions.toFirstUpper(entity_1.getName());
-        _builder.append(_firstUpper_3, "    ");
-        _builder.append("Repository ");
-        String _name = entity_1.getName();
-        _builder.append(_name, "    ");
-        _builder.append("Repository");
-        _builder.newLineIfNotEmpty();
-        _builder.append("\t\t    ");
-      }
-    }
+    CharSequence _reposAsParams = Helpers.getReposAsParams(backend);
+    _builder.append(_reposAsParams, "    ");
     _builder.append(") {");
     _builder.newLineIfNotEmpty();
     _builder.append("        ");

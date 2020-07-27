@@ -6,14 +6,11 @@ import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.runtime.IProgressMonitor
-import org.eclipse.emf.ecore.EAttribute
-import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecore.EcorePackage
 import org.eclipse.emf.ecore.resource.Resource
 import projectMdd.Backend
 import projectMdd.Entity
-import org.eclipse.emf.common.util.EList
+import static extension generator.Helpers.*;
 
 /**
  * The generator for ecore files.
@@ -128,9 +125,9 @@ class Generator {
 		createFile(resourceFolder, "application.properties", true, backend.genApplicationProperties, progressMonitor);
 
 		// create Application.class with exemplary data
-		createFile(entityFolder, backend.projectName + "Application.java", true, backend.genApplicationClass, progressMonitor);
-		
-		// TODO create ui-base: login, logout and tab-switcher
+		createFile(packageFolder, backend.projectName + "Application.java", true, backend.genApplicationClass, progressMonitor);
+
+		// create base-ui
 		createFile(packageFolder, "MainView.java", true, backend.genMainView, progressMonitor);
 		createFile(packageFolder, "ChangeHandler.java", true, genChangeHandler, progressMonitor);
 		createFile(packageFolder, "AccessDeniedView.java", true, genAccessDenied, progressMonitor);
@@ -283,12 +280,8 @@ class Generator {
 		'''
 		package «PACKAGE»;
 		
-		«FOR entity:backend.entities»
-			«IF !entity.transient»
-				import «PACKAGE».entities.«entity.name.toFirstUpper»;
-				import «PACKAGE».entities.«entity.name.toFirstUpper»Repository;
-			«ENDIF»
-		«ENDFOR»
+		«backend.getEntitiesAsImports(PACKAGE)»
+		«backend.getReposAsImports(PACKAGE)»
 		import org.slf4j.Logger;
 		import org.slf4j.LoggerFactory;
 		import org.springframework.boot.CommandLineRunner;
@@ -347,10 +340,7 @@ class Generator {
 		        }
 		
 		    @Bean
-		    public CommandLineRunner loadData(
-		    «FOR entity:backend.entities SEPARATOR ", "»
-		    	«entity.name.toFirstUpper»Repository «entity.name»Repository
-		    «ENDFOR») {
+		    public CommandLineRunner loadData(«backend.getReposAsParams») {
 		        return (args) -> {
 		            // TODO generate Values
 		        };
