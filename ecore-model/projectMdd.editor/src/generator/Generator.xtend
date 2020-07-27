@@ -13,6 +13,7 @@ import projectMdd.Entity
 import static extension generator.Helpers.*;
 import projectMdd.TypeAttribute
 import projectMdd.EnumAttribute
+import projectMdd.RelationType
 
 /**
  * The generator for ecore files.
@@ -129,10 +130,9 @@ class Generator {
 		// create Application.class with exemplary data
 		createFile(packageFolder, backend.projectName + "Application.java", true, backend.genApplicationClass,
 			progressMonitor);
-			
+
 		// create websecurity-class
-		createFile(packageFolder, "WebSecurityConfig.java", true, backend.genWebsecurity,
-			progressMonitor);
+		createFile(packageFolder, "WebSecurityConfig.java", true, backend.genWebsecurity, progressMonitor);
 
 		// create base-ui
 		createFile(packageFolder, "MainView.java", true, backend.genMainView, progressMonitor);
@@ -153,10 +153,12 @@ class Generator {
 
 				if (entity.display) {
 					// create page, f.e. gamesGridPage in klostertrophy
-					createFile(pageFolder, entity.name + "GridPage.java", true, entity.genEntityGridPage, progressMonitor);
+					createFile(pageFolder, entity.name + "GridPage.java", true, entity.genEntityGridPage,
+						progressMonitor);
 					// TODO update method
 					// create editor
-					createFile(editorFolder, entity.name + "Editor.java", true, entity.genEntityEditor, progressMonitor);
+					createFile(editorFolder, entity.name + "Editor.java", true, entity.genEntityEditor,
+						progressMonitor);
 				}
 			} else {
 				// create entity-gen-file
@@ -353,7 +355,7 @@ class Generator {
 			            «FOR entity : backend.entities»
 			            	«entity.createNewEntity(entity.name.toFirstLower  + counter)»
 			            	«FOR attribute:entity.attributes»
-			            		«attribute.setRandomValue(entity.name.toFirstLower + counter)»
+			            		«entity.name.toFirstLower  + counter».set«attribute.name.toFirstUpper»(«attribute.getRandomValueForType(entity)»);
 			            	«ENDFOR»
 			            	«entity.saveInRepo(entity.name.toFirstLower  + counter++)»
 			            	
@@ -364,81 +366,81 @@ class Generator {
 			}
 		'''
 	}
-	
-	def genWebsecurity(Backend backend){
+
+	def genWebsecurity(Backend backend) {
 		'''
-		package «PACKAGE»;
-		
-		import «PACKAGE».repositories.AdminRepository;
-		import «PACKAGE».entities.Admin;
-		import org.springframework.beans.factory.annotation.Autowired;
-		import org.springframework.context.annotation.Bean;
-		import org.springframework.context.annotation.Configuration;
-		import org.springframework.http.HttpMethod;
-		import org.springframework.security.authentication.AuthenticationManager;
-		import org.springframework.security.config.BeanIds;
-		import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-		import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-		import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-		import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-		import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-		import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-		
-		@Configuration
-		@EnableWebSecurity
-		public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+			package «PACKAGE»;
 			
-			private AdminRepository adminRepository;
+			import «PACKAGE».repositories.AdminRepository;
+			import «PACKAGE».entities.Admin;
+			import org.springframework.beans.factory.annotation.Autowired;
+			import org.springframework.context.annotation.Bean;
+			import org.springframework.context.annotation.Configuration;
+			import org.springframework.http.HttpMethod;
+			import org.springframework.security.authentication.AuthenticationManager;
+			import org.springframework.security.config.BeanIds;
+			import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+			import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+			import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+			import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+			import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+			import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 			
-			@Autowired
-			public WebSecurityConfig(AdminRepository adminRepository){
-				this.adminRepository = adminRepository;
+			@Configuration
+			@EnableWebSecurity
+			public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+				
+				private AdminRepository adminRepository;
+				
+				@Autowired
+				public WebSecurityConfig(AdminRepository adminRepository){
+					this.adminRepository = adminRepository;
+				}
+			
+			    @Override
+			    protected void configure(HttpSecurity http) throws Exception {
+			        http
+			                .csrf().disable() // CSRF is handled by Vaadin: https://vaadin.com/framework/security
+			                .exceptionHandling().accessDeniedPage("/accessDenied")
+			                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+			                .and().logout().logoutSuccessUrl("/")
+			                .and()
+			                .authorizeRequests()
+			                // allow Vaadin URLs and the login URL without authentication
+			                .regexMatchers("/login.*", "/accessDenied", "/VAADIN/.*", "/favicon.ico", "/robots.txt", "/manifest.webmanifest",
+			                        "/sw.js", "/offline-page.html", "/frontend/.*", "/webjars/.*", "/frontend-es5/.*", "/frontend-es6/.*").permitAll()
+			                .regexMatchers(HttpMethod.POST, "/\\?v-r=.*").permitAll()
+			                // deny any other URL until authenticated
+			                .antMatchers("/**").fullyAuthenticated()
+			            /*
+			             Note that anonymous authentication is enabled by default, therefore;
+			             SecurityContextHolder.getContext().getAuthentication().isAuthenticated() always will return true.
+			             Look at LoginView.beforeEnter method.
+			             more info: https://docs.spring.io/spring-security/site/docs/4.0.x/reference/html/anonymous.html
+			             */
+			        ;
+			    }
+			
+			    @Autowired
+			    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+			        for(Admin admin:adminRepository.findAll()){
+			        	auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder())
+			        		.withUser(admin.getUsername()).password(admin.getPassword()).roles("ADMIN");
+			        }
+			    }
+			
+			    /**
+			     * Expose the AuthenticationManager (to be used in LoginView)
+			     *
+			     * @return
+			     * @throws Exception
+			     */
+			    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+			    @Override
+			    public AuthenticationManager authenticationManagerBean() throws Exception {
+			        return super.authenticationManagerBean();
+			    }
 			}
-		
-		    @Override
-		    protected void configure(HttpSecurity http) throws Exception {
-		        http
-		                .csrf().disable() // CSRF is handled by Vaadin: https://vaadin.com/framework/security
-		                .exceptionHandling().accessDeniedPage("/accessDenied")
-		                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-		                .and().logout().logoutSuccessUrl("/")
-		                .and()
-		                .authorizeRequests()
-		                // allow Vaadin URLs and the login URL without authentication
-		                .regexMatchers("/login.*", "/accessDenied", "/VAADIN/.*", "/favicon.ico", "/robots.txt", "/manifest.webmanifest",
-		                        "/sw.js", "/offline-page.html", "/frontend/.*", "/webjars/.*", "/frontend-es5/.*", "/frontend-es6/.*").permitAll()
-		                .regexMatchers(HttpMethod.POST, "/\\?v-r=.*").permitAll()
-		                // deny any other URL until authenticated
-		                .antMatchers("/**").fullyAuthenticated()
-		            /*
-		             Note that anonymous authentication is enabled by default, therefore;
-		             SecurityContextHolder.getContext().getAuthentication().isAuthenticated() always will return true.
-		             Look at LoginView.beforeEnter method.
-		             more info: https://docs.spring.io/spring-security/site/docs/4.0.x/reference/html/anonymous.html
-		             */
-		        ;
-		    }
-		
-		    @Autowired
-		    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		        for(Admin admin:adminRepository.findAll()){
-		        	auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder())
-		        		.withUser(admin.getName()).password(admin.getPassword()).roles("ADMIN");
-		        }
-		    }
-		
-		    /**
-		     * Expose the AuthenticationManager (to be used in LoginView)
-		     *
-		     * @return
-		     * @throws Exception
-		     */
-		    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-		    @Override
-		    public AuthenticationManager authenticationManagerBean() throws Exception {
-		        return super.authenticationManagerBean();
-		    }
-		}
 		'''
 	}
 
@@ -545,6 +547,7 @@ class Generator {
 			        UI.getCurrent().getSession().close();
 			        UI.getCurrent().getPage().reload();// to redirect user to the login page
 			    }
+			}
 		'''
 	}
 
@@ -710,86 +713,142 @@ class Generator {
 	}
 
 	// TODO we currently don't have inheritance - we probably should.
-	// TODO use Lombok for Getters and setters
-	// TODO update this
 	def genEntityClass(Entity entity) {
-		"fix implementation"
-//		'''
-//			package «PACKAGE»entities;
-//			
-//			/**
-//			* This is the {@link «entity.name»} gen-entity class.
-//			*
-//			*@generated
-//			*/
-//			public class «entity.name»Gen «IF !e.EAllSuperTypes.empty» extends «e.EAllSuperTypes.head.name» «ENDIF» {
-//			
-//				// attributes
-//				«FOR a : e.EAllAttributes»
-//					private «a.EType.instanceTypeName» «a.name»;
-//				«ENDFOR»
-//				
-//				// references
-//				«FOR a : e.EAllReferences.filter[!many]»
-//					private «a.EReferenceType.name» «a.name»;
-//				«ENDFOR»
-//				«FOR a : e.EAllReferences.filter[many]»
-//					private java.util.ArrayList<«a.EReferenceType.name»> «a.name»;
-//				«ENDFOR»
-//				
-//				/**
-//				* Default constructor.
-//				*/
-//				public «entity.name»Gen() {
-//				}
-//				
-//				«IF !e.EAllAttributes.empty»
-//					/**
-//					* Constructor for all attributes.
-//					*/
-//					public «e.name»Gen(«FOR a : e.EAllAttributes SEPARATOR ', '» «a.EType.instanceTypeName» «a.name» «ENDFOR») {
-//						«FOR a : e.EAllAttributes»
-//							this.«a.name» = «a.name»;
-//						«ENDFOR»
-//					}
-//				«ENDIF»
-//				
-//				«IF !e.EAllAttributes.empty && !e.EAllReferences.empty»
-//					/**
-//					* Full constructor.
-//					*/
-//					public «e.name»Gen(
-//					«FOR a : e.EAllAttributes SEPARATOR ', '» «a.EType.instanceTypeName» «a.name» «ENDFOR» 
-//					«FOR a : e.EAllReferences.filter[!many] BEFORE ', ' SEPARATOR ', '» «a.EReferenceType.name» «a.name» «ENDFOR»
-//					«FOR a : e.EAllReferences.filter[many] BEFORE ', ' SEPARATOR ', '» java.util.ArrayList<«a.EReferenceType.name»> «a.name» «ENDFOR») {
-//					«FOR a : e.EAllAttributes + e.EAllReferences»
-//						this.«a.name» = «a.name»;
-//					«ENDFOR»
-//					}
-//				«ENDIF»
-//				
-//				//TODO getter setter
-//				
-//				@Override
-//				public String toString() {
-//					«IF e.EAllAttributes.exists[string]»
-//						StringBuilder builder = new StringBuilder();
-//						«FOR a : e.EAllAttributes.filter[string]»
-//							builder.append(«a.name»);
-//							builder.append(" - ");
-//						«ENDFOR»
-//						return builder.toString();
-//					«ELSE»
-//						return null; //TODO
-//					«ENDIF»
-//				}
-//			
-//			}
-//		'''
+		'''
+			package «PACKAGE».entities;
+			
+			import lombok.Getter;
+			import lombok.NoArgsConstructor;
+			import lombok.Setter;
+			import javax.persistence.*;
+			import java.util.Set;
+			
+			@Setter
+			@Getter
+			@NoArgsConstructor
+			@Entity
+			public class «entity.name»Gen {
+				
+				@Id
+				@GeneratedValue
+				@Column(name = "«entity.name.toFirstLower»_id")
+				private Long id;
+				
+				// attributes
+				«FOR attribute : entity.attributes»
+					«IF attribute instanceof TypeAttribute»
+						private «attribute.type» «attribute.name»;
+					«ELSEIF attribute instanceof EnumAttribute»
+						@Enumerated(EnumType.STRING)
+						private «attribute.name.toFirstUpper» «attribute.name»;
+					«ENDIF»
+				«ENDFOR»
+				
+				// inward relations
+				«FOR relation : entity.inwardRelations»
+					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+						@OneToOne(mappedBy = "«relation.start.name.toFirstLower»")
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+						@ManyToOne
+						@JoinColumn(name = "«relation.start.name.toFirstLower»_id", nullable = false)
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+					«ELSE»
+						@ManyToMany(mappedBy = "«relation.end.name.toFirstLower»s")
+						private Set<«relation.start.name.toFirstUpper»> «relation.start.name.toFirstLower»s;
+					«ENDIF»
+				«ENDFOR»
+				
+				// outward relations
+				«FOR relation : entity.outwardRelations»
+					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+						@OneToOne(cascade = CascadeType.ALL)
+						@JoinColumn(name = "«relation.end.name.toFirstLower»_id", referencedColumnName = "«relation.end.name.toFirstLower»_id")
+						private «relation.end.name.toFirstUpper» «relation.end.name.toFirstLower»;
+					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+						@OneToMany(mappedBy = "«relation.start.name.toFirstLower»", cascade = CascadeType.ALL)
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+					«ELSE»
+						@ManyToMany(cascade = CascadeType.ALL)
+						@JoinTable(
+						name = "«relation.start.name.toFirstUpper»«relation.end.name.toFirstUpper»",
+						joinColumns = {@JoinColumn(name = "«relation.start.name.toFirstLower»_id")}, 
+										inverseJoinColumns = {@JoinColumn(name = "«relation.end.name.toFirstLower»_id")})
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+					«ENDIF»
+				«ENDFOR»
+				
+				// enums
+				«FOR attribute : entity.attributes»
+					«IF attribute instanceof EnumAttribute»
+						public enum «attribute.name.toFirstUpper»{
+							«FOR value:attribute.values SEPARATOR ", "»
+								«value.toUpperCase»
+							«ENDFOR»
+						}
+					«ENDIF»
+				«ENDFOR»
+			}
+		'''
 	}
 
 	def genTransientEntityClass(Entity entity) {
 		'''
+			package «PACKAGE».entities;
+			
+			import lombok.Getter;
+			import lombok.NoArgsConstructor;
+			import lombok.Setter;
+			import javax.persistence.*;
+			import java.util.Set;
+			
+			@Setter
+			@Getter
+			@NoArgsConstructor
+			public class «entity.name»Gen {
+				
+				// attributes
+				«FOR attribute : entity.attributes»
+					«IF attribute instanceof TypeAttribute»
+						private «attribute.type» «attribute.name»;
+					«ELSEIF attribute instanceof EnumAttribute»
+						private «attribute.name.toFirstUpper» «attribute.name»;
+					«ENDIF»
+				«ENDFOR»
+				
+				// inward relations
+				«FOR relation : entity.inwardRelations»
+					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+					«ELSE»
+						private Set<«relation.start.name.toFirstUpper»> «relation.start.name.toFirstLower»s;
+					«ENDIF»
+				«ENDFOR»
+				
+				// outward relations
+				«FOR relation : entity.outwardRelations»
+					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+						private «relation.end.name.toFirstUpper» «relation.end.name.toFirstLower»;
+					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+					«ELSE»
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+					«ENDIF»
+				«ENDFOR»
+				
+				// enums
+				«FOR attribute : entity.attributes»
+					«IF attribute instanceof EnumAttribute»
+						public enum «attribute.name.toFirstUpper»{
+							«FOR value:attribute.values SEPARATOR ", "»
+								«value.toUpperCase»
+							«ENDFOR»
+						}
+					«ENDIF»
+				«ENDFOR»
+			}
 		'''
 	}
 
@@ -994,8 +1053,8 @@ class Generator {
 			
 		'''
 	}
-	
-	def genEntityEditor(Entity entity){
+
+	def genEntityEditor(Entity entity) {
 		'''
 		'''
 	}

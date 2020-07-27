@@ -37,8 +37,8 @@ public class Helpers {
             String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
             _builder.append(_firstUpper);
             _builder.append("Repository ");
-            String _name = entity.getName();
-            _builder.append(_name);
+            String _firstLower = StringExtensions.toFirstLower(entity.getName());
+            _builder.append(_firstLower);
             _builder.append("Repository");
             _builder.newLineIfNotEmpty();
           }
@@ -119,7 +119,7 @@ public class Helpers {
     return _builder;
   }
   
-  public static String getRandomValueForType(final Attribute attribute) {
+  public static String getRandomValueForType(final Attribute attribute, final Entity entity) {
     String _switchResult = null;
     boolean _matched = false;
     if (attribute instanceof TypeAttribute) {
@@ -174,10 +174,13 @@ public class Helpers {
       if (attribute instanceof EnumAttribute) {
         if (true) {
           _matched=true;
-          String _firstUpper = StringExtensions.toFirstUpper(((EnumAttribute)attribute).getName());
+          String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
           String _plus = (_firstUpper + ".");
-          String _firstUpper_1 = StringExtensions.toFirstUpper(((EnumAttribute)attribute).getValues().get(0));
-          _switchResult = (_plus + _firstUpper_1);
+          String _firstUpper_1 = StringExtensions.toFirstUpper(((EnumAttribute)attribute).getName());
+          String _plus_1 = (_plus + _firstUpper_1);
+          String _plus_2 = (_plus_1 + ".");
+          String _upperCase = ((EnumAttribute)attribute).getValues().get(0).toUpperCase();
+          _switchResult = (_plus_2 + _upperCase);
         }
       }
     }
@@ -185,20 +188,6 @@ public class Helpers {
       _switchResult = "null";
     }
     return _switchResult;
-  }
-  
-  public static CharSequence setRandomValue(final Attribute attribute, final String entityName) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append(entityName);
-    _builder.append(".set");
-    String _firstUpper = StringExtensions.toFirstUpper(attribute.getName());
-    _builder.append(_firstUpper);
-    _builder.append("(");
-    String _randomValueForType = Helpers.getRandomValueForType(attribute);
-    _builder.append(_randomValueForType);
-    _builder.append(");");
-    _builder.newLineIfNotEmpty();
-    return _builder;
   }
   
   public static CharSequence saveInRepo(final Entity entity, final String name) {

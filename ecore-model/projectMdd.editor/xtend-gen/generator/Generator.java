@@ -1,5 +1,6 @@
 package generator;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Iterators;
 import generator.Helpers;
 import java.io.ByteArrayInputStream;
@@ -19,7 +20,12 @@ import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import org.eclipse.xtext.xbase.lib.StringExtensions;
 import projectMdd.Attribute;
 import projectMdd.Backend;
+import projectMdd.DataType;
 import projectMdd.Entity;
+import projectMdd.EnumAttribute;
+import projectMdd.Relation;
+import projectMdd.RelationType;
+import projectMdd.TypeAttribute;
 
 /**
  * The generator for ecore files.
@@ -723,8 +729,14 @@ public class Generator {
             _builder.append("            ");
             String _firstLower_1 = StringExtensions.toFirstLower(entity.getName());
             String _plus_1 = (_firstLower_1 + Integer.valueOf(counter));
-            CharSequence _setRandomValue = Helpers.setRandomValue(attribute, _plus_1);
-            _builder.append(_setRandomValue, "            ");
+            _builder.append(_plus_1, "            ");
+            _builder.append(".set");
+            String _firstUpper_3 = StringExtensions.toFirstUpper(attribute.getName());
+            _builder.append(_firstUpper_3, "            ");
+            _builder.append("(");
+            String _randomValueForType = Helpers.getRandomValueForType(attribute, entity);
+            _builder.append(_randomValueForType, "            ");
+            _builder.append(");");
             _builder.newLineIfNotEmpty();
           }
         }
@@ -900,7 +912,7 @@ public class Generator {
     _builder.append("auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder())");
     _builder.newLine();
     _builder.append("        \t\t");
-    _builder.append(".withUser(admin.getName()).password(admin.getPassword()).roles(\"ADMIN\");");
+    _builder.append(".withUser(admin.getUsername()).password(admin.getPassword()).roles(\"ADMIN\");");
     _builder.newLine();
     _builder.append("        ");
     _builder.append("}");
@@ -1268,6 +1280,8 @@ public class Generator {
     _builder.append("UI.getCurrent().getPage().reload();// to redirect user to the login page");
     _builder.newLine();
     _builder.append("    ");
+    _builder.append("}");
+    _builder.newLine();
     _builder.append("}");
     _builder.newLine();
     return _builder;
@@ -1664,12 +1678,503 @@ public class Generator {
     return _builder;
   }
   
-  public String genEntityClass(final Entity entity) {
-    return "fix implementation";
+  public CharSequence genEntityClass(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package ");
+    _builder.append(Generator.PACKAGE);
+    _builder.append(".entities;");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("import lombok.Getter;");
+    _builder.newLine();
+    _builder.append("import lombok.NoArgsConstructor;");
+    _builder.newLine();
+    _builder.append("import lombok.Setter;");
+    _builder.newLine();
+    _builder.append("import javax.persistence.*;");
+    _builder.newLine();
+    _builder.append("import java.util.Set;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("@Setter");
+    _builder.newLine();
+    _builder.append("@Getter");
+    _builder.newLine();
+    _builder.append("@NoArgsConstructor");
+    _builder.newLine();
+    _builder.append("@Entity");
+    _builder.newLine();
+    _builder.append("public class ");
+    String _name = entity.getName();
+    _builder.append(_name);
+    _builder.append("Gen {");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@Id");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@GeneratedValue");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@Column(name = \"");
+    String _firstLower = StringExtensions.toFirstLower(entity.getName());
+    _builder.append(_firstLower, "\t");
+    _builder.append("_id\")");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t");
+    _builder.append("private Long id;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// attributes");
+    _builder.newLine();
+    {
+      EList<Attribute> _attributes = entity.getAttributes();
+      for(final Attribute attribute : _attributes) {
+        {
+          if ((attribute instanceof TypeAttribute)) {
+            _builder.append("\t");
+            _builder.append("private ");
+            DataType _type = ((TypeAttribute)attribute).getType();
+            _builder.append(_type, "\t");
+            _builder.append(" ");
+            String _name_1 = ((TypeAttribute)attribute).getName();
+            _builder.append(_name_1, "\t");
+            _builder.append(";");
+            _builder.newLineIfNotEmpty();
+          } else {
+            if ((attribute instanceof EnumAttribute)) {
+              _builder.append("\t");
+              _builder.append("@Enumerated(EnumType.STRING)");
+              _builder.newLine();
+              _builder.append("\t");
+              _builder.append("private ");
+              String _firstUpper = StringExtensions.toFirstUpper(((EnumAttribute)attribute).getName());
+              _builder.append(_firstUpper, "\t");
+              _builder.append(" ");
+              String _name_2 = ((EnumAttribute)attribute).getName();
+              _builder.append(_name_2, "\t");
+              _builder.append(";");
+              _builder.newLineIfNotEmpty();
+            }
+          }
+        }
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// inward relations");
+    _builder.newLine();
+    {
+      EList<Relation> _inwardRelations = entity.getInwardRelations();
+      for(final Relation relation : _inwardRelations) {
+        {
+          RelationType _type_1 = relation.getType();
+          boolean _equals = Objects.equal(_type_1, Integer.valueOf(RelationType.ONE_TO_ONE_VALUE));
+          if (_equals) {
+            _builder.append("\t");
+            _builder.append("@OneToOne(mappedBy = \"");
+            String _firstLower_1 = StringExtensions.toFirstLower(relation.getStart().getName());
+            _builder.append(_firstLower_1, "\t");
+            _builder.append("\")");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append("private ");
+            String _firstUpper_1 = StringExtensions.toFirstUpper(relation.getStart().getName());
+            _builder.append(_firstUpper_1, "\t");
+            _builder.append(" ");
+            String _firstLower_2 = StringExtensions.toFirstLower(relation.getStart().getName());
+            _builder.append(_firstLower_2, "\t");
+            _builder.append(";");
+            _builder.newLineIfNotEmpty();
+          } else {
+            RelationType _type_2 = relation.getType();
+            boolean _equals_1 = Objects.equal(_type_2, Integer.valueOf(RelationType.ONE_TO_MANY_VALUE));
+            if (_equals_1) {
+              _builder.append("\t");
+              _builder.append("@ManyToOne");
+              _builder.newLine();
+              _builder.append("\t");
+              _builder.append("@JoinColumn(name = \"");
+              String _firstLower_3 = StringExtensions.toFirstLower(relation.getStart().getName());
+              _builder.append(_firstLower_3, "\t");
+              _builder.append("_id\", nullable = false)");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t");
+              _builder.append("private ");
+              String _firstUpper_2 = StringExtensions.toFirstUpper(relation.getStart().getName());
+              _builder.append(_firstUpper_2, "\t");
+              _builder.append(" ");
+              String _firstLower_4 = StringExtensions.toFirstLower(relation.getStart().getName());
+              _builder.append(_firstLower_4, "\t");
+              _builder.append(";");
+              _builder.newLineIfNotEmpty();
+            } else {
+              _builder.append("\t");
+              _builder.append("@ManyToMany(mappedBy = \"");
+              String _firstLower_5 = StringExtensions.toFirstLower(relation.getEnd().getName());
+              _builder.append(_firstLower_5, "\t");
+              _builder.append("s\")");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t");
+              _builder.append("private Set<");
+              String _firstUpper_3 = StringExtensions.toFirstUpper(relation.getStart().getName());
+              _builder.append(_firstUpper_3, "\t");
+              _builder.append("> ");
+              String _firstLower_6 = StringExtensions.toFirstLower(relation.getStart().getName());
+              _builder.append(_firstLower_6, "\t");
+              _builder.append("s;");
+              _builder.newLineIfNotEmpty();
+            }
+          }
+        }
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// outward relations");
+    _builder.newLine();
+    {
+      EList<Relation> _outwardRelations = entity.getOutwardRelations();
+      for(final Relation relation_1 : _outwardRelations) {
+        {
+          RelationType _type_3 = relation_1.getType();
+          boolean _equals_2 = Objects.equal(_type_3, Integer.valueOf(RelationType.ONE_TO_ONE_VALUE));
+          if (_equals_2) {
+            _builder.append("\t");
+            _builder.append("@OneToOne(cascade = CascadeType.ALL)");
+            _builder.newLine();
+            _builder.append("\t");
+            _builder.append("@JoinColumn(name = \"");
+            String _firstLower_7 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+            _builder.append(_firstLower_7, "\t");
+            _builder.append("_id\", referencedColumnName = \"");
+            String _firstLower_8 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+            _builder.append(_firstLower_8, "\t");
+            _builder.append("_id\")");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append("private ");
+            String _firstUpper_4 = StringExtensions.toFirstUpper(relation_1.getEnd().getName());
+            _builder.append(_firstUpper_4, "\t");
+            _builder.append(" ");
+            String _firstLower_9 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+            _builder.append(_firstLower_9, "\t");
+            _builder.append(";");
+            _builder.newLineIfNotEmpty();
+          } else {
+            RelationType _type_4 = relation_1.getType();
+            boolean _equals_3 = Objects.equal(_type_4, Integer.valueOf(RelationType.ONE_TO_MANY_VALUE));
+            if (_equals_3) {
+              _builder.append("\t");
+              _builder.append("@OneToMany(mappedBy = \"");
+              String _firstLower_10 = StringExtensions.toFirstLower(relation_1.getStart().getName());
+              _builder.append(_firstLower_10, "\t");
+              _builder.append("\", cascade = CascadeType.ALL)");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t");
+              _builder.append("private Set<");
+              String _firstUpper_5 = StringExtensions.toFirstUpper(relation_1.getEnd().getName());
+              _builder.append(_firstUpper_5, "\t");
+              _builder.append("> ");
+              String _firstLower_11 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+              _builder.append(_firstLower_11, "\t");
+              _builder.append("s;");
+              _builder.newLineIfNotEmpty();
+            } else {
+              _builder.append("\t");
+              _builder.append("@ManyToMany(cascade = CascadeType.ALL)");
+              _builder.newLine();
+              _builder.append("\t");
+              _builder.append("@JoinTable(");
+              _builder.newLine();
+              _builder.append("\t");
+              _builder.append("name = \"");
+              String _firstUpper_6 = StringExtensions.toFirstUpper(relation_1.getStart().getName());
+              _builder.append(_firstUpper_6, "\t");
+              String _firstUpper_7 = StringExtensions.toFirstUpper(relation_1.getEnd().getName());
+              _builder.append(_firstUpper_7, "\t");
+              _builder.append("\",");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t");
+              _builder.append("joinColumns = {@JoinColumn(name = \"");
+              String _firstLower_12 = StringExtensions.toFirstLower(relation_1.getStart().getName());
+              _builder.append(_firstLower_12, "\t");
+              _builder.append("_id\")}, ");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t");
+              _builder.append("\t\t\t\t");
+              _builder.append("inverseJoinColumns = {@JoinColumn(name = \"");
+              String _firstLower_13 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+              _builder.append(_firstLower_13, "\t\t\t\t\t");
+              _builder.append("_id\")})");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t");
+              _builder.append("private Set<");
+              String _firstUpper_8 = StringExtensions.toFirstUpper(relation_1.getEnd().getName());
+              _builder.append(_firstUpper_8, "\t");
+              _builder.append("> ");
+              String _firstLower_14 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+              _builder.append(_firstLower_14, "\t");
+              _builder.append("s;");
+              _builder.newLineIfNotEmpty();
+            }
+          }
+        }
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// enums");
+    _builder.newLine();
+    {
+      EList<Attribute> _attributes_1 = entity.getAttributes();
+      for(final Attribute attribute_1 : _attributes_1) {
+        {
+          if ((attribute_1 instanceof EnumAttribute)) {
+            _builder.append("\t");
+            _builder.append("public enum ");
+            String _firstUpper_9 = StringExtensions.toFirstUpper(((EnumAttribute)attribute_1).getName());
+            _builder.append(_firstUpper_9, "\t");
+            _builder.append("{");
+            _builder.newLineIfNotEmpty();
+            {
+              EList<String> _values = ((EnumAttribute)attribute_1).getValues();
+              boolean _hasElements = false;
+              for(final String value : _values) {
+                if (!_hasElements) {
+                  _hasElements = true;
+                } else {
+                  _builder.appendImmediate(", ", "\t\t");
+                }
+                _builder.append("\t");
+                _builder.append("\t");
+                String _upperCase = value.toUpperCase();
+                _builder.append(_upperCase, "\t\t");
+                _builder.newLineIfNotEmpty();
+              }
+            }
+            _builder.append("\t");
+            _builder.append("}");
+            _builder.newLine();
+          }
+        }
+      }
+    }
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
   }
   
   public CharSequence genTransientEntityClass(final Entity entity) {
     StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package ");
+    _builder.append(Generator.PACKAGE);
+    _builder.append(".entities;");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("import lombok.Getter;");
+    _builder.newLine();
+    _builder.append("import lombok.NoArgsConstructor;");
+    _builder.newLine();
+    _builder.append("import lombok.Setter;");
+    _builder.newLine();
+    _builder.append("import javax.persistence.*;");
+    _builder.newLine();
+    _builder.append("import java.util.Set;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("@Setter");
+    _builder.newLine();
+    _builder.append("@Getter");
+    _builder.newLine();
+    _builder.append("@NoArgsConstructor");
+    _builder.newLine();
+    _builder.append("public class ");
+    String _name = entity.getName();
+    _builder.append(_name);
+    _builder.append("Gen {");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// attributes");
+    _builder.newLine();
+    {
+      EList<Attribute> _attributes = entity.getAttributes();
+      for(final Attribute attribute : _attributes) {
+        {
+          if ((attribute instanceof TypeAttribute)) {
+            _builder.append("\t");
+            _builder.append("private ");
+            DataType _type = ((TypeAttribute)attribute).getType();
+            _builder.append(_type, "\t");
+            _builder.append(" ");
+            String _name_1 = ((TypeAttribute)attribute).getName();
+            _builder.append(_name_1, "\t");
+            _builder.append(";");
+            _builder.newLineIfNotEmpty();
+          } else {
+            if ((attribute instanceof EnumAttribute)) {
+              _builder.append("\t");
+              _builder.append("private ");
+              String _firstUpper = StringExtensions.toFirstUpper(((EnumAttribute)attribute).getName());
+              _builder.append(_firstUpper, "\t");
+              _builder.append(" ");
+              String _name_2 = ((EnumAttribute)attribute).getName();
+              _builder.append(_name_2, "\t");
+              _builder.append(";");
+              _builder.newLineIfNotEmpty();
+            }
+          }
+        }
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// inward relations");
+    _builder.newLine();
+    {
+      EList<Relation> _inwardRelations = entity.getInwardRelations();
+      for(final Relation relation : _inwardRelations) {
+        {
+          RelationType _type_1 = relation.getType();
+          boolean _equals = Objects.equal(_type_1, Integer.valueOf(RelationType.ONE_TO_ONE_VALUE));
+          if (_equals) {
+            _builder.append("\t");
+            _builder.append("private ");
+            String _firstUpper_1 = StringExtensions.toFirstUpper(relation.getStart().getName());
+            _builder.append(_firstUpper_1, "\t");
+            _builder.append(" ");
+            String _firstLower = StringExtensions.toFirstLower(relation.getStart().getName());
+            _builder.append(_firstLower, "\t");
+            _builder.append(";");
+            _builder.newLineIfNotEmpty();
+          } else {
+            RelationType _type_2 = relation.getType();
+            boolean _equals_1 = Objects.equal(_type_2, Integer.valueOf(RelationType.ONE_TO_MANY_VALUE));
+            if (_equals_1) {
+              _builder.append("\t");
+              _builder.append("private ");
+              String _firstUpper_2 = StringExtensions.toFirstUpper(relation.getStart().getName());
+              _builder.append(_firstUpper_2, "\t");
+              _builder.append(" ");
+              String _firstLower_1 = StringExtensions.toFirstLower(relation.getStart().getName());
+              _builder.append(_firstLower_1, "\t");
+              _builder.append(";");
+              _builder.newLineIfNotEmpty();
+            } else {
+              _builder.append("\t");
+              _builder.append("private Set<");
+              String _firstUpper_3 = StringExtensions.toFirstUpper(relation.getStart().getName());
+              _builder.append(_firstUpper_3, "\t");
+              _builder.append("> ");
+              String _firstLower_2 = StringExtensions.toFirstLower(relation.getStart().getName());
+              _builder.append(_firstLower_2, "\t");
+              _builder.append("s;");
+              _builder.newLineIfNotEmpty();
+            }
+          }
+        }
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// outward relations");
+    _builder.newLine();
+    {
+      EList<Relation> _outwardRelations = entity.getOutwardRelations();
+      for(final Relation relation_1 : _outwardRelations) {
+        {
+          RelationType _type_3 = relation_1.getType();
+          boolean _equals_2 = Objects.equal(_type_3, Integer.valueOf(RelationType.ONE_TO_ONE_VALUE));
+          if (_equals_2) {
+            _builder.append("\t");
+            _builder.append("private ");
+            String _firstUpper_4 = StringExtensions.toFirstUpper(relation_1.getEnd().getName());
+            _builder.append(_firstUpper_4, "\t");
+            _builder.append(" ");
+            String _firstLower_3 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+            _builder.append(_firstLower_3, "\t");
+            _builder.append(";");
+            _builder.newLineIfNotEmpty();
+          } else {
+            RelationType _type_4 = relation_1.getType();
+            boolean _equals_3 = Objects.equal(_type_4, Integer.valueOf(RelationType.ONE_TO_MANY_VALUE));
+            if (_equals_3) {
+              _builder.append("\t");
+              _builder.append("private Set<");
+              String _firstUpper_5 = StringExtensions.toFirstUpper(relation_1.getEnd().getName());
+              _builder.append(_firstUpper_5, "\t");
+              _builder.append("> ");
+              String _firstLower_4 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+              _builder.append(_firstLower_4, "\t");
+              _builder.append("s;");
+              _builder.newLineIfNotEmpty();
+            } else {
+              _builder.append("\t");
+              _builder.append("private Set<");
+              String _firstUpper_6 = StringExtensions.toFirstUpper(relation_1.getEnd().getName());
+              _builder.append(_firstUpper_6, "\t");
+              _builder.append("> ");
+              String _firstLower_5 = StringExtensions.toFirstLower(relation_1.getEnd().getName());
+              _builder.append(_firstLower_5, "\t");
+              _builder.append("s;");
+              _builder.newLineIfNotEmpty();
+            }
+          }
+        }
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("// enums");
+    _builder.newLine();
+    {
+      EList<Attribute> _attributes_1 = entity.getAttributes();
+      for(final Attribute attribute_1 : _attributes_1) {
+        {
+          if ((attribute_1 instanceof EnumAttribute)) {
+            _builder.append("\t");
+            _builder.append("public enum ");
+            String _firstUpper_7 = StringExtensions.toFirstUpper(((EnumAttribute)attribute_1).getName());
+            _builder.append(_firstUpper_7, "\t");
+            _builder.append("{");
+            _builder.newLineIfNotEmpty();
+            {
+              EList<String> _values = ((EnumAttribute)attribute_1).getValues();
+              boolean _hasElements = false;
+              for(final String value : _values) {
+                if (!_hasElements) {
+                  _hasElements = true;
+                } else {
+                  _builder.appendImmediate(", ", "\t\t");
+                }
+                _builder.append("\t");
+                _builder.append("\t");
+                String _upperCase = value.toUpperCase();
+                _builder.append(_upperCase, "\t\t");
+                _builder.newLineIfNotEmpty();
+              }
+            }
+            _builder.append("\t");
+            _builder.append("}");
+            _builder.newLine();
+          }
+        }
+      }
+    }
+    _builder.append("}");
+    _builder.newLine();
     return _builder;
   }
   

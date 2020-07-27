@@ -64,23 +64,23 @@ public class KlostertrophyApplication {
         }
 
     @Bean
-    public CommandLineRunner loadData(TeamRepository TeamRepository, 
-    GameRepository GameRepository, 
-    AdminRepository AdminRepository
+    public CommandLineRunner loadData(TeamRepository teamRepository, 
+    GameRepository gameRepository, 
+    AdminRepository adminRepository
     ) {
         return (args) -> {
             Team team1 = new Team();
-            team1.setStatus(Status.Done);
+            team1.setStatus(Team.Status.DONE);
             team1.setName("asdf");
             team1.setPoints(-1);
-            team1.setGender(Gender.Male);
+            team1.setGender(Team.Gender.MALE);
             teamRepository.save(team1);
             
             Game game2 = new Game();
             game2.setName("asdf");
-            game2.setStatus(Status.Done);
-            game2.setSortOrder(SortOrder.Ascending);
-            game2.setPointType(PointType.Time);
+            game2.setStatus(Game.Status.DONE);
+            game2.setSortOrder(Game.SortOrder.ASCENDING);
+            game2.setPointType(Game.PointType.TIME);
             gameRepository.save(game2);
             
             Admin admin3 = new Admin();

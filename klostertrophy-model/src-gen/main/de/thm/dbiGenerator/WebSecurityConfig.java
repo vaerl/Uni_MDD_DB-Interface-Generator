@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         for(Admin admin:adminRepository.findAll()){
         	auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder())
-        		.withUser(admin.getName()).password(admin.getPassword()).roles("ADMIN");
+        		.withUser(admin.getUsername()).password(admin.getPassword()).roles("ADMIN");
         }
     }
 

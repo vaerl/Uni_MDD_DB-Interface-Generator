@@ -97,3 +97,4 @@ void requestLogout() {
         UI.getCurrent().getSession().close();
         UI.getCurrent().getPage().reload();// to redirect user to the login page
     }
+}

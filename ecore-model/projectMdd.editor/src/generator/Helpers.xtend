@@ -2,7 +2,6 @@ package generator
 
 import org.eclipse.emf.ecore.EcorePackage
 import org.eclipse.emf.ecore.EAttribute
-import org.eclipse.core.resources.IProject
 import projectMdd.Backend
 import projectMdd.Entity
 import projectMdd.TypeAttribute
@@ -20,7 +19,7 @@ class Helpers {
 		'''
 			«FOR entity : backend.entities SEPARATOR ", "»
 				«IF !entity.transient»
-					«entity.name.toFirstUpper»Repository «entity.name»Repository
+					«entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository
 				«ENDIF»
 			«ENDFOR»
 		'''
@@ -58,22 +57,16 @@ class Helpers {
 		'''
 	}
 
-	def static getRandomValueForType(Attribute attribute) {
+	def static getRandomValueForType(Attribute attribute, Entity entity) {
 		return switch attribute {
 			TypeAttribute case attribute.type.value == DataType.BOOLEAN_VALUE: "true"
 			TypeAttribute case attribute.type.value == DataType.INTEGER_VALUE: "-1"
 			TypeAttribute case attribute.type.value == DataType.CHAR_VALUE: "'x'"
 			TypeAttribute case attribute.type.value == DataType.DOUBLE_VALUE: "-2.0"
 			TypeAttribute case attribute.type.value == DataType.STRING_VALUE: "\"asdf\""
-			EnumAttribute case true: attribute.name.toFirstUpper + "." + attribute.values.get(0).toFirstUpper
+			EnumAttribute case true: entity.name.toFirstUpper + "." + attribute.name.toFirstUpper + "." + attribute.values.get(0).toUpperCase
 			default: "null"
 		}
-	}
-
-	def static setRandomValue(Attribute attribute, String entityName) {
-		'''
-			«entityName».set«attribute.name.toFirstUpper»(«attribute.getRandomValueForType»);
-		'''
 	}
 	
 	def static saveInRepo(Entity entity, String name){

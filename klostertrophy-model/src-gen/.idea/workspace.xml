@@ -21,21 +21,13 @@
   <component name="ChangeListManager">
     <list default="true" id="06ab4d76-2e9a-4034-b84a-814fcbcda86a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Generator.xtend" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Generator.xtend" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Helpers.xtend" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Helpers.xtend" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Generator.xtendbin" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Generator.xtendbin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Helpers.xtendbin" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Helpers.xtendbin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Generator.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Generator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Helpers.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Helpers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../model/klostertrophy.projectmdd" beforeDir="false" afterPath="$PROJECT_DIR$/../model/klostertrophy.projectmdd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/KlostertrophyApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/KlostertrophyApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/Admin.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/Admin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/MainView.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/MainView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/AdminGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/AdminGen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/Team.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/Team.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/pages/GamePage.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/pages/TeamPage.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/repositories/GameRepo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/repositories/TeamRepo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/GameGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/GameGen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/TeamGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/TeamGen.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,10 +47,21 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../food-truck/food-truck-be" />
+    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Start" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="Klostertrophy" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="de.thm.dbiGenerator.KlostertrophyApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -70,7 +73,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1595841063931</updated>
-      <workItem from="1595841069184" duration="871000" />
+      <workItem from="1595841069184" duration="2193000" />
+      <workItem from="1595843527377" duration="1555000" />
+      <workItem from="1595848414632" duration="945000" />
+      <workItem from="1595849428991" duration="475000" />
+      <workItem from="1595849941694" duration="2789000" />
     </task>
     <servers />
   </component>
@@ -84,11 +91,40 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="236" y="87" width="1024" height="858" key="SettingsEditor" timestamp="1595841228906">
+    <state x="348" y="154" width="800" height="725" key="#Plugins" timestamp="1595848376682">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="236" y="87" width="1024" height="858" key="SettingsEditor/0.25.1500.975@0.25.1500.975" timestamp="1595841228906" />
+    <state x="348" y="154" width="800" height="725" key="#Plugins/0.25.1500.975@0.25.1500.975" timestamp="1595848376682" />
+    <state x="229" y="80" width="1024" height="858" key="#Project_Structure" timestamp="1595849902084">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="229" y="80" width="1024" height="858" key="#Project_Structure/0.25.1500.975@0.25.1500.975" timestamp="1595849902084" />
+    <state x="212" y="168" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595849039262">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="212" y="168" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1500.975@0.25.1500.975" timestamp="1595849039262" />
+    <state x="485" y="294" width="525" height="430" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1595849038531">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="485" y="294" width="525" height="430" key="#com.intellij.ide.util.TreeClassChooserDialog/0.25.1500.975@0.25.1500.975" timestamp="1595849038531" />
+    <state x="534" y="254" width="424" height="497" key="FileChooserDialogImpl" timestamp="1595852106620">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="534" y="254" width="424" height="497" key="FileChooserDialogImpl/0.25.1500.975@0.25.1500.975" timestamp="1595852106620" />
+    <state x="236" y="59" width="1024" height="858" key="SettingsEditor" timestamp="1595850019680">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="236" y="59" width="1024" height="858" key="SettingsEditor/0.25.1500.975@0.25.1500.975" timestamp="1595850019680" />
+    <state x="431" y="107" width="638" height="804" key="find.popup" timestamp="1595848268591">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="431" y="107" width="638" height="804" key="find.popup/0.25.1500.975@0.25.1500.975" timestamp="1595848268591" />
+    <state x="413" y="232" width="672" height="678" key="search.everywhere.popup" timestamp="1595848272602">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="413" y="232" width="672" height="678" key="search.everywhere.popup/0.25.1500.975@0.25.1500.975" timestamp="1595848272602" />
   </component>
 </project>
