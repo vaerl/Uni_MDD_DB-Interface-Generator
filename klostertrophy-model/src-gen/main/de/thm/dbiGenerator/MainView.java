@@ -1,4 +1,4 @@
-package de.thm.dbiGenerator.;
+package de.thm.dbiGenerator;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -17,9 +17,8 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import de.thm.dbiGenerator..pages.TeamGridPage;
-import de.thm.dbiGenerator..pages.GameGridPage;
-import de.thm.dbiGenerator..pages.AdminGridPage;
+import de.thm.dbiGenerator.pages.TeamGridPage;
+import de.thm.dbiGenerator.pages.GameGridPage;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +34,7 @@ public class MainView extends VerticalLayout {
 	private HttpServletRequest request;
 	
 	@Autowired
-	    MainView(HttpServletRequest request, TeamGridPage Teampage, GameGridPage Gamepage, AdminGridPage Adminpage) {
+	    MainView(HttpServletRequest request, TeamGridPage Teampage, GameGridPage Gamepage) {
 	    	super();
 	    	this.request = request;
 	    	
@@ -55,9 +54,7 @@ public class MainView extends VerticalLayout {
 	    	        Team.getStyle().set("font-size", "48px");
 	    	Tab Game = new Tab("Game");
 	    	        Game.getStyle().set("font-size", "48px");
-	    	Tab Admin = new Tab("Admin");
-	    	        Admin.getStyle().set("font-size", "48px");
-	    	Tabs tabs = new Tabs(Team, Game, Admin);
+	    	Tabs tabs = new Tabs(Team, Game);
 	    	tabs.setSelectedTab(Team);
 	    	tabs.setFlexGrowForEnclosedTabs(1);
 	    	tabs.setWidthFull();
@@ -72,7 +69,6 @@ public class MainView extends VerticalLayout {
 	    	Map<Tab, VerticalLayout> tabsToPages = new HashMap<>();
 	    	tabsToPages.put(Team, TeamPage);
 	    	tabsToPages.put(Game, GamePage);
-	    	tabsToPages.put(Admin, AdminPage);
 	    	
 	    	tabs.addSelectedChangeListener(event -> {
 	    	     removeAll();

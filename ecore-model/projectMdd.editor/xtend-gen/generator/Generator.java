@@ -34,7 +34,7 @@ public class Generator {
   /**
    * The base package name. Needs the succeeding dot!
    */
-  public static final String PACKAGE = "de.thm.dbiGenerator.";
+  public static final String PACKAGE = "de.thm.dbiGenerator";
   
   public static final String PACKAGE_PATH = ("/" + Generator.PACKAGE.replaceAll("\\.", "/"));
   
@@ -134,7 +134,7 @@ public class Generator {
     IFolder resourceFolder = this.getAndCreateFolder(project, (Generator.SOURCE_FOLDER_PATH + "/resources"));
     IFolder packageFolder = this.getAndCreateFolder(project, Generator.COMPLETE_PATH);
     IFolder entityFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/entities"));
-    IFolder repoFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/repos"));
+    IFolder repoFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/repositories"));
     IFolder pageFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/pages"));
     IFolder gridFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/grids"));
     this.createFile(sourceFolder, "pom.xml", true, this.genPom(backend), progressMonitor);
@@ -511,6 +511,241 @@ public class Generator {
   
   public CharSequence genApplicationClass(final Backend backend) {
     StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package ");
+    _builder.append(Generator.PACKAGE);
+    _builder.append(";");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    {
+      EList<Entity> _entities = backend.getEntities();
+      for(final Entity entity : _entities) {
+        {
+          boolean _isTransient = entity.isTransient();
+          boolean _not = (!_isTransient);
+          if (_not) {
+            _builder.append("import ");
+            _builder.append(Generator.PACKAGE);
+            _builder.append(".entities.");
+            String _firstUpper = StringExtensions.toFirstUpper(entity.getName());
+            _builder.append(_firstUpper);
+            _builder.append(";");
+            _builder.newLineIfNotEmpty();
+            _builder.append("import ");
+            _builder.append(Generator.PACKAGE);
+            _builder.append(".entities.");
+            String _firstUpper_1 = StringExtensions.toFirstUpper(entity.getName());
+            _builder.append(_firstUpper_1);
+            _builder.append("Repository;");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+      }
+    }
+    _builder.append("import org.slf4j.Logger;");
+    _builder.newLine();
+    _builder.append("import org.slf4j.LoggerFactory;");
+    _builder.newLine();
+    _builder.append("import org.springframework.boot.CommandLineRunner;");
+    _builder.newLine();
+    _builder.append("import org.springframework.boot.SpringApplication;");
+    _builder.newLine();
+    _builder.append("import org.springframework.boot.autoconfigure.SpringBootApplication;");
+    _builder.newLine();
+    _builder.append("import org.springframework.context.annotation.Bean;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import java.io.IOException;");
+    _builder.newLine();
+    _builder.append("import java.util.HashSet;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("@SpringBootApplication");
+    _builder.newLine();
+    _builder.append("public class ");
+    String _firstUpper_2 = StringExtensions.toFirstUpper(backend.getProjectName());
+    _builder.append(_firstUpper_2);
+    _builder.append("Application {");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("private static final Logger log = LoggerFactory.getLogger(this.getClass());");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("private static final String CONTAINER_NAME = \"");
+    String _projectName = backend.getProjectName();
+    _builder.append(_projectName, "    ");
+    _builder.append("\";");
+    _builder.newLineIfNotEmpty();
+    _builder.append("    ");
+    _builder.append("private static final String CONTAINER_DATABASE_PASSWORD = \"");
+    String _password = backend.getDatabase().getPassword();
+    _builder.append(_password, "    ");
+    _builder.append("\";");
+    _builder.newLineIfNotEmpty();
+    _builder.append("    ");
+    _builder.append("private static final String CONTAINER_DATABASE_NAME = \"");
+    String _schema = backend.getDatabase().getSchema();
+    _builder.append(_schema, "    ");
+    _builder.append("\";");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("public static void main(String[] args) {");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("startMySQLContainer(CONTAINER_DATABASE_NAME);");
+    _builder.newLine();
+    _builder.append("     \t");
+    _builder.append("SpringApplication.run(Application.class, args);");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("try {");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("log.info(\"Checking if container {} exists.\", containerName);");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("Process check = Runtime.getRuntime().exec(\"docker inspect -f \'{{.State.Running}}\' \" + containerName);");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("String res = String.valueOf(check.getInputStream());");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("log.info(\"Container exists: {}\", res);");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("check.getOutputStream().close();");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("if (!res.contains(\"true\")) {");
+    _builder.newLine();
+    _builder.append("                    ");
+    _builder.append("log.info(\"Creating container {}.\", containerName);");
+    _builder.newLine();
+    _builder.append("                    ");
+    _builder.append("Process run = Runtime.getRuntime()");
+    _builder.newLine();
+    _builder.append("                            ");
+    _builder.append(".exec(\"docker run -p ");
+    String _port = backend.getDatabase().getPort();
+    _builder.append(_port, "                            ");
+    _builder.append(":3306 --name \" + containerName + \" -e MYSQL_ROOT_PASSWORD=\"");
+    _builder.newLineIfNotEmpty();
+    _builder.append("                                    ");
+    _builder.append("+ databasePassword + \" -e MYSQL_DATABASE=\" + databaseName + \" -d mysql:latest\");");
+    _builder.newLine();
+    _builder.append("                    ");
+    _builder.append("run.getOutputStream().close();");
+    _builder.newLine();
+    _builder.append("                    ");
+    _builder.append("log.info(\"Created docker-container with name: {}\", containerName);");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("} catch (IOException e) {");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("e.printStackTrace();");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("log.error(\"Could not create docker-container with name: {}\", containerName);");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("private static void startMySQLContainer(String containerName) {");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("try {");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("Process start = Runtime.getRuntime().exec(\"docker start \" + containerName);");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("start.getOutputStream().close();");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("log.info(\"Started docker-container with name: {}\", containerName);");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("} catch (IOException e) {");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("e.printStackTrace();");
+    _builder.newLine();
+    _builder.append("                ");
+    _builder.append("log.error(\"Could\'nt start docker-container with name: {}\", containerName);");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("@Bean");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("public CommandLineRunner loadData(");
+    _builder.newLine();
+    {
+      EList<Entity> _entities_1 = backend.getEntities();
+      boolean _hasElements = false;
+      for(final Entity entity_1 : _entities_1) {
+        if (!_hasElements) {
+          _hasElements = true;
+        } else {
+          _builder.appendImmediate(", ", "    ");
+        }
+        _builder.append("    ");
+        String _firstUpper_3 = StringExtensions.toFirstUpper(entity_1.getName());
+        _builder.append(_firstUpper_3, "    ");
+        _builder.append("Repository ");
+        String _name = entity_1.getName();
+        _builder.append(_name, "    ");
+        _builder.append("Repository");
+        _builder.newLineIfNotEmpty();
+        _builder.append("\t\t    ");
+      }
+    }
+    _builder.append(") {");
+    _builder.newLineIfNotEmpty();
+    _builder.append("        ");
+    _builder.append("return (args) -> {");
+    _builder.newLine();
+    _builder.append("            ");
+    _builder.append("// TODO generate Values");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("};");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
     return _builder;
   }
   

@@ -30,7 +30,7 @@ class Generator {
 	/**
 	 * The base package name. Needs the succeeding dot!
 	 */
-	public static final String PACKAGE = "de.thm.dbiGenerator.";
+	public static final String PACKAGE = "de.thm.dbiGenerator";
 	public static final String PACKAGE_PATH = "/" + PACKAGE.replaceAll("\\.", "/");
 	public static final String COMPLETE_PATH = SOURCE_FOLDER_PATH + PACKAGE_PATH;
 
@@ -116,7 +116,7 @@ class Generator {
 		var IFolder resourceFolder = project.getAndCreateFolder(SOURCE_FOLDER_PATH + "/resources");
 		var IFolder packageFolder = project.getAndCreateFolder(COMPLETE_PATH);
 		var IFolder entityFolder = project.getAndCreateFolder(COMPLETE_PATH + "/entities");
-		var IFolder repoFolder = project.getAndCreateFolder(COMPLETE_PATH + "/repos");
+		var IFolder repoFolder = project.getAndCreateFolder(COMPLETE_PATH + "/repositories");
 		var IFolder pageFolder = project.getAndCreateFolder(COMPLETE_PATH + "/pages");
 		var IFolder gridFolder = project.getAndCreateFolder(COMPLETE_PATH + "/grids");
 
@@ -281,6 +281,82 @@ class Generator {
 	
 	def genApplicationClass(Backend backend){
 		'''
+		package «PACKAGE»;
+		
+		«FOR entity:backend.entities»
+			«IF !entity.transient»
+				import «PACKAGE».entities.«entity.name.toFirstUpper»;
+				import «PACKAGE».entities.«entity.name.toFirstUpper»Repository;
+			«ENDIF»
+		«ENDFOR»
+		import org.slf4j.Logger;
+		import org.slf4j.LoggerFactory;
+		import org.springframework.boot.CommandLineRunner;
+		import org.springframework.boot.SpringApplication;
+		import org.springframework.boot.autoconfigure.SpringBootApplication;
+		import org.springframework.context.annotation.Bean;
+		
+		import java.io.IOException;
+		import java.util.HashSet;
+		
+		@SpringBootApplication
+		public class «backend.projectName.toFirstUpper»Application {
+		
+		    private static final Logger log = LoggerFactory.getLogger(this.getClass());
+		    
+		    private static final String CONTAINER_NAME = "«backend.projectName»";
+		    private static final String CONTAINER_DATABASE_PASSWORD = "«backend.database.password»";
+		    private static final String CONTAINER_DATABASE_NAME = "«backend.database.schema»";
+		
+		    public static void main(String[] args) {
+		        createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
+		        startMySQLContainer(CONTAINER_DATABASE_NAME);
+		     	SpringApplication.run(Application.class, args);
+		    }
+		
+		    public static void createMySQLContainer(String containerName, String databasePassword, String databaseName) {
+		            try {
+		                log.info("Checking if container {} exists.", containerName);
+		                Process check = Runtime.getRuntime().exec("docker inspect -f '{{.State.Running}}' " + containerName);
+		                String res = String.valueOf(check.getInputStream());
+		                log.info("Container exists: {}", res);
+		                check.getOutputStream().close();
+		                if (!res.contains("true")) {
+		                    log.info("Creating container {}.", containerName);
+		                    Process run = Runtime.getRuntime()
+		                            .exec("docker run -p «backend.database.port»:3306 --name " + containerName + " -e MYSQL_ROOT_PASSWORD="
+		                                    + databasePassword + " -e MYSQL_DATABASE=" + databaseName + " -d mysql:latest");
+		                    run.getOutputStream().close();
+		                    log.info("Created docker-container with name: {}", containerName);
+		                }
+		            } catch (IOException e) {
+		                e.printStackTrace();
+		                log.error("Could not create docker-container with name: {}", containerName);
+		            }
+		        }
+		    
+		        private static void startMySQLContainer(String containerName) {
+		            try {
+		                Process start = Runtime.getRuntime().exec("docker start " + containerName);
+		                start.getOutputStream().close();
+		                log.info("Started docker-container with name: {}", containerName);
+		            } catch (IOException e) {
+		                e.printStackTrace();
+		                log.error("Could'nt start docker-container with name: {}", containerName);
+		            }
+		        }
+		
+		    @Bean
+		    public CommandLineRunner loadData(
+		    «FOR entity:backend.entities SEPARATOR ", "»
+		    	«entity.name.toFirstUpper»Repository «entity.name»Repository
+		    «ENDFOR») {
+		        return (args) -> {
+		            // TODO generate Values
+		        };
+		    }
+		
+		}
 		'''
 	}
 	

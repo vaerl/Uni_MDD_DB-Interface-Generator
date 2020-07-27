@@ -1,4 +1,4 @@
-package de.thm.dbiGenerator.entities;
+package de.thm.dbiGeneratorentities;
 
 public class Game extends GameGen {
 	

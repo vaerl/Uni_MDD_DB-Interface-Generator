@@ -1,4 +1,4 @@
-package de.thm.dbiGenerator.;
+package de.thm.dbiGenerator;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
