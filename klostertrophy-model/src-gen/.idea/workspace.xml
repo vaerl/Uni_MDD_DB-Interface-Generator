@@ -19,16 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="06ab4d76-2e9a-4034-b84a-814fcbcda86a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Generator.xtend" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/src/generator/Generator.xtend" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Generator.xtendbin" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/.Generator.xtendbin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Generator.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../ecore-model/projectMdd.editor/xtend-gen/generator/Generator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/MainView.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/MainView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/AdminGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/AdminGen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/GameGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/GameGen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/TeamGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/entities/TeamGen.java" afterDir="false" />
-    </list>
+    <list default="true" id="06ab4d76-2e9a-4034-b84a-814fcbcda86a" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,7 +68,7 @@
       <workItem from="1595843527377" duration="1555000" />
       <workItem from="1595848414632" duration="945000" />
       <workItem from="1595849428991" duration="475000" />
-      <workItem from="1595849941694" duration="2789000" />
+      <workItem from="1595849941694" duration="2868000" />
     </task>
     <servers />
   </component>
