@@ -1140,6 +1140,9 @@ class Generator {
 
 	def genEntityDetails(Entity entity) {
 		'''
+			// Genrell: Für jedes relEntity eigenes Grid -> Schwachsinn??
+		
+		
 			package «PACKAGE».frontend.details;
 			
 			import com.vaadin.flow.component.dialog.Dialog;
@@ -1148,35 +1151,43 @@ class Generator {
 			import com.vaadin.flow.component.grid.GridVariant;
 			import com.vaadin.flow.data.provider.SortDirection;
 			import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
-			// import «PACKAGE».backend.entities.Team;   // welches andere Entity??
+			«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+				import «PACKAGE».backend.entities.«relEntity.name.toFirstUpper»;	// = import «PACKAGE».backend.entities.Team;
+			«ENDFOR»
 			
 			import java.util.Collections;
 			
 			public class «entity.name.toFirstUpper»Details extends Dialog {
 			
-			    protected «entity.name.toFirstUpper»<Team> grid; // <<-- "Team"
+				«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+			    	protected Grid<«relEntity.name.toFirstUpper»> grid«relEntity.name.toFirstUpper»; // = protected Grid<Team> grid;
+			    «ENDFOR»
 			
 			    public «entity.name.toFirstUpper»Details() {
 			        super();
-			
-			        grid = new Grid<>(Team.class);
-			        grid.setMultiSort(true);
-			        // style
-			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-			        //TODO: check if height scales accordingly; maybe find better method for setting size in general
-			        grid.setWidth("400px");
-			
-			        //set columns
-			        grid.removeAllColumns();
-			        grid.addColumn(Team::getId).setHeader("ID").setSortable(true);
-			        grid.addColumn(Team::getName).setHeader("Teamname").setSortable(true).setKey("name");
-			        grid.sort(Collections.singletonList(new GridSortOrder<Team>(grid.getColumnByKey("name"), SortDirection.ASCENDING)));
-			
-			        add(grid);
+				
+					«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+				        grid«relEntity.name.toFirstUpper» = new Grid<>(«relEntity.name.toFirstUpper».class);
+				        grid«relEntity.name.toFirstUpper».setMultiSort(true);
+				        // style
+				        grid«relEntity.name.toFirstUpper».addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+				        //TODO: check if height scales accordingly; maybe find better method for setting size in general
+				        grid«relEntity.name.toFirstUpper».setWidth("400px");
+				
+				        //set columns
+				        grid«relEntity.name.toFirstUpper».removeAllColumns();
+				        «FOR attribute : relEntity.attributes»
+				        	grid.addColumn(«relEntity.name.toFirstUpper»::get«attribute.name.toFirstUpper».setHeader("«attribute.name.toFirstUpper»".setSortable(true)
+				        «ENDFOR»
+				
+				        add(grid«relEntity.name.toFirstUpper»);
+			        «ENDFOR»
 			    }
 			
-			    public void open(Game game){
-			        grid.setItems(game.getFinished());
+			    public void open(«entity.name.toFirstUpper» «entity.name»){
+			    	«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+			    		grid«relEntity.name.toFirstUpper».setItems(«entity.name».getFinished());  // = grid.setItems(«entity.name».getFinished());
+			    	«ENDFOR»
 			        open();
 			    }
 			}
