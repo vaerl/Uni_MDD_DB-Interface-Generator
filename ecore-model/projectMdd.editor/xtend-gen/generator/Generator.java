@@ -145,6 +145,7 @@ public class Generator {
     IFolder repoFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/repositories"));
     IFolder pageFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/pages"));
     IFolder editorFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/editors"));
+    IFolder detailsFolder = this.getAndCreateFolder(project, (Generator.COMPLETE_PATH + "/details"));
     this.createFile(sourceFolder, "pom.xml", true, this.genPom(backend), progressMonitor);
     this.createFile(resourceFolder, "application.properties", true, this.genApplicationProperties(backend), progressMonitor);
     String _projectName = backend.getProjectName();
@@ -178,11 +179,14 @@ public class Generator {
             String _name_4 = entity.getName();
             String _plus_5 = (_name_4 + "Editor.java");
             this.createFile(editorFolder, _plus_5, true, this.genEntityEditor(entity), progressMonitor);
+            String _name_5 = entity.getName();
+            String _plus_6 = (_name_5 + "Details.java");
+            this.createFile(detailsFolder, _plus_6, true, this.genEntityDetails(entity), progressMonitor);
           }
         } else {
-          String _name_5 = entity.getName();
-          String _plus_6 = (_name_5 + "Gen.java");
-          this.createFile(entityFolder, _plus_6, true, this.genTransientEntityClass(entity), progressMonitor);
+          String _name_6 = entity.getName();
+          String _plus_7 = (_name_6 + "Gen.java");
+          this.createFile(entityFolder, _plus_7, true, this.genTransientEntityClass(entity), progressMonitor);
         }
       }
     }
@@ -3218,7 +3222,10 @@ public class Generator {
     return _builder;
   }
   
-  public Object genEntityDetails(final Entity entity) {
-    return null;
+  public CharSequence genEntityDetails(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("\t\t");
+    _builder.newLine();
+    return _builder;
   }
 }

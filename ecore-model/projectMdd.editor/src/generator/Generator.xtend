@@ -119,6 +119,7 @@ class Generator {
 		var IFolder repoFolder = project.getAndCreateFolder(COMPLETE_PATH + "/repositories");
 		var IFolder pageFolder = project.getAndCreateFolder(COMPLETE_PATH + "/pages");
 		var IFolder editorFolder = project.getAndCreateFolder(COMPLETE_PATH + "/editors");
+		var IFolder detailsFolder = project.getAndCreateFolder(COMPLETE_PATH + "/details");
 
 		// TODO add contents
 		// create pom.xml
@@ -152,12 +153,15 @@ class Generator {
 				createFile(repoFolder, entity.name + "Repository.java", true, entity.genEntityRepo, progressMonitor);
 
 				if (entity.display) {
-					// create page, f.e. gamesGridPage in klostertrophy
+					// create page
 					createFile(pageFolder, entity.name + "GridPage.java", true, entity.genEntityGridPage,
 						progressMonitor);
 					// TODO update method
 					// create editor
 					createFile(editorFolder, entity.name + "Editor.java", true, entity.genEntityEditor,
+						progressMonitor);
+					// create details
+					createFile(detailsFolder, entity.name + "Details.java", true, entity.genEntityDetails,
 						progressMonitor);
 				}
 			} else {
@@ -1139,6 +1143,9 @@ class Generator {
 	}
 
 	def genEntityDetails(Entity entity) {
+		'''
+		
+		'''
 		/*
 		'''
 			// Genrell: Für jedes relEntity eigenes Grid -> Schwachsinn??
