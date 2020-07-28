@@ -12,7 +12,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.thm.dbiGenerator.entities.Team;
-import de.thm.dbiGenerator.repos.TeamRepository;
+import de.thm.dbiGenerator.repositories.TeamRepository;
 import de.thm.dbiGenerator.ChangeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,9 +24,9 @@ import java.util.EnumSet;
 @UIScope
 public class TeamEditor extends Dialog implements KeyNotifier {
 
-    private TeamRepository TeamRepository;
+    private TeamRepository teamRepository;
     private ChangeHandler changeHandler;
-    private Team game;
+    private Team team;
 
     //buttons
     Button save = new Button("Speichern", VaadinIcon.CHECK.create());
@@ -42,10 +42,10 @@ public class TeamEditor extends Dialog implements KeyNotifier {
 	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
-    public TeamEditor(TeamRepository TeamRepository) {
-	   	super();
-   	    this.TeamRepository = TeamRepository;
-   	    add(fields, actions);
+    public TeamEditor(TeamRepository teamRepository) {
+    	super();
+    	   this.teamRepository = teamRepository;
+    	   add(fields, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
@@ -75,32 +75,32 @@ public class TeamEditor extends Dialog implements KeyNotifier {
             return;
         }
 
-        final boolean persisted = Team.getId() != null;
+        final boolean persisted = team.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
-            this.Team = TeamRepository.findById(Team.getId()).get();
+            this.team = teamRepository.findById(team.getId()).get();
         }
         else {
-            this.Team = Team;
+            this.team = team;
         }
 
-        this.binder.setBean(this.Team);
+        this.binder.setBean(this.team);
         open();
         this.name.focus();
     }
 
     void save() {
-        if (this.Team.getStatus() == null || this.Team.getGender() == null || this.Team.getName() == null){
+        if (this.team.getStatus() == null || this.team.getGender() == null || this.team.getName() == null){
             return;
         }
-        TeamRepository.save(this.Team);
+        teamRepository.save(this.team);
         this.changeHandler.onChange();
     }
 
 	void delete() {
-       TeamRepository.delete(this.Team);
-       this.changeHandler.onChange();
-   }
+	      teamRepository.delete(this.team);
+	      this.changeHandler.onChange();
+	  }
 
     public void setChangeHandler(ChangeHandler h) {
         // ChangeHandler is notified when either save or delete is clicked

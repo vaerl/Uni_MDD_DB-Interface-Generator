@@ -12,7 +12,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.thm.dbiGenerator.entities.Game;
-import de.thm.dbiGenerator.repos.GameRepository;
+import de.thm.dbiGenerator.repositories.GameRepository;
 import de.thm.dbiGenerator.ChangeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ import java.util.EnumSet;
 @UIScope
 public class GameEditor extends Dialog implements KeyNotifier {
 
-    private GameRepository GameRepository;
+    private GameRepository gameRepository;
     private ChangeHandler changeHandler;
     private Game game;
 
@@ -43,10 +43,10 @@ public class GameEditor extends Dialog implements KeyNotifier {
 	Binder<Game> binder = new Binder<>(Game.class);
 
     @Autowired
-    public GameEditor(GameRepository GameRepository) {
-	   	super();
-   	    this.GameRepository = GameRepository;
-   	    add(fields, actions);
+    public GameEditor(GameRepository gameRepository) {
+    	super();
+    	   this.gameRepository = gameRepository;
+    	   add(fields, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
@@ -79,32 +79,32 @@ public class GameEditor extends Dialog implements KeyNotifier {
             return;
         }
 
-        final boolean persisted = Game.getId() != null;
+        final boolean persisted = game.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
-            this.Game = GameRepository.findById(Game.getId()).get();
+            this.game = gameRepository.findById(game.getId()).get();
         }
         else {
-            this.Game = Game;
+            this.game = game;
         }
 
-        this.binder.setBean(this.Game);
+        this.binder.setBean(this.game);
         open();
         this.name.focus();
     }
 
     void save() {
-        if (this.Game.getStatus() == null || this.Game.getSortOrder() == null || this.Game.getPointType() == null || this.Game.getName() == null){
+        if (this.game.getStatus() == null || this.game.getSortOrder() == null || this.game.getPointType() == null || this.game.getName() == null){
             return;
         }
-        GameRepository.save(this.Game);
+        gameRepository.save(this.game);
         this.changeHandler.onChange();
     }
 
 	void delete() {
-       GameRepository.delete(this.Game);
-       this.changeHandler.onChange();
-   }
+	      gameRepository.delete(this.game);
+	      this.changeHandler.onChange();
+	  }
 
     public void setChangeHandler(ChangeHandler h) {
         // ChangeHandler is notified when either save or delete is clicked

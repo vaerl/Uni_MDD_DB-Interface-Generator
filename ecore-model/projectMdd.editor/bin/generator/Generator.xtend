@@ -135,6 +135,9 @@ class Generator {
 		// create websecurity-class
 		createFile(packageFolder, "WebSecurityConfig.java", true, backend.genWebsecurity, progressMonitor);
 
+		// create servler-initializer
+		createFile(packageFolder, "ServletInitializer.java", true, genServletInitializer, progressMonitor);
+
 		// create base-ui
 		createFile(packageFolder, "MainView.java", true, backend.genMainView, progressMonitor);
 		createFile(packageFolder, "ChangeHandler.java", true, genChangeHandler, progressMonitor);
@@ -445,6 +448,24 @@ class Generator {
 			        return super.authenticationManagerBean();
 			    }
 			}
+		'''
+	}
+
+	def genServletInitializer() {
+		'''
+		package «PACKAGE»;
+		
+		import org.springframework.boot.builder.SpringApplicationBuilder;
+		import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+		
+		public class ServletInitializer extends SpringBootServletInitializer {
+		
+			@Override
+			protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+				return application.sources(KlostertrophyApplication.class);
+			}
+		
+		}
 		'''
 	}
 
@@ -893,137 +914,137 @@ class Generator {
 
 	def genEntityGridPage(Entity entity) {
 		'''
-			package «PACKAGE».pages;
-			
-			import com.vaadin.flow.component.button.Button;
-			import com.vaadin.flow.component.grid.Grid;
-			import com.vaadin.flow.component.grid.GridVariant;
-			import com.vaadin.flow.component.icon.VaadinIcon;
-			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-			import com.vaadin.flow.component.page.Push;
-			import com.vaadin.flow.component.textfield.TextField;
-			import com.vaadin.flow.data.value.ValueChangeMode;
-			import com.vaadin.flow.spring.annotation.UIScope;
-			import «PACKAGE».entities.«entity.name.toFirstUpper»;
-			import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
-			import «PACKAGE».details.«entity.name.toFirstUpper»Details;
-			import «PACKAGE».editors.«entity.name.toFirstUpper»Editor;
-			import org.slf4j.Logger;
-			import org.slf4j.LoggerFactory;
-			import org.springframework.beans.factory.annotation.Autowired;
-			import org.springframework.stereotype.Component;
-			import org.springframework.transaction.annotation.Transactional;
-			import org.springframework.util.StringUtils;
-			// Team Repository entfernt, da nur für Play verwendet
-			
-			@Component
-			@Transactional
-			@UIScope
-			public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
-			
+				package «PACKAGE».pages;
+				
+				import com.vaadin.flow.component.button.Button;
+				import com.vaadin.flow.component.grid.Grid;
+				import com.vaadin.flow.component.grid.GridVariant;
+				import com.vaadin.flow.component.icon.VaadinIcon;
+				import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+				import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+				import com.vaadin.flow.component.page.Push;
+				import com.vaadin.flow.component.textfield.TextField;
+				import com.vaadin.flow.data.value.ValueChangeMode;
+				import com.vaadin.flow.spring.annotation.UIScope;
+				import «PACKAGE».entities.«entity.name.toFirstUpper»;
+				import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
+				import «PACKAGE».details.«entity.name.toFirstUpper»Details;
+				import «PACKAGE».editors.«entity.name.toFirstUpper»Editor;
+				import org.slf4j.Logger;
+				import org.slf4j.LoggerFactory;
+				import org.springframework.beans.factory.annotation.Autowired;
+				import org.springframework.stereotype.Component;
+				import org.springframework.transaction.annotation.Transactional;
+				import org.springframework.util.StringUtils;
+				// Team Repository entfernt, da nur für Play verwendet
+				
+				@Component
+				@Transactional
+				@UIScope
+				public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
+				
 			    private static final long serialVersionUID = -8733687422451328748L;
 			    private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
+				
+				    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
+				    private Grid<«entity.name.toFirstUpper»> grid;
+				    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
+				
+				    private TextField filter;
+				
+				    private Button evaluate;
+				
+				    @Autowired
+				    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»Editor «entity.name»Editor) {
+				        super();
+				        this.«entity.name»Repository = «entity.name»Repository;
+				        this.«entity.name»Editor = «entity.name»Editor;
+				
+				        filter = new TextField();
+				        HorizontalLayout actions = new HorizontalLayout();
+				
+				        // grid
+				        grid = new Grid<>(«entity.name.toFirstUpper».class);
+				        grid.setItems(«entity.name»Repository.findAll());
+				        grid.setMultiSort(true);
+				        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
+				                GridVariant.LUMO_ROW_STRIPES);
+				        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+				        // add Columns
+				        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+				        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+				        //add Columns
+				        setColumns();
+				
+				        // actions
+				        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
+				        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»()));
+				
+				        // filter
+				        filter.setPlaceholder("Nach Namen filtern");
+				        filter.setValueChangeMode(ValueChangeMode.EAGER);
+				        filter.addValueChangeListener(e -> listValues(e.getValue()));
+				
+				        // editor
+				        «entity.name»Editor.setChangeHandler(() -> {
+				            «entity.name»Editor.close();
+				            listValues(filter.getValue());
+				        });
+				
+				
+				        actions.add(filter, addNew);
+				        add(actions, grid, this.«entity.name»Editor);
+				        listValues(null);
+				    }
+				
+				    void listValues(String filterText) {
+				        if (StringUtils.isEmpty(filterText)) {
+				            grid.setItems(«entity.name»Repository.findAll());
+				        } else {
+				            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
+				        }
+				    }
+				
+				    private void setColumns() {
+				        // remove unwanted columns
+				        grid.removeAllColumns();
+				        // add Columns
+				        «FOR attribute : entity.attributes»
+				        	grid.addColumn(«entity.name.toFirstUpper»::get«attribute.name.toFirstUpper»).setHeader("«attribute.name.toFirstUpper»").setSortable(true);
+				        «ENDFOR»
+				
+				
+				        // add standard-columns
 			
-			    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
-			    private Grid<«entity.name.toFirstUpper»> grid;
-			    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
-			
-			    private TextField filter;
-			
-			    private Button evaluate;
-			
-			    @Autowired
-			    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»Editor «entity.name»Editor) {
-			        super();
-			        this.«entity.name»Repository = «entity.name»Repository;
-			        this.«entity.name»Editor = «entity.name»Editor;
-			
-			        filter = new TextField();
-			        HorizontalLayout actions = new HorizontalLayout();
-			
-			        // grid
-			        grid = new Grid<>(«entity.name.toFirstUpper».class);
-			        grid.setItems(«entity.name»Repository.findAll());
-			        grid.setMultiSort(true);
-			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
-			                GridVariant.LUMO_ROW_STRIPES);
-			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
-			        // add Columns
-			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
-			        //add Columns
-			        setColumns();
-			
-			        // actions
-			        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
-			        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»()));
-			
-			        // filter
-			        filter.setPlaceholder("Nach Namen filtern");
-			        filter.setValueChangeMode(ValueChangeMode.EAGER);
-			        filter.addValueChangeListener(e -> listValues(e.getValue()));
-			
-			        // editor
-			        «entity.name»Editor.setChangeHandler(() -> {
-			            «entity.name»Editor.close();
-			            listValues(filter.getValue());
-			        });
-			
-			
-			        actions.add(filter, addNew);
-			        add(actions, grid, this.«entity.name»Editor);
-			        listValues(null);
-			    }
-			
-			    void listValues(String filterText) {
-			        if (StringUtils.isEmpty(filterText)) {
-			            grid.setItems(«entity.name»Repository.findAll());
-			        } else {
-			            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
-			        }
-			    }
-			
-			    private void setColumns() {
-			        // remove unwanted columns
-			        grid.removeAllColumns();
-			        // add Columns
-			        «FOR attribute : entity.attributes»
-			        	grid.addColumn(«entity.name.toFirstUpper»::get«attribute.name.toFirstUpper»).setHeader("«attribute.name.toFirstUpper»").setSortable(true);
-			        «ENDFOR»
-			
-			
-			        // add standard-columns
-		
-			        grid.addComponentColumn(value -> {
-			            Button details = new Button("Fertig");
-			            details.addClassName("details");
-			            details.addClickListener(e -> {
-			                var «entity.name»Details = new «entity.name.toFirstUpper»Details();
-			                «entity.name»Details.open(value);
-			            });
-			            if (value.getFinished().isEmpty()) {
-			                log.info("Finished is empty.");
-			                details.setEnabled(false);
-			            } else {
-			                log.info("Finished will be displayed.");
-			                details.setEnabled(true);
-			            }
-			            return details;
-			        });
-			
-			        grid.addComponentColumn(value -> {
-			            Button edit = new Button("Bearbeiten");
-			            edit.addClassName("edit");
-			            edit.addClickListener(e -> {
-			                «entity.name»Editor.edit(value);
-			            });
-			            return edit;
-			        });
-			
-			    }
-			}
-			
+				        grid.addComponentColumn(value -> {
+				            Button details = new Button("Fertig");
+				            details.addClassName("details");
+				            details.addClickListener(e -> {
+				                var «entity.name»Details = new «entity.name.toFirstUpper»Details();
+				                «entity.name»Details.open(value);
+				            });
+				            if (value.getFinished().isEmpty()) {
+				                log.info("Finished is empty.");
+				                details.setEnabled(false);
+				            } else {
+				                log.info("Finished will be displayed.");
+				                details.setEnabled(true);
+				            }
+				            return details;
+				        });
+				
+				        grid.addComponentColumn(value -> {
+				            Button edit = new Button("Bearbeiten");
+				            edit.addClassName("edit");
+				            edit.addClickListener(e -> {
+				                «entity.name»Editor.edit(value);
+				            });
+				            return edit;
+				        });
+				
+				    }
+				}
+				
 		'''
 	}
 
@@ -1075,9 +1096,9 @@ class Generator {
 			
 			    @Autowired
 			    public «entity.name.toFirstUpper»Editor(«entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository) {
-				   	super();
-			   	    this.«entity.name.toFirstLower»Repository = «entity.name.toFirstLower»Repository;
-			   	    add(fields, actions);
+			    	super();
+			    	   this.«entity.name.toFirstLower»Repository = «entity.name.toFirstLower»Repository;
+			    	   add(fields, actions);
 			
 			        // bind using naming convention
 			        binder.bindInstanceFields(this);
@@ -1129,9 +1150,9 @@ class Generator {
 			    }
 			
 				void delete() {
-			       «entity.name.toFirstLower»Repository.delete(this.«entity.name.toFirstLower»);
-			       this.changeHandler.onChange();
-			   }
+				      «entity.name.toFirstLower»Repository.delete(this.«entity.name.toFirstLower»);
+				      this.changeHandler.onChange();
+				  }
 			
 			    public void setChangeHandler(ChangeHandler h) {
 			        // ChangeHandler is notified when either save or delete is clicked
@@ -1146,62 +1167,62 @@ class Generator {
 		'''
 		
 		'''
-		/*
-		'''
-			// Genrell: Für jedes relEntity eigenes Grid -> Schwachsinn??
-		
-		
-			package «PACKAGE».frontend.details;
-			
-			import com.vaadin.flow.component.dialog.Dialog;
-			import com.vaadin.flow.component.grid.Grid;
-			import com.vaadin.flow.component.grid.GridSortOrder;
-			import com.vaadin.flow.component.grid.GridVariant;
-			import com.vaadin.flow.data.provider.SortDirection;
-			import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
-			«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
-				import «PACKAGE».backend.entities.«relEntity.name.toFirstUpper»;	// = import «PACKAGE».backend.entities.Team;
-			«ENDFOR»
-			
-			import java.util.Collections;
-			
-			public class «entity.name.toFirstUpper»Details extends Dialog {
-			
-				«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
-			    	protected Grid<«relEntity.name.toFirstUpper»> grid«relEntity.name.toFirstUpper»; // = protected Grid<Team> grid;
-			    «ENDFOR»
-			
-			    public «entity.name.toFirstUpper»Details() {
-			        super();
-				
-					«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
-				        grid«relEntity.name.toFirstUpper» = new Grid<>(«relEntity.name.toFirstUpper».class);
-				        grid«relEntity.name.toFirstUpper».setMultiSort(true);
-				        // style
-				        grid«relEntity.name.toFirstUpper».addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-				        //TODO: check if height scales accordingly; maybe find better method for setting size in general
-				        grid«relEntity.name.toFirstUpper».setWidth("400px");
-				
-				        //set columns
-				        grid«relEntity.name.toFirstUpper».removeAllColumns();
-				        «FOR attribute : relEntity.attributes»
-				        	grid.addColumn(«relEntity.name.toFirstUpper»::get«attribute.name.toFirstUpper».setHeader("«attribute.name.toFirstUpper»".setSortable(true)
-				        «ENDFOR»
-				
-				        add(grid«relEntity.name.toFirstUpper»);
-			        «ENDFOR»
-			    }
-			
-			    public void open(«entity.name.toFirstUpper» «entity.name»){
-			    	«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
-			    		grid«relEntity.name.toFirstUpper».setItems(«entity.name».getFinished());  // = grid.setItems(«entity.name».getFinished());
-			    	«ENDFOR»
-			        open();
-			    }
-			}
-			
-		'''
-		*/
+	/*
+	 * '''
+	 * 	// Genrell: Für jedes relEntity eigenes Grid -> Schwachsinn??
+	 * 
+	 * 
+	 * 	package «PACKAGE».frontend.details;
+	 * 	
+	 * 	import com.vaadin.flow.component.dialog.Dialog;
+	 * 	import com.vaadin.flow.component.grid.Grid;
+	 * 	import com.vaadin.flow.component.grid.GridSortOrder;
+	 * 	import com.vaadin.flow.component.grid.GridVariant;
+	 * 	import com.vaadin.flow.data.provider.SortDirection;
+	 * 	import «PACKAGE».backend.entities.«entity.name.toFirstUpper»;
+	 * 	«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+	 * 		import «PACKAGE».backend.entities.«relEntity.name.toFirstUpper»;	// = import «PACKAGE».backend.entities.Team;
+	 * 	«ENDFOR»
+	 * 	
+	 * 	import java.util.Collections;
+	 * 	
+	 * 	public class «entity.name.toFirstUpper»Details extends Dialog {
+	 * 	
+	 * 		«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+	 * 	    	protected Grid<«relEntity.name.toFirstUpper»> grid«relEntity.name.toFirstUpper»; // = protected Grid<Team> grid;
+	 * 	    «ENDFOR»
+	 * 	
+	 * 	    public «entity.name.toFirstUpper»Details() {
+	 * 	        super();
+	 * 		
+	 * 			«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+	 * 		        grid«relEntity.name.toFirstUpper» = new Grid<>(«relEntity.name.toFirstUpper».class);
+	 * 		        grid«relEntity.name.toFirstUpper».setMultiSort(true);
+	 * 		        // style
+	 * 		        grid«relEntity.name.toFirstUpper».addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+	 * 		        //TODO: check if height scales accordingly; maybe find better method for setting size in general
+	 * 		        grid«relEntity.name.toFirstUpper».setWidth("400px");
+	 * 		
+	 * 		        //set columns
+	 * 		        grid«relEntity.name.toFirstUpper».removeAllColumns();
+	 * 		        «FOR attribute : relEntity.attributes»
+	 * 		        	grid.addColumn(«relEntity.name.toFirstUpper»::get«attribute.name.toFirstUpper».setHeader("«attribute.name.toFirstUpper»".setSortable(true)
+	 * 		        «ENDFOR»
+	 * 		
+	 * 		        add(grid«relEntity.name.toFirstUpper»);
+	 * 	        «ENDFOR»
+	 * 	    }
+	 * 	
+	 * 	    public void open(«entity.name.toFirstUpper» «entity.name»){
+	 * 	    	«FOR relEntity : entity.relations» // TODO: Wie an Relations kommen?
+	 * 	    		grid«relEntity.name.toFirstUpper».setItems(«entity.name».getFinished());  // = grid.setItems(«entity.name».getFinished());
+	 * 	    	«ENDFOR»
+	 * 	        open();
+	 * 	    }
+	 * 	}
+	 * 	
+	 * '''
+	 */
 	}
 
 }
