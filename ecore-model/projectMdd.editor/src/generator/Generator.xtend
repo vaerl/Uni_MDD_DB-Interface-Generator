@@ -1139,6 +1139,7 @@ class Generator {
 	}
 
 	def genEntityDetails(Entity entity) {
+		/*
 		'''
 			// Genrell: Für jedes relEntity eigenes Grid -> Schwachsinn??
 		
@@ -1193,6 +1194,7 @@ class Generator {
 			}
 			
 		'''
+		*/
 	}
 
 }
