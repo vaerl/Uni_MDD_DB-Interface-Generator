@@ -487,7 +487,7 @@ class Generator {
 				private HttpServletRequest request;
 				
 				@Autowired
-				    MainView(HttpServletRequest request, «FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name.toFirstUpper»GridPage «e.name»page«ENDFOR») {
+				    MainView(HttpServletRequest request, «FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name.toFirstUpper»GridPage «e.name»Page«ENDFOR») {
 				    	super();
 				    	this.request = request;
 				    	
@@ -893,7 +893,7 @@ class Generator {
 
 	def genEntityGridPage(Entity entity) {
 		'''
-			package «PACKAGE».grids;
+			package «PACKAGE».pages;
 			
 			import com.vaadin.flow.component.button.Button;
 			import com.vaadin.flow.component.grid.Grid;
@@ -906,7 +906,7 @@ class Generator {
 			import com.vaadin.flow.data.value.ValueChangeMode;
 			import com.vaadin.flow.spring.annotation.UIScope;
 			import «PACKAGE».entities.«entity.name.toFirstUpper»;
-			import «PACKAGE».repos.«entity.name.toFirstUpper»Repository;
+			import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
 			import «PACKAGE».details.«entity.name.toFirstUpper»Details;
 			import «PACKAGE».editors.«entity.name.toFirstUpper»Editor;
 			import org.slf4j.Logger;
@@ -989,7 +989,7 @@ class Generator {
 			        grid.removeAllColumns();
 			        // add Columns
 			        «FOR attribute : entity.attributes»
-			        	grid.addColumn(«entity.name.toFirstUpper»::get«attribute.name.toFirstUpper».setHeader("«attribute.name.toFirstUpper»".setSortable(true)
+			        	grid.addColumn(«entity.name.toFirstUpper»::get«attribute.name.toFirstUpper»).setHeader("«attribute.name.toFirstUpper»").setSortable(true);
 			        «ENDFOR»
 			
 			
@@ -1043,7 +1043,7 @@ class Generator {
 			import com.vaadin.flow.data.binder.Binder;
 			import com.vaadin.flow.spring.annotation.UIScope;
 			import «PACKAGE».entities.«entity.name.toFirstUpper»;
-			import «PACKAGE».repos.«entity.name.toFirstUpper»Repository;
+			import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
 			import «PACKAGE».ChangeHandler;
 			import org.springframework.beans.factory.annotation.Autowired;
 			import org.springframework.stereotype.Component;
@@ -1055,9 +1055,9 @@ class Generator {
 			@UIScope
 			public class «entity.name.toFirstUpper»Editor extends Dialog implements KeyNotifier {
 			
-			    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
+			    private «entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository;
 			    private ChangeHandler changeHandler;
-			    private «entity.name.toFirstUpper» game;
+			    private «entity.name.toFirstUpper» «entity.name.toFirstLower»;
 			
 			    //buttons
 			    Button save = new Button("Speichern", VaadinIcon.CHECK.create());
@@ -1074,9 +1074,9 @@ class Generator {
 				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
 			
 			    @Autowired
-			    public «entity.name.toFirstUpper»Editor(«entity.name.toFirstUpper»Repository «entity.name»Repository) {
+			    public «entity.name.toFirstUpper»Editor(«entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository) {
 				   	super();
-			   	    this.«entity.name»Repository = «entity.name»Repository;
+			   	    this.«entity.name.toFirstLower»Repository = «entity.name.toFirstLower»Repository;
 			   	    add(fields, actions);
 			
 			        // bind using naming convention
@@ -1106,30 +1106,30 @@ class Generator {
 			            return;
 			        }
 			
-			        final boolean persisted = «entity.name».getId() != null;
+			        final boolean persisted = «entity.name.toFirstLower».getId() != null;
 			        if (persisted) {
 			            // Find fresh entity for editing
-			            this.«entity.name» = «entity.name»Repository.findById(«entity.name».getId()).get();
+			            this.«entity.name.toFirstLower» = «entity.name.toFirstLower»Repository.findById(«entity.name.toFirstLower».getId()).get();
 			        }
 			        else {
-			            this.«entity.name» = «entity.name»;
+			            this.«entity.name.toFirstLower» = «entity.name.toFirstLower»;
 			        }
 			
-			        this.binder.setBean(this.«entity.name»);
+			        this.binder.setBean(this.«entity.name.toFirstLower»);
 			        open();
 			        this.name.focus();
 			    }
 			
 			    void save() {
-			        if («FOR e : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ' || '»this.«entity.name».get«e.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter[it instanceof EnumAttribute].size > 0» || «ENDIF»this.«entity.name».getName() == null){
+			        if («FOR e : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter[it instanceof EnumAttribute].size > 0» || «ENDIF»this.«entity.name.toFirstLower».getName() == null){
 			            return;
 			        }
-			        «entity.name»Repository.save(this.«entity.name»);
+			        «entity.name.toFirstLower»Repository.save(this.«entity.name.toFirstLower»);
 			        this.changeHandler.onChange();
 			    }
 			
 				void delete() {
-			       «entity.name»Repository.delete(this.«entity.name»);
+			       «entity.name.toFirstLower»Repository.delete(this.«entity.name.toFirstLower»);
 			       this.changeHandler.onChange();
 			   }
 			
