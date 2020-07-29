@@ -34,7 +34,7 @@ public class MainView extends VerticalLayout {
 	private HttpServletRequest request;
 	
 	@Autowired
-	    MainView(HttpServletRequest request, TeamGridPage Teampage, GameGridPage Gamepage) {
+	    MainView(HttpServletRequest request, TeamGridPage TeamPage, GameGridPage GamePage) {
 	    	super();
 	    	this.request = request;
 	    	

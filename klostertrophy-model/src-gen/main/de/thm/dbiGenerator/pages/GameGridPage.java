@@ -1,4 +1,4 @@
-	package de.thm.dbiGenerator.grids;
+	package de.thm.dbiGenerator.pages;
 	
 	import com.vaadin.flow.component.button.Button;
 	import com.vaadin.flow.component.grid.Grid;
@@ -11,7 +11,7 @@
 	import com.vaadin.flow.data.value.ValueChangeMode;
 	import com.vaadin.flow.spring.annotation.UIScope;
 	import de.thm.dbiGenerator.entities.Game;
-	import de.thm.dbiGenerator.repos.GameRepository;
+	import de.thm.dbiGenerator.repositories.GameRepository;
 	import de.thm.dbiGenerator.details.GameDetails;
 	import de.thm.dbiGenerator.editors.GameEditor;
 	import org.slf4j.Logger;
@@ -93,10 +93,10 @@
 	        // remove unwanted columns
 	        grid.removeAllColumns();
 	        // add Columns
-	        grid.addColumn(Game::getName.setHeader("Name".setSortable(true)
-	        grid.addColumn(Game::getStatus.setHeader("Status".setSortable(true)
-	        grid.addColumn(Game::getSortOrder.setHeader("SortOrder".setSortable(true)
-	        grid.addColumn(Game::getPointType.setHeader("PointType".setSortable(true)
+	        grid.addColumn(Game::getName).setHeader("Name").setSortable(true);
+	        grid.addColumn(Game::getStatus).setHeader("Status").setSortable(true);
+	        grid.addColumn(Game::getSortOrder).setHeader("SortOrder").setSortable(true);
+	        grid.addColumn(Game::getPointType).setHeader("PointType").setSortable(true);
 	
 	
 	        // add standard-columns

@@ -1,4 +1,4 @@
-	package de.thm.dbiGenerator.grids;
+	package de.thm.dbiGenerator.pages;
 	
 	import com.vaadin.flow.component.button.Button;
 	import com.vaadin.flow.component.grid.Grid;
@@ -11,7 +11,7 @@
 	import com.vaadin.flow.data.value.ValueChangeMode;
 	import com.vaadin.flow.spring.annotation.UIScope;
 	import de.thm.dbiGenerator.entities.Team;
-	import de.thm.dbiGenerator.repos.TeamRepository;
+	import de.thm.dbiGenerator.repositories.TeamRepository;
 	import de.thm.dbiGenerator.details.TeamDetails;
 	import de.thm.dbiGenerator.editors.TeamEditor;
 	import org.slf4j.Logger;
@@ -93,10 +93,10 @@
 	        // remove unwanted columns
 	        grid.removeAllColumns();
 	        // add Columns
-	        grid.addColumn(Team::getStatus.setHeader("Status".setSortable(true)
-	        grid.addColumn(Team::getName.setHeader("Name".setSortable(true)
-	        grid.addColumn(Team::getPoints.setHeader("Points".setSortable(true)
-	        grid.addColumn(Team::getGender.setHeader("Gender".setSortable(true)
+	        grid.addColumn(Team::getStatus).setHeader("Status").setSortable(true);
+	        grid.addColumn(Team::getName).setHeader("Name").setSortable(true);
+	        grid.addColumn(Team::getPoints).setHeader("Points").setSortable(true);
+	        grid.addColumn(Team::getGender).setHeader("Gender").setSortable(true);
 	
 	
 	        // add standard-columns

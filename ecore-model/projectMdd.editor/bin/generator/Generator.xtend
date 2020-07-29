@@ -160,9 +160,6 @@ class Generator {
 					// create editor
 					createFile(editorFolder, entity.name + "Editor.java", true, entity.genEntityEditor,
 						progressMonitor);
-					// create details
-					createFile(detailsFolder, entity.name + "Details.java", true, entity.genEntityDetails,
-						progressMonitor);
 				}
 			} else {
 				// create entity-gen-file
@@ -1043,19 +1040,38 @@ class Generator {
 			import com.vaadin.flow.data.binder.Binder;
 			import com.vaadin.flow.spring.annotation.UIScope;
 			import «PACKAGE».entities.«entity.name.toFirstUpper»;
+			«FOR rel : entity.outwardRelations»
+				import «PACKAGE».entities.«rel.end.name.toFirstUpper»;
+			«ENDFOR»
+			«FOR rel : entity.inwardRelations»
+				import «PACKAGE».entities.«rel.start.name.toFirstUpper»;
+			«ENDFOR»
 			import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
+			«FOR rel : entity.outwardRelations»
+				import «PACKAGE».repositories.«rel.end.name.toFirstUpper»Repository;
+			«ENDFOR»
+			«FOR rel : entity.inwardRelations»
+				import «PACKAGE».repositories.«rel.start.name.toFirstUpper»Repository;
+			«ENDFOR»
 			import «PACKAGE».ChangeHandler;
 			import org.springframework.beans.factory.annotation.Autowired;
 			import org.springframework.stereotype.Component;
 			
 			import java.util.ArrayList;
 			import java.util.EnumSet;
+			import java.util.List;
 			
 			@Component
 			@UIScope
 			public class «entity.name.toFirstUpper»Editor extends Dialog implements KeyNotifier {
 			
 			    private «entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository;
+			    «FOR rel : entity.outwardRelations»
+			    	private «rel.end.name.toFirstUpper»Repository «rel.end.name.toFirstLower»Repository;
+			    «ENDFOR»
+			    «FOR rel : entity.inwardRelations»
+			    	private «rel.start.name.toFirstUpper»Repository «rel.start.name.toFirstLower»Repository;
+			    «ENDFOR»
 			    private ChangeHandler changeHandler;
 			    private «entity.name.toFirstUpper» «entity.name.toFirstLower»;
 			
@@ -1067,10 +1083,16 @@ class Generator {
 			
 			    //fields to edit
 			    TextField name = new TextField("«entity.name.toFirstUpper»-Name");
-				«FOR e : entity.attributes.filter[it instanceof EnumAttribute]»
-					Select<«entity.name.toFirstUpper».«e.name.toFirstUpper»> «e.name» = new Select<>();
+				«FOR e : entity.attributes.filter(EnumAttribute)»
+					Select<«entity.name.toFirstUpper».«e.name.toFirstUpper»> «e.name.toFirstLower» = new Select<>();
 				«ENDFOR»
-				HorizontalLayout fields = new HorizontalLayout(name, «FOR e : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ', '»«e.name»«ENDFOR»);
+				«FOR rel : entity.outwardRelations»
+					Select<«rel.end.name.toFirstUpper»> «rel.end.name.toFirstLower» = new Select<>();
+				«ENDFOR»
+				«FOR rel : entity.inwardRelations»
+					Select<«rel.start.name.toFirstUpper»> «rel.start.name.toFirstLower» = new Select<>();
+				«ENDFOR»
+				HorizontalLayout fields = new HorizontalLayout(name, «FOR e : entity.attributes.filter(EnumAttribute) SEPARATOR ', '»«e.name»«ENDFOR»);
 				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
 			
 			    @Autowired
@@ -1092,11 +1114,24 @@ class Generator {
 			        cancel.addClickListener(e -> changeHandler.onChange());
 			
 			        //fields
-			        «FOR e : entity.attributes.filter[it instanceof EnumAttribute]»
+			        «FOR e : entity.attributes.filter(EnumAttribute)»
 			        	«e.name».setLabel("«e.name.toFirstUpper»");
 			        	«e.name».setItemLabelGenerator(«entity.name.toFirstUpper».«e.name.toFirstUpper»::toString);
 			        	«e.name».setItems(new ArrayList<>(EnumSet.allOf(«entity.name.toFirstUpper».«e.name.toFirstUpper».class)));
 			        «ENDFOR»
+			        «FOR rel : entity.outwardRelations»
+			        	«rel.end.name.toFirstLower».setLabel("«rel.end.name.toFirstUpper»");
+			        	List<«rel.end.name.toFirstUpper»> «rel.end.name.toFirstLower»List = get«rel.end.name.toFirstUpper»s();
+			        	«rel.end.name.toFirstLower».setItemLabelGenerator(«rel.end.name.toFirstUpper»::getName);
+			        	«rel.end.name.toFirstLower».setItems(«rel.end.name.toFirstLower»List);
+			        «ENDFOR»
+			        «FOR rel : entity.inwardRelations»
+			        	«rel.start.name.toFirstLower».setLabel("«rel.start.name.toFirstUpper»");
+			        	List<«rel.start.name.toFirstUpper»> «rel.start.name.toFirstLower»List = get«rel.start.name.toFirstUpper»s();
+			        	«rel.start.name.toFirstLower».setItemLabelGenerator(«rel.start.name.toFirstUpper»::getName);
+			        	«rel.start.name.toFirstLower».setItems(«rel.start.name.toFirstLower»List);
+			        «ENDFOR»
+			        
 			        actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 			    }
 			
@@ -1121,7 +1156,7 @@ class Generator {
 			    }
 			
 			    void save() {
-			        if («FOR e : entity.attributes.filter[it instanceof EnumAttribute] SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter[it instanceof EnumAttribute].size > 0» || «ENDIF»this.«entity.name.toFirstLower».getName() == null){
+			        if («FOR e : entity.attributes SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter(EnumAttribute).size > 0» || «ENDIF»«FOR rel : entity.outwardRelations SEPARATOR ' || '»this.«entity.name.toFirstLower».get«rel.end.name.toFirstUpper»() == null«ENDFOR»«IF entity.outwardRelations.size > 0» || «ENDIF»«FOR rel : entity.inwardRelations SEPARATOR ' || '»this.«entity.name.toFirstLower».get«rel.start.name.toFirstUpper»() == null«ENDFOR»«IF entity.inwardRelations.size > 0» || «ENDIF»this.«entity.name.toFirstLower».getName() == null){
 			            return;
 			        }
 			        «entity.name.toFirstLower»Repository.save(this.«entity.name.toFirstLower»);
@@ -1137,21 +1172,28 @@ class Generator {
 			        // ChangeHandler is notified when either save or delete is clicked
 			        this.changeHandler = h;
 			    }
+			    
+				«FOR rel : entity.outwardRelations»
+					public List<«rel.end.name.toFirstUpper»> get«rel.end.name.toFirstUpper»s() {
+						return «rel.end.name.toFirstLower»Repository.findAll();
+					}
+				«ENDFOR»
+				«FOR rel : entity.inwardRelations»
+					public List<«rel.start.name.toFirstUpper»> get«rel.start.name.toFirstUpper»s() {
+						return «rel.start.name.toFirstLower»Repository.findAll();
+					}
+				«ENDFOR»
 			
 			}
 		'''
 	}
 
-	def genEntityDetails(Entity entity) {
-		'''
 		
 		'''
 		/*
 		'''
 			// Genrell: Für jedes relEntity eigenes Grid -> Schwachsinn??
 		
-		
-			package «PACKAGE».frontend.details;
 			
 			import com.vaadin.flow.component.dialog.Dialog;
 			import com.vaadin.flow.component.grid.Grid;
@@ -1163,7 +1205,6 @@ class Generator {
 				import «PACKAGE».backend.entities.«relEntity.name.toFirstUpper»;	// = import «PACKAGE».backend.entities.Team;
 			«ENDFOR»
 			
-			import java.util.Collections;
 			
 			public class «entity.name.toFirstUpper»Details extends Dialog {
 			
@@ -1199,9 +1240,4 @@ class Generator {
 			        open();
 			    }
 			}
-			
-		'''
-		*/
-	}
-
 }

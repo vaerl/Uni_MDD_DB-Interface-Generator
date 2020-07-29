@@ -12,21 +12,25 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.thm.dbiGenerator.entities.Team;
-import de.thm.dbiGenerator.repos.TeamRepository;
+import de.thm.dbiGenerator.entities.Game;
+import de.thm.dbiGenerator.repositories.TeamRepository;
+import de.thm.dbiGenerator.repositories.GameRepository;
 import de.thm.dbiGenerator.ChangeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 @Component
 @UIScope
 public class TeamEditor extends Dialog implements KeyNotifier {
 
-    private TeamRepository TeamRepository;
+    private TeamRepository teamRepository;
+    private GameRepository gameRepository;
     private ChangeHandler changeHandler;
-    private Team game;
+    private Team team;
 
     //buttons
     Button save = new Button("Speichern", VaadinIcon.CHECK.create());
@@ -38,13 +42,14 @@ public class TeamEditor extends Dialog implements KeyNotifier {
     TextField name = new TextField("Team-Name");
 	Select<Team.Status> status = new Select<>();
 	Select<Team.Gender> gender = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(name, status, gender);
+	Select<Game> game = new Select<>();
+	HorizontalLayout fields = new HorizontalLayout(name, status, name, points, gender);
 	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
-    public TeamEditor(TeamRepository TeamRepository) {
+    public TeamEditor(TeamRepository teamRepository) {
 	   	super();
-   	    this.TeamRepository = TeamRepository;
+   	    this.teamRepository = teamRepository;
    	    add(fields, actions);
 
         // bind using naming convention
@@ -66,6 +71,11 @@ public class TeamEditor extends Dialog implements KeyNotifier {
         gender.setLabel("Gender");
         gender.setItemLabelGenerator(Team.Gender::toString);
         gender.setItems(new ArrayList<>(EnumSet.allOf(Team.Gender.class)));
+        game.setLabel("Game");
+        List<Game> gameList = getGames();
+        game.setItemLabelGenerator(Game::getName);
+        game.setItems(gameList);
+        
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
@@ -75,30 +85,30 @@ public class TeamEditor extends Dialog implements KeyNotifier {
             return;
         }
 
-        final boolean persisted = Team.getId() != null;
+        final boolean persisted = team.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
-            this.Team = TeamRepository.findById(Team.getId()).get();
+            this.team = teamRepository.findById(team.getId()).get();
         }
         else {
-            this.Team = Team;
+            this.team = team;
         }
 
-        this.binder.setBean(this.Team);
+        this.binder.setBean(this.team);
         open();
         this.name.focus();
     }
 
     void save() {
-        if (this.Team.getStatus() == null || this.Team.getGender() == null || this.Team.getName() == null){
+        if (this.team.getStatus() == null || this.team.getName() == null || this.team.getPoints() == null || this.team.getGender() == null || this.team.getGame() == null || this.team.getName() == null){
             return;
         }
-        TeamRepository.save(this.Team);
+        teamRepository.save(this.team);
         this.changeHandler.onChange();
     }
 
 	void delete() {
-       TeamRepository.delete(this.Team);
+       teamRepository.delete(this.team);
        this.changeHandler.onChange();
    }
 
@@ -106,5 +116,9 @@ public class TeamEditor extends Dialog implements KeyNotifier {
         // ChangeHandler is notified when either save or delete is clicked
         this.changeHandler = h;
     }
+    
+	public List<Game> getGames() {
+		return GameRepository.findAll();
+	}
 
 }
