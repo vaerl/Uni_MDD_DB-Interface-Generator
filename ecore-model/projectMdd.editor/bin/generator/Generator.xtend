@@ -134,6 +134,9 @@ class Generator {
 		// create websecurity-class
 		createFile(packageFolder, "WebSecurityConfig.java", true, backend.genWebsecurity, progressMonitor);
 
+		// create custom-auth-provider
+		createFile(packageFolder, "CustomAuthenticationProvider.java", true, backend.genAuthProvider, progressMonitor);
+
 		// create servler-initializer
 		createFile(packageFolder, "ServletInitializer.java", true, genServletInitializer, progressMonitor);
 
@@ -225,6 +228,10 @@ class Generator {
 						<groupId>org.springframework.security</groupId>
 						<artifactId>spring-security-test</artifactId>
 						<scope>test</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-validation</artifactId>
 					</dependency>
 					
 					<!-- vaadin -->
@@ -386,20 +393,23 @@ class Generator {
 
 	def genWebsecurity(Backend backend) {
 		'''
-			package «PACKAGE»;
+			package de.thm.dbiGenerator;
 			
-			import «PACKAGE».repositories.AdminRepository;
-			import «PACKAGE».entities.Admin;
+			import de.thm.dbiGenerator.repositories.AdminRepository;
+			import de.thm.dbiGenerator.entities.Admin;
 			import org.springframework.beans.factory.annotation.Autowired;
 			import org.springframework.context.annotation.Bean;
 			import org.springframework.context.annotation.Configuration;
 			import org.springframework.http.HttpMethod;
 			import org.springframework.security.authentication.AuthenticationManager;
+			import org.springframework.security.authentication.AuthenticationProvider;
 			import org.springframework.security.config.BeanIds;
 			import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 			import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 			import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 			import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+			import org.springframework.security.core.Authentication;
+			import org.springframework.security.core.AuthenticationException;
 			import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 			import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 			
@@ -439,11 +449,9 @@ class Generator {
 			    }
 			
 			    @Autowired
-			    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-			        for(Admin admin:adminRepository.findAll()){
-			        	auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder())
-			        		.withUser(admin.getUsername()).password(admin.getPassword()).roles("ADMIN");
-			        }
+			    @Override
+			    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+			        auth.authenticationProvider(new CustomAuthenticationProvider(adminRepository));
 			    }
 			
 			    /**
@@ -456,6 +464,53 @@ class Generator {
 			    @Override
 			    public AuthenticationManager authenticationManagerBean() throws Exception {
 			        return super.authenticationManagerBean();
+			    }
+			}
+			
+		'''
+	}
+
+	def genAuthProvider(Backend backend) {
+		'''
+			package de.thm.dbiGenerator;
+			
+			import de.thm.dbiGenerator.entities.Admin;
+			import de.thm.dbiGenerator.repositories.AdminRepository;
+			import org.springframework.beans.factory.annotation.Autowired;
+			import org.springframework.security.authentication.AuthenticationProvider;
+			import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+			import org.springframework.security.core.Authentication;
+			import org.springframework.security.core.AuthenticationException;
+			
+			import java.util.ArrayList;
+			
+			public class CustomAuthenticationProvider implements AuthenticationProvider {
+			
+			    private AdminRepository adminRepository;
+			
+			    public CustomAuthenticationProvider(AdminRepository adminRepository){
+			        this.adminRepository = adminRepository;
+			    }
+			
+			    @Override
+			    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+			        String name = authentication.getName();
+			        String password = authentication.getCredentials().toString();
+			
+			        for(Admin admin : adminRepository.findAll()){
+			            if (admin.getUsername().equals(name) && admin.getPassword().equals(password)) {
+			                return new UsernamePasswordAuthenticationToken(
+			                        name, password, new ArrayList<>());
+			            } else {
+			                return null;
+			            }
+			        }
+			        return null;
+			    }
+			
+			    @Override
+			    public boolean supports(Class<?> authentication) {
+			        return authentication.equals(UsernamePasswordAuthenticationToken.class);
 			    }
 			}
 		'''
@@ -902,6 +957,7 @@ class Generator {
 		'''
 	}
 
+	// TODO generate Extension for Repos
 	def genEntityRepo(Entity entity) {
 		'''
 			package «PACKAGE».repositories;
@@ -916,11 +972,11 @@ class Generator {
 			public interface «entity.name.toFirstUpper»Repository extends JpaRepository<«entity.name.toFirstUpper», Long> {
 			
 			    List<«entity.name.toFirstUpper»> findAll();
-			
-			    List<«entity.name.toFirstUpper»> findByNameStartsWithIgnoreCase(String name);
-			
-			    List<«entity.name.toFirstUpper»> findByDoneIs(boolean b);
-			
+				
+				// ONLY do this if property name exists
+				«IF entity.attributes.map[it.name.toLowerCase].contains("name")»
+					List<«entity.name.toFirstUpper»> findByNameStartsWithIgnoreCase(String name);
+				«ENDIF»
 			}
 		'''
 	}
@@ -1111,7 +1167,9 @@ class Generator {
 				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
 			
 			    @Autowired
-			    public «entity.name.toFirstUpper»Editor(«entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository) {
+			    public «entity.name.toFirstUpper»Editor(
+			    «entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository
+			    ) {
 			    	super();
 			    	   this.«entity.name.toFirstLower»Repository = «entity.name.toFirstLower»Repository;
 			    	   add(fields, actions);

@@ -13,6 +13,4 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     List<Team> findByNameStartsWithIgnoreCase(String name);
 
-    List<Team> findByDoneIs(boolean b);
-
 }

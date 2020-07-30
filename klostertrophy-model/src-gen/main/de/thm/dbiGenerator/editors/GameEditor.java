@@ -48,9 +48,10 @@ public class GameEditor extends Dialog implements KeyNotifier {
 	Binder<Game> binder = new Binder<>(Game.class);
 
     @Autowired
-    public GameEditor(GameRepository gameRepository) {
+    public GameEditor(GameRepository gameRepository, TeamRepository teamRepository) {
     	super();
     	   this.gameRepository = gameRepository;
+    	   this.teamRepository = teamRepository;
     	   add(fields, actions);
 
         // bind using naming convention

@@ -11,8 +11,4 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     List<Admin> findAll();
 
-    List<Admin> findByNameStartsWithIgnoreCase(String name);
-
-    List<Admin> findByDoneIs(boolean b);
-
 }

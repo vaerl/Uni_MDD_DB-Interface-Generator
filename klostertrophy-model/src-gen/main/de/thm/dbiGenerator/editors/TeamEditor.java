@@ -47,9 +47,10 @@ public class TeamEditor extends Dialog implements KeyNotifier {
 	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
-    public TeamEditor(TeamRepository teamRepository) {
+    public TeamEditor(TeamRepository teamRepository, GameRepository gameRepository) {
     	super();
     	   this.teamRepository = teamRepository;
+    	   this.gameRepository = gameRepository;
     	   add(fields, actions);
 
         // bind using naming convention
