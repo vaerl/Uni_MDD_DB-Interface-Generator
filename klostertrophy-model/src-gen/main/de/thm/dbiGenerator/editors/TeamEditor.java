@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 @Component
 @UIScope
@@ -38,7 +39,8 @@ public class TeamEditor extends Dialog implements KeyNotifier {
     TextField name = new TextField("Team-Name");
 	Select<Team.Status> status = new Select<>();
 	Select<Team.Gender> gender = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(name, status, gender);
+	Select<Game> game = new Select<>();
+	HorizontalLayout fields = new HorizontalLayout(name, status, name, points, gender);
 	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
@@ -66,6 +68,11 @@ public class TeamEditor extends Dialog implements KeyNotifier {
         gender.setLabel("Gender");
         gender.setItemLabelGenerator(Team.Gender::toString);
         gender.setItems(new ArrayList<>(EnumSet.allOf(Team.Gender.class)));
+        game.setLabel("Game");
+        List<Game> gameList = getGames();
+        game.setItemLabelGenerator(Game::getName);
+        game.setItems(gameList);
+        
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
@@ -106,5 +113,9 @@ public class TeamEditor extends Dialog implements KeyNotifier {
         // ChangeHandler is notified when either save or delete is clicked
         this.changeHandler = h;
     }
+    
+	public List<Game> getGames() {
+		return GameRepository.findAll();
+	}
 
 }
