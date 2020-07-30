@@ -39,16 +39,23 @@ public class GameEditor extends Dialog implements KeyNotifier {
     HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
     //fields to edit
-    TextField name = new TextField("Game-Name");
+    TextField name = new TextField("Name");
 	Select<Game.Status> status = new Select<>();
 	Select<Game.SortOrder> sortOrder = new Select<>();
 	Select<Game.PointType> pointType = new Select<>();
 	Select<Team> team = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(name, status, sortOrder, pointType);
+	HorizontalLayout fields = new HorizontalLayout(
+	name
+	, 
+	status, sortOrder, pointType);
 	Binder<Game> binder = new Binder<>(Game.class);
 
     @Autowired
-    public GameEditor(GameRepository gameRepository, TeamRepository teamRepository) {
+    public GameEditor(
+    	GameRepository gameRepository,
+    	 TeamRepository teamRepository
+    ) {
+    	
     	super();
     	   this.gameRepository = gameRepository;
     	   this.teamRepository = teamRepository;
@@ -84,8 +91,8 @@ public class GameEditor extends Dialog implements KeyNotifier {
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
-    public final void edit(Game Game) {
-        if (Game == null) {
+    public final void edit(Game game) {
+        if (game == null) {
             close();
             return;
         }

@@ -10,7 +10,7 @@ import java.util.List;
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
     List<Team> findAll();
-
-    List<Team> findByNameStartsWithIgnoreCase(String name);
-
+	
+	// ONLY do this if property name exists
+	List<Team> findByNameStartsWithIgnoreCase(String name);
 }

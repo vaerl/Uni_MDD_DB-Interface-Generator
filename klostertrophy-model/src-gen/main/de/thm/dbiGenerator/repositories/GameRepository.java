@@ -10,7 +10,7 @@ import java.util.List;
 public interface GameRepository extends JpaRepository<Game, Long> {
 
     List<Game> findAll();
-
-    List<Game> findByNameStartsWithIgnoreCase(String name);
-
+	
+	// ONLY do this if property name exists
+	List<Game> findByNameStartsWithIgnoreCase(String name);
 }

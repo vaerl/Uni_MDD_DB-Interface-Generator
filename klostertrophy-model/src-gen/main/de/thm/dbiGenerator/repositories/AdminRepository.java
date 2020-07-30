@@ -10,5 +10,6 @@ import java.util.List;
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     List<Admin> findAll();
-
+	
+	// ONLY do this if property name exists
 }

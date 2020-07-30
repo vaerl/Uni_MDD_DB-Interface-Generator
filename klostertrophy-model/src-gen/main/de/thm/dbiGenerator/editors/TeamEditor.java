@@ -39,15 +39,23 @@ public class TeamEditor extends Dialog implements KeyNotifier {
     HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
     //fields to edit
-    TextField name = new TextField("Team-Name");
+    TextField name = new TextField("Name");
+    TextField points = new TextField("Points");
 	Select<Team.Status> status = new Select<>();
 	Select<Team.Gender> gender = new Select<>();
 	Select<Game> game = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(name, status, gender);
+	HorizontalLayout fields = new HorizontalLayout(
+	name, points
+	, 
+	status, gender);
 	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
-    public TeamEditor(TeamRepository teamRepository, GameRepository gameRepository) {
+    public TeamEditor(
+    	TeamRepository teamRepository,
+    	 GameRepository gameRepository
+    ) {
+    	
     	super();
     	   this.teamRepository = teamRepository;
     	   this.gameRepository = gameRepository;
@@ -80,8 +88,8 @@ public class TeamEditor extends Dialog implements KeyNotifier {
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
-    public final void edit(Team Team) {
-        if (Team == null) {
+    public final void edit(Team team) {
+        if (team == null) {
             close();
             return;
         }

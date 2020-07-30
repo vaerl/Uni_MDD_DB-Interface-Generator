@@ -1153,7 +1153,9 @@ class Generator {
 			    HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 			
 			    //fields to edit
-			    TextField name = new TextField("«entity.name.toFirstUpper»-Name");
+			    «FOR e : entity.attributes.filter(TypeAttribute)»
+			    	TextField «e.name.toFirstLower» = new TextField("«e.name.toFirstUpper»");
+			    «ENDFOR»
 				«FOR e : entity.attributes.filter(EnumAttribute)»
 					Select<«entity.name.toFirstUpper».«e.name.toFirstUpper»> «e.name.toFirstLower» = new Select<>();
 				«ENDFOR»
@@ -1163,15 +1165,32 @@ class Generator {
 				«FOR rel : entity.inwardRelations»
 					Select<«rel.start.name.toFirstUpper»> «rel.start.name.toFirstLower» = new Select<>();
 				«ENDFOR»
-				HorizontalLayout fields = new HorizontalLayout(name, «FOR e : entity.attributes.filter(EnumAttribute) SEPARATOR ', '»«e.name»«ENDFOR»);
+				HorizontalLayout fields = new HorizontalLayout(
+				«FOR e : entity.attributes.filter(TypeAttribute) SEPARATOR ', '»«e.name»«ENDFOR»
+				«IF entity.attributes.filter(TypeAttribute).size > 0 && entity.attributes.filter(EnumAttribute).size > 0», «ENDIF»
+				«FOR e : entity.attributes.filter(EnumAttribute) SEPARATOR ', '»«e.name»«ENDFOR»);
 				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
 			
 			    @Autowired
 			    public «entity.name.toFirstUpper»Editor(
-			    «entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository
+			    	«entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository,
+			    	 «FOR rel : entity.outwardRelations SEPARATOR ", "»
+			    	 	«rel.end.name.toFirstUpper»Repository «rel.end.name.toFirstLower»Repository
+			    	 «ENDFOR»
+			    	 «IF entity.outwardRelations.size > 0 && entity.inwardRelations.size > 0», «ENDIF»
+			    	 «FOR rel : entity.inwardRelations SEPARATOR ", "»
+			    	 	«rel.start.name.toFirstUpper»Repository «rel.start.name.toFirstLower»Repository
+			    	 «ENDFOR»
 			    ) {
+			    	
 			    	super();
 			    	   this.«entity.name.toFirstLower»Repository = «entity.name.toFirstLower»Repository;
+			    	   «FOR rel : entity.outwardRelations»
+			    	   	this.«rel.end.name.toFirstLower»Repository = «rel.end.name.toFirstLower»Repository;
+			    	   «ENDFOR»
+			    	   «FOR rel : entity.inwardRelations»
+			    	   	this.«rel.start.name.toFirstLower»Repository = «rel.start.name.toFirstLower»Repository;
+			    	   «ENDFOR»
 			    	   add(fields, actions);
 			
 			        // bind using naming convention
@@ -1208,8 +1227,8 @@ class Generator {
 			        actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 			    }
 			
-			    public final void edit(«entity.name.toFirstUpper» «entity.name») {
-			        if («entity.name» == null) {
+			    public final void edit(«entity.name.toFirstUpper» «entity.name.toFirstLower») {
+			        if («entity.name.toFirstLower» == null) {
 			            close();
 			            return;
 			        }
