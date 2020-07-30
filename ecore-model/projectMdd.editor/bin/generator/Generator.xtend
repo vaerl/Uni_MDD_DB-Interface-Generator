@@ -271,6 +271,18 @@ class Generator {
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-maven-plugin</artifactId>
 						</plugin>
+						<plugin>
+							<groupId>com.vaadin</groupId>
+							<artifactId>vaadin-maven-plugin</artifactId>
+							<version>${vaadin.version}</version>
+							<executions>
+								<execution>
+									<goals>
+										<goal>prepare-frontend</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
 					</plugins>
 				</build>
 			
@@ -285,6 +297,8 @@ class Generator {
 			spring.datasource.url=jdbc:mysql://«backend.database.host»:«backend.database.port»/«backend.database.schema»?useSSL=false&allowPublicKeyRetrieval=true
 			spring.datasource.username=«backend.database.username»
 			spring.datasource.password=«backend.database.password»
+			spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+			spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 			
 			# LOGGING
 			logging.level.root=DEBUG
@@ -453,19 +467,19 @@ class Generator {
 
 	def genServletInitializer() {
 		'''
-		package «PACKAGE»;
-		
-		import org.springframework.boot.builder.SpringApplicationBuilder;
-		import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-		
-		public class ServletInitializer extends SpringBootServletInitializer {
-		
-			@Override
-			protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-				return application.sources(KlostertrophyApplication.class);
+			package «PACKAGE»;
+			
+			import org.springframework.boot.builder.SpringApplicationBuilder;
+			import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+			
+			public class ServletInitializer extends SpringBootServletInitializer {
+			
+				@Override
+				protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+					return application.sources(KlostertrophyApplication.class);
+				}
+			
 			}
-		
-		}
 		'''
 	}
 
@@ -943,8 +957,8 @@ class Generator {
 				@UIScope
 				public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
 				
-			    private static final long serialVersionUID = -8733687422451328748L;
-			    private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
+			   private static final long serialVersionUID = -8733687422451328748L;
+			   private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
 				
 				    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
 				    private Grid<«entity.name.toFirstUpper»> grid;

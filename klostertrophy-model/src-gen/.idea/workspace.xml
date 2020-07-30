@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -19,7 +22,17 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="06ab4d76-2e9a-4034-b84a-814fcbcda86a" name="Default Changelist" comment="" />
+    <list default="true" id="06ab4d76-2e9a-4034-b84a-814fcbcda86a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Klostertrophy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Klostertrophy.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/pages/GameGridPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/pages/GameGridPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/de/thm/dbiGenerator/pages/TeamGridPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/de/thm/dbiGenerator/pages/TeamGridPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,6 +40,13 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+      </MavenGeneralSettings>
+    </option>
   </component>
   <component name="ProjectId" id="1fGOfCUIbd9whtjSs41s6UM7XZY" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -38,11 +58,11 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../food-truck/food-truck-be" />
-    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../klostertrophy/backend/klostertrophy-OLD" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RunManager">
     <configuration name="Start" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
@@ -54,6 +74,7 @@
       </method>
     </configuration>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -69,6 +90,10 @@
       <workItem from="1595848414632" duration="945000" />
       <workItem from="1595849428991" duration="475000" />
       <workItem from="1595849941694" duration="2868000" />
+      <workItem from="1596036728928" duration="86000" />
+      <workItem from="1596036830446" duration="55000" />
+      <workItem from="1596036938814" duration="107000" />
+      <workItem from="1596097441591" duration="1102000" />
     </task>
     <servers />
   </component>
@@ -85,37 +110,85 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="348" y="154" width="800" height="725" key="#Plugins" timestamp="1595848376682">
+    <state x="348" y="147" width="800" height="725" key="#Plugins" timestamp="1596097516930">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="348" y="154" width="800" height="725" key="#Plugins/0.25.1500.975@0.25.1500.975" timestamp="1595848376682" />
+    <state x="348" y="147" width="800" height="725" key="#Plugins/0.25.1500.975@0.25.1500.975" timestamp="1596097516930" />
     <state x="229" y="80" width="1024" height="858" key="#Project_Structure" timestamp="1595849902084">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
     <state x="229" y="80" width="1024" height="858" key="#Project_Structure/0.25.1500.975@0.25.1500.975" timestamp="1595849902084" />
-    <state x="212" y="168" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595849039262">
+    <state x="212" y="161" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596098087438">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="212" y="168" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1500.975@0.25.1500.975" timestamp="1595849039262" />
+    <state x="212" y="161" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1500.975@0.25.1500.975" timestamp="1596098087438" />
     <state x="485" y="294" width="525" height="430" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1595849038531">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
     <state x="485" y="294" width="525" height="430" key="#com.intellij.ide.util.TreeClassChooserDialog/0.25.1500.975@0.25.1500.975" timestamp="1595849038531" />
-    <state x="534" y="254" width="424" height="497" key="FileChooserDialogImpl" timestamp="1595852106620">
+    <state x="534" y="240" width="424" height="497" key="FileChooserDialogImpl" timestamp="1596097951372">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="534" y="254" width="424" height="497" key="FileChooserDialogImpl/0.25.1500.975@0.25.1500.975" timestamp="1595852106620" />
-    <state x="236" y="59" width="1024" height="858" key="SettingsEditor" timestamp="1595850019680">
+    <state x="534" y="240" width="424" height="497" key="FileChooserDialogImpl/0.25.1500.975@0.25.1500.975" timestamp="1596097951372" />
+    <state width="1454" height="511" key="GridCell.Tab.0.bottom" timestamp="1596098375298">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="236" y="59" width="1024" height="858" key="SettingsEditor/0.25.1500.975@0.25.1500.975" timestamp="1595850019680" />
-    <state x="431" y="107" width="638" height="804" key="find.popup" timestamp="1595848268591">
+    <state width="1454" height="511" key="GridCell.Tab.0.bottom/0.25.1500.975@0.25.1500.975" timestamp="1596098375298" />
+    <state width="1454" height="511" key="GridCell.Tab.0.center" timestamp="1596098375298">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="431" y="107" width="638" height="804" key="find.popup/0.25.1500.975@0.25.1500.975" timestamp="1595848268591" />
-    <state x="413" y="232" width="672" height="678" key="search.everywhere.popup" timestamp="1595848272602">
+    <state width="1454" height="511" key="GridCell.Tab.0.center/0.25.1500.975@0.25.1500.975" timestamp="1596098375298" />
+    <state width="1454" height="511" key="GridCell.Tab.0.left" timestamp="1596098375297">
       <screen x="0" y="25" width="1500" height="975" />
     </state>
-    <state x="413" y="232" width="672" height="678" key="search.everywhere.popup/0.25.1500.975@0.25.1500.975" timestamp="1595848272602" />
+    <state width="1454" height="511" key="GridCell.Tab.0.left/0.25.1500.975@0.25.1500.975" timestamp="1596098375297" />
+    <state width="1454" height="511" key="GridCell.Tab.0.right" timestamp="1596098375298">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="511" key="GridCell.Tab.0.right/0.25.1500.975@0.25.1500.975" timestamp="1596098375298" />
+    <state width="1454" height="511" key="GridCell.Tab.1.bottom" timestamp="1596098375300">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="511" key="GridCell.Tab.1.bottom/0.25.1500.975@0.25.1500.975" timestamp="1596098375300" />
+    <state width="1454" height="511" key="GridCell.Tab.1.center" timestamp="1596098375299">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="511" key="GridCell.Tab.1.center/0.25.1500.975@0.25.1500.975" timestamp="1596098375299" />
+    <state width="1454" height="511" key="GridCell.Tab.1.left" timestamp="1596098375299">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="511" key="GridCell.Tab.1.left/0.25.1500.975@0.25.1500.975" timestamp="1596098375299" />
+    <state width="1454" height="511" key="GridCell.Tab.1.right" timestamp="1596098375299">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="511" key="GridCell.Tab.1.right/0.25.1500.975@0.25.1500.975" timestamp="1596098375299" />
+    <state width="1454" height="309" key="GridCell.Tab.2.bottom" timestamp="1596098091050">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="309" key="GridCell.Tab.2.bottom/0.25.1500.975@0.25.1500.975" timestamp="1596098091050" />
+    <state width="1454" height="309" key="GridCell.Tab.2.center" timestamp="1596098091049">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="309" key="GridCell.Tab.2.center/0.25.1500.975@0.25.1500.975" timestamp="1596098091049" />
+    <state width="1454" height="309" key="GridCell.Tab.2.left" timestamp="1596098091049">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="309" key="GridCell.Tab.2.left/0.25.1500.975@0.25.1500.975" timestamp="1596098091049" />
+    <state width="1454" height="309" key="GridCell.Tab.2.right" timestamp="1596098091049">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state width="1454" height="309" key="GridCell.Tab.2.right/0.25.1500.975@0.25.1500.975" timestamp="1596098091049" />
+    <state x="303" y="48" width="1024" height="858" key="SettingsEditor" timestamp="1596098192305">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="303" y="48" width="1024" height="858" key="SettingsEditor/0.25.1500.975@0.25.1500.975" timestamp="1596098192305" />
+    <state x="431" y="107" width="638" height="804" key="find.popup" timestamp="1596097600456">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="431" y="107" width="638" height="804" key="find.popup/0.25.1500.975@0.25.1500.975" timestamp="1596097600456" />
+    <state x="413" y="232" width="672" height="678" key="search.everywhere.popup" timestamp="1596097460373">
+      <screen x="0" y="25" width="1500" height="975" />
+    </state>
+    <state x="413" y="232" width="672" height="678" key="search.everywhere.popup/0.25.1500.975@0.25.1500.975" timestamp="1596097460373" />
   </component>
 </project>
