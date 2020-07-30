@@ -922,19 +922,19 @@ class Generator {
 			    private static final long serialVersionUID = -8733687422451328748L;
 			    private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
 			
-			    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
+			    private «entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository;
 			    private Grid<«entity.name.toFirstUpper»> grid;
-			    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
+			    private «entity.name.toFirstUpper»Editor «entity.name.toFirstLower»Editor;
 			
 			    private TextField filter;
 			
 			    private Button evaluate;
 			
 			    @Autowired
-			    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»Editor «entity.name»Editor) {
+			    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository, «entity.name.toFirstUpper»Editor «entity.name.toFirstLower»Editor) {
 			        super();
-			        this.«entity.name»Repository = «entity.name»Repository;
-			        this.«entity.name»Editor = «entity.name»Editor;
+			        this.«entity.name.toFirstLower»Repository = «entity.name.toFirstLower»Repository;
+			        this.«entity.name.toFirstLower»Editor = «entity.name.toFirstLower»Editor;
 			
 			        filter = new TextField();
 			        HorizontalLayout actions = new HorizontalLayout();
@@ -945,16 +945,16 @@ class Generator {
 			        grid.setMultiSort(true);
 			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
 			                GridVariant.LUMO_ROW_STRIPES);
-			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name.toFirstLower»Editor.edit(e.getValue()));
 			        // add Columns
 			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name.toFirstLower»Editor.edit(e.getValue()));
 			        //add Columns
 			        setColumns();
 			
 			        // actions
 			        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
-			        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»()));
+			        addNew.addClickListener(e -> this.«entity.name.toFirstLower»Editor.edit(new «entity.name.toFirstUpper»()));
 			
 			        // filter
 			        filter.setPlaceholder("Nach Namen filtern");
@@ -962,22 +962,22 @@ class Generator {
 			        filter.addValueChangeListener(e -> listValues(e.getValue()));
 			
 			        // editor
-			        «entity.name»Editor.setChangeHandler(() -> {
-			            «entity.name»Editor.close();
+			        «entity.name.toFirstLower»Editor.setChangeHandler(() -> {
+			            «entity.name.toFirstLower»Editor.close();
 			            listValues(filter.getValue());
 			        });
 			
 			
 			        actions.add(filter, addNew);
-			        add(actions, grid, this.«entity.name»Editor);
+			        add(actions, grid, this.«entity.name.toFirstLower»Editor);
 			        listValues(null);
 			    }
 			
 			    void listValues(String filterText) {
 			        if (StringUtils.isEmpty(filterText)) {
-			            grid.setItems(«entity.name»Repository.findAll());
+			            grid.setItems(«entity.name.toFirstLower»Repository.findAll());
 			        } else {
-			            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
+			            grid.setItems(«entity.name.toFirstLower»Repository.findByNameStartsWithIgnoreCase(filterText));
 			        }
 			    }
 			
@@ -991,29 +991,12 @@ class Generator {
 			
 			
 			        // add standard-columns
-		
-			        grid.addComponentColumn(value -> {
-			            Button details = new Button("Fertig");
-			            details.addClassName("details");
-			            details.addClickListener(e -> {
-			                var «entity.name»Details = new «entity.name.toFirstUpper»Details();
-			                «entity.name»Details.open(value);
-			            });
-			            if (value.getFinished().isEmpty()) {
-			                log.info("Finished is empty.");
-			                details.setEnabled(false);
-			            } else {
-			                log.info("Finished will be displayed.");
-			                details.setEnabled(true);
-			            }
-			            return details;
-			        });
 			
 			        grid.addComponentColumn(value -> {
 			            Button edit = new Button("Bearbeiten");
 			            edit.addClassName("edit");
 			            edit.addClickListener(e -> {
-			                «entity.name»Editor.edit(value);
+			                «entity.name.toFirstLower»Editor.edit(value);
 			            });
 			            return edit;
 			        });
