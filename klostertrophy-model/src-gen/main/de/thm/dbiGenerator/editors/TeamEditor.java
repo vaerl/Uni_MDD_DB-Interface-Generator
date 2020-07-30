@@ -11,10 +11,10 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.UIScope;
-import de.thm.dbiGenerator.entities.Game;
 import de.thm.dbiGenerator.entities.Team;
-import de.thm.dbiGenerator.repositories.GameRepository;
+import de.thm.dbiGenerator.entities.Game;
 import de.thm.dbiGenerator.repositories.TeamRepository;
+import de.thm.dbiGenerator.repositories.GameRepository;
 import de.thm.dbiGenerator.ChangeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,12 +25,12 @@ import java.util.List;
 
 @Component
 @UIScope
-public class GameEditor extends Dialog implements KeyNotifier {
+public class TeamEditor extends Dialog implements KeyNotifier {
 
-    private GameRepository gameRepository;
     private TeamRepository teamRepository;
+    private GameRepository gameRepository;
     private ChangeHandler changeHandler;
-    private Game game;
+    private Team team;
 
     //buttons
     Button save = new Button("Speichern", VaadinIcon.CHECK.create());
@@ -39,18 +39,17 @@ public class GameEditor extends Dialog implements KeyNotifier {
     HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
     //fields to edit
-    TextField name = new TextField("Game-Name");
-	Select<Game.Status> status = new Select<>();
-	Select<Game.SortOrder> sortOrder = new Select<>();
-	Select<Game.PointType> pointType = new Select<>();
-	Select<Team> team = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(name, status, sortOrder, pointType);
-	Binder<Game> binder = new Binder<>(Game.class);
+    TextField name = new TextField("Team-Name");
+	Select<Team.Status> status = new Select<>();
+	Select<Team.Gender> gender = new Select<>();
+	Select<Game> game = new Select<>();
+	HorizontalLayout fields = new HorizontalLayout(name, status, gender);
+	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
-    public GameEditor(GameRepository gameRepository) {
+    public TeamEditor(TeamRepository teamRepository) {
     	super();
-    	   this.gameRepository = gameRepository;
+    	   this.teamRepository = teamRepository;
     	   add(fields, actions);
 
         // bind using naming convention
@@ -67,55 +66,52 @@ public class GameEditor extends Dialog implements KeyNotifier {
 
         //fields
         status.setLabel("Status");
-        status.setItemLabelGenerator(Game.Status::toString);
-        status.setItems(new ArrayList<>(EnumSet.allOf(Game.Status.class)));
-        sortOrder.setLabel("SortOrder");
-        sortOrder.setItemLabelGenerator(Game.SortOrder::toString);
-        sortOrder.setItems(new ArrayList<>(EnumSet.allOf(Game.SortOrder.class)));
-        pointType.setLabel("PointType");
-        pointType.setItemLabelGenerator(Game.PointType::toString);
-        pointType.setItems(new ArrayList<>(EnumSet.allOf(Game.PointType.class)));
-        team.setLabel("Team");
-        List<Team> teamList = getTeams();
-        team.setItemLabelGenerator(Team::getName);
-        team.setItems(teamList);
+        status.setItemLabelGenerator(Team.Status::toString);
+        status.setItems(new ArrayList<>(EnumSet.allOf(Team.Status.class)));
+        gender.setLabel("Gender");
+        gender.setItemLabelGenerator(Team.Gender::toString);
+        gender.setItems(new ArrayList<>(EnumSet.allOf(Team.Gender.class)));
+        game.setLabel("Game");
+        List<Game> gameList = getGames();
+        game.setItemLabelGenerator(Game::getName);
+        game.setItems(gameList);
         
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
-    public final void edit(Game Game) {
-        if (Game == null) {
+    public final void edit(Team Team) {
+        if (Team == null) {
             close();
             return;
         }
 
-        final boolean persisted = game.getId() != null;
+        final boolean persisted = team.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
-            this.game = gameRepository.findById(game.getId()).get();
+            this.team = teamRepository.findById(team.getId()).get();
         }
         else {
-            this.game = game;
+            this.team = team;
         }
 
-        this.binder.setBean(this.game);
+        this.binder.setBean(this.team);
         open();
         this.name.focus();
     }
 
     void save() {
-        if (this.game.getName() == null || this.game.getStatus() == null || this.game.getSortOrder() == null || this.game.getPointType() == null
+        if (this.team.getStatus() == null || this.team.getName() == null || this.team.getPoints() == null || this.team.getGender() == null
          || 
-        this.game.getTeams() == null
+        this.team.getGames() == null
         ){
             return;
         }
-        gameRepository.save(this.game);
+        teamRepository.save(this.team);
         this.changeHandler.onChange();
     }
 
 	void delete() {
-	      gameRepository.delete(this.game);
+	      teamRepository.delete(this.team);
 	      this.changeHandler.onChange();
 	  }
 
@@ -124,8 +120,8 @@ public class GameEditor extends Dialog implements KeyNotifier {
         this.changeHandler = h;
     }
     
-	public List<Team> getTeams() {
-		return teamRepository.findAll();
+	public List<Game> getGames() {
+		return gameRepository.findAll();
 	}
 
 }

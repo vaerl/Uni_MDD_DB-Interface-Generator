@@ -119,7 +119,6 @@ class Generator {
 		var IFolder repoFolder = project.getAndCreateFolder(COMPLETE_PATH + "/repositories");
 		var IFolder pageFolder = project.getAndCreateFolder(COMPLETE_PATH + "/pages");
 		var IFolder editorFolder = project.getAndCreateFolder(COMPLETE_PATH + "/editors");
-		var IFolder detailsFolder = project.getAndCreateFolder(COMPLETE_PATH + "/details");
 
 		// TODO add contents
 		// create pom.xml
@@ -840,7 +839,6 @@ class Generator {
 			
 			@Setter
 			@Getter
-			@NoArgsConstructor
 			public class «entity.name»Gen {
 				
 				// attributes
@@ -893,7 +891,11 @@ class Generator {
 			package «PACKAGE».entities;
 			
 			import «PACKAGE».entities.«entity.name.toFirstUpper»Gen;
+			import javax.persistence.*;
 			
+			«IF !entity.transient»
+				@Entity
+			«ENDIF»
 			public class «entity.name» extends «entity.name»Gen {
 				
 			}
@@ -925,137 +927,115 @@ class Generator {
 
 	def genEntityGridPage(Entity entity) {
 		'''
-				package «PACKAGE».pages;
-				
-				import com.vaadin.flow.component.button.Button;
-				import com.vaadin.flow.component.grid.Grid;
-				import com.vaadin.flow.component.grid.GridVariant;
-				import com.vaadin.flow.component.icon.VaadinIcon;
-				import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-				import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-				import com.vaadin.flow.component.page.Push;
-				import com.vaadin.flow.component.textfield.TextField;
-				import com.vaadin.flow.data.value.ValueChangeMode;
-				import com.vaadin.flow.spring.annotation.UIScope;
-				import «PACKAGE».entities.«entity.name.toFirstUpper»;
-				import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
-				import «PACKAGE».details.«entity.name.toFirstUpper»Details;
-				import «PACKAGE».editors.«entity.name.toFirstUpper»Editor;
-				import org.slf4j.Logger;
-				import org.slf4j.LoggerFactory;
-				import org.springframework.beans.factory.annotation.Autowired;
-				import org.springframework.stereotype.Component;
-				import org.springframework.transaction.annotation.Transactional;
-				import org.springframework.util.StringUtils;
-				// Team Repository entfernt, da nur für Play verwendet
-				
-				@Component
-				@Transactional
-				@UIScope
-				public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
-				
-			   private static final long serialVersionUID = -8733687422451328748L;
-			   private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
-				
-				    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
-				    private Grid<«entity.name.toFirstUpper»> grid;
-				    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
-				
-				    private TextField filter;
-				
-				    private Button evaluate;
-				
-				    @Autowired
-				    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»Editor «entity.name»Editor) {
-				        super();
-				        this.«entity.name»Repository = «entity.name»Repository;
-				        this.«entity.name»Editor = «entity.name»Editor;
-				
-				        filter = new TextField();
-				        HorizontalLayout actions = new HorizontalLayout();
-				
-				        // grid
-				        grid = new Grid<>(«entity.name.toFirstUpper».class);
-				        grid.setItems(«entity.name»Repository.findAll());
-				        grid.setMultiSort(true);
-				        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
-				                GridVariant.LUMO_ROW_STRIPES);
-				        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
-				        // add Columns
-				        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-				        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
-				        //add Columns
-				        setColumns();
-				
-				        // actions
-				        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
-				        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»()));
-				
-				        // filter
-				        filter.setPlaceholder("Nach Namen filtern");
-				        filter.setValueChangeMode(ValueChangeMode.EAGER);
-				        filter.addValueChangeListener(e -> listValues(e.getValue()));
-				
-				        // editor
-				        «entity.name»Editor.setChangeHandler(() -> {
-				            «entity.name»Editor.close();
-				            listValues(filter.getValue());
-				        });
-				
-				
-				        actions.add(filter, addNew);
-				        add(actions, grid, this.«entity.name»Editor);
-				        listValues(null);
-				    }
-				
-				    void listValues(String filterText) {
-				        if (StringUtils.isEmpty(filterText)) {
-				            grid.setItems(«entity.name»Repository.findAll());
-				        } else {
-				            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
-				        }
-				    }
-				
-				    private void setColumns() {
-				        // remove unwanted columns
-				        grid.removeAllColumns();
-				        // add Columns
-				        «FOR attribute : entity.attributes»
-				        	grid.addColumn(«entity.name.toFirstUpper»::get«attribute.name.toFirstUpper»).setHeader("«attribute.name.toFirstUpper»").setSortable(true);
-				        «ENDFOR»
-				
-				
-				        // add standard-columns
+			package «PACKAGE».pages;
 			
-				        grid.addComponentColumn(value -> {
-				            Button details = new Button("Fertig");
-				            details.addClassName("details");
-				            details.addClickListener(e -> {
-				                var «entity.name»Details = new «entity.name.toFirstUpper»Details();
-				                «entity.name»Details.open(value);
-				            });
-				            if (value.getFinished().isEmpty()) {
-				                log.info("Finished is empty.");
-				                details.setEnabled(false);
-				            } else {
-				                log.info("Finished will be displayed.");
-				                details.setEnabled(true);
-				            }
-				            return details;
-				        });
-				
-				        grid.addComponentColumn(value -> {
-				            Button edit = new Button("Bearbeiten");
-				            edit.addClassName("edit");
-				            edit.addClickListener(e -> {
-				                «entity.name»Editor.edit(value);
-				            });
-				            return edit;
-				        });
-				
-				    }
-				}
-				
+			import com.vaadin.flow.component.button.Button;
+			import com.vaadin.flow.component.grid.Grid;
+			import com.vaadin.flow.component.grid.GridVariant;
+			import com.vaadin.flow.component.icon.VaadinIcon;
+			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+			import com.vaadin.flow.component.page.Push;
+			import com.vaadin.flow.component.textfield.TextField;
+			import com.vaadin.flow.data.value.ValueChangeMode;
+			import com.vaadin.flow.spring.annotation.UIScope;
+			import «PACKAGE».entities.«entity.name.toFirstUpper»;
+			import «PACKAGE».repositories.«entity.name.toFirstUpper»Repository;
+			import «PACKAGE».editors.«entity.name.toFirstUpper»Editor;
+			import org.slf4j.Logger;
+			import org.slf4j.LoggerFactory;
+			import org.springframework.beans.factory.annotation.Autowired;
+			import org.springframework.stereotype.Component;
+			import org.springframework.transaction.annotation.Transactional;
+			import org.springframework.util.StringUtils;
+			// Team Repository entfernt, da nur für Play verwendet
+			
+			@Component
+			@Transactional
+			@UIScope
+			public class «entity.name.toFirstUpper»GridPage extends VerticalLayout {
+			
+			  private static final long serialVersionUID = -8733687422451328748L;
+			  private static final Logger log = LoggerFactory.getLogger(«entity.name.toFirstUpper»GridPage.class);
+			
+			    private «entity.name.toFirstUpper»Repository «entity.name»Repository;
+			    private Grid<«entity.name.toFirstUpper»> grid;
+			    private «entity.name.toFirstUpper»Editor «entity.name»Editor;
+			
+			    private TextField filter;
+			
+			    private Button evaluate;
+			
+			    @Autowired
+			    public «entity.name.toFirstUpper»GridPage(«entity.name.toFirstUpper»Repository «entity.name»Repository, «entity.name.toFirstUpper»Editor «entity.name»Editor) {
+			        super();
+			        this.«entity.name»Repository = «entity.name»Repository;
+			        this.«entity.name»Editor = «entity.name»Editor;
+			
+			        filter = new TextField();
+			        HorizontalLayout actions = new HorizontalLayout();
+			
+			        // grid
+			        grid = new Grid<>(«entity.name.toFirstUpper».class);
+			        grid.setItems(«entity.name»Repository.findAll());
+			        grid.setMultiSort(true);
+			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
+			                GridVariant.LUMO_ROW_STRIPES);
+			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+			        // add Columns
+			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+			        grid.asSingleSelect().addValueChangeListener(e -> this.«entity.name»Editor.edit(e.getValue()));
+			        //add Columns
+			        setColumns();
+			
+			        // actions
+			        Button addNew = new Button("«entity.name.toFirstUpper» hinzufügen", VaadinIcon.PLUS.create());
+			        addNew.addClickListener(e -> this.«entity.name»Editor.edit(new «entity.name.toFirstUpper»()));
+			
+			        // filter
+			        filter.setPlaceholder("Nach Namen filtern");
+			        filter.setValueChangeMode(ValueChangeMode.EAGER);
+			        filter.addValueChangeListener(e -> listValues(e.getValue()));
+			
+			        // editor
+			        «entity.name»Editor.setChangeHandler(() -> {
+			            «entity.name»Editor.close();
+			            listValues(filter.getValue());
+			        });
+			
+			
+			        actions.add(filter, addNew);
+			        add(actions, grid, this.«entity.name»Editor);
+			        listValues(null);
+			    }
+			
+			    void listValues(String filterText) {
+			        if (StringUtils.isEmpty(filterText)) {
+			            grid.setItems(«entity.name»Repository.findAll());
+			        } else {
+			            grid.setItems(«entity.name»Repository.findByNameStartsWithIgnoreCase(filterText));
+			        }
+			    }
+			
+			    private void setColumns() {
+			        // remove unwanted columns
+			        grid.removeAllColumns();
+			        // add Columns
+			        «FOR attribute : entity.attributes»
+			        	grid.addColumn(«entity.name.toFirstUpper»::get«attribute.name.toFirstUpper»).setHeader("«attribute.name.toFirstUpper»").setSortable(true);
+			        «ENDFOR»				
+			        grid.addComponentColumn(value -> {
+			            Button edit = new Button("Bearbeiten");
+			            edit.addClassName("edit");
+			            edit.addClickListener(e -> {
+			                «entity.name»Editor.edit(value);
+			            });
+			            return edit;
+			        });
+			
+			    }
+			}
+			
 		'''
 	}
 
@@ -1191,7 +1171,28 @@ class Generator {
 			    }
 			
 			    void save() {
-			        if («FOR e : entity.attributes SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»«IF entity.attributes.filter(EnumAttribute).size > 0» || «ENDIF»«FOR rel : entity.outwardRelations SEPARATOR ' || '»this.«entity.name.toFirstLower».get«rel.end.name.toFirstUpper»() == null«ENDFOR»«IF entity.outwardRelations.size > 0» || «ENDIF»«FOR rel : entity.inwardRelations SEPARATOR ' || '»this.«entity.name.toFirstLower».get«rel.start.name.toFirstUpper»() == null«ENDFOR»«IF entity.inwardRelations.size > 0» || «ENDIF»this.«entity.name.toFirstLower».getName() == null){
+			        if («FOR e : entity.attributes SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»
+			        «IF entity.attributes.filter(EnumAttribute).size > 0» || «ENDIF»
+			        «FOR relation : entity.outwardRelations SEPARATOR ' || '»
+			        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»() == null
+			        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»() == null
+			        	«ELSE»
+			        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»s() == null
+			        	«ENDIF»
+			        «ENDFOR»
+			        «IF entity.outwardRelations.size > 0 && entity.inwardRelations.size > 0» || «ENDIF»
+			        «FOR relation : entity.inwardRelations SEPARATOR ' || '»
+			        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»() == null
+			        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s() == null
+			        	«ELSE»
+			        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s() == null
+			        	«ENDIF»
+			        «ENDFOR»
+			        ){
 			            return;
 			        }
 			        «entity.name.toFirstLower»Repository.save(this.«entity.name.toFirstLower»);
