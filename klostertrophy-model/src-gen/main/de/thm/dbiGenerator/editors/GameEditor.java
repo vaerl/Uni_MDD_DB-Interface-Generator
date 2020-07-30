@@ -12,7 +12,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.thm.dbiGenerator.entities.Game;
+import de.thm.dbiGenerator.entities.Team;
 import de.thm.dbiGenerator.repositories.GameRepository;
+import de.thm.dbiGenerator.repositories.TeamRepository;
 import de.thm.dbiGenerator.ChangeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,7 @@ import java.util.List;
 public class GameEditor extends Dialog implements KeyNotifier {
 
     private GameRepository gameRepository;
+    private TeamRepository teamRepository;
     private ChangeHandler changeHandler;
     private Game game;
 
@@ -41,7 +44,7 @@ public class GameEditor extends Dialog implements KeyNotifier {
 	Select<Game.SortOrder> sortOrder = new Select<>();
 	Select<Game.PointType> pointType = new Select<>();
 	Select<Team> team = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(name, name, status, sortOrder, pointType);
+	HorizontalLayout fields = new HorizontalLayout(name, status, sortOrder, pointType);
 	Binder<Game> binder = new Binder<>(Game.class);
 
     @Autowired
@@ -101,7 +104,7 @@ public class GameEditor extends Dialog implements KeyNotifier {
     }
 
     void save() {
-        if (this.game.getStatus() == null || this.game.getSortOrder() == null || this.game.getPointType() == null || this.game.getName() == null){
+        if (this.game.getName() == null || this.game.getStatus() == null || this.game.getSortOrder() == null || this.game.getPointType() == null || this.game.getTeams() == null || this.game.getName() == null){
             return;
         }
         gameRepository.save(this.game);

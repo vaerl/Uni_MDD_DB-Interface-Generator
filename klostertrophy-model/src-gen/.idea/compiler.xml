@@ -10,7 +10,7 @@
         <module name="Klostertrophy" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="14">
       <module name="Klostertrophy" target="14" />
     </bytecodeTargetLevel>
   </component>

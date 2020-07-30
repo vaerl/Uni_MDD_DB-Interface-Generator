@@ -12,7 +12,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.thm.dbiGenerator.entities.Team;
+import de.thm.dbiGenerator.entities.Game;
 import de.thm.dbiGenerator.repositories.TeamRepository;
+import de.thm.dbiGenerator.repositories.GameRepository;
 import de.thm.dbiGenerator.ChangeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,7 @@ import java.util.List;
 public class TeamEditor extends Dialog implements KeyNotifier {
 
     private TeamRepository teamRepository;
+    private GameRepository gameRepository;
     private ChangeHandler changeHandler;
     private Team team;
 
@@ -40,7 +43,7 @@ public class TeamEditor extends Dialog implements KeyNotifier {
 	Select<Team.Status> status = new Select<>();
 	Select<Team.Gender> gender = new Select<>();
 	Select<Game> game = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(name, status, name, points, gender);
+	HorizontalLayout fields = new HorizontalLayout(name, status, gender);
 	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
@@ -97,7 +100,7 @@ public class TeamEditor extends Dialog implements KeyNotifier {
     }
 
     void save() {
-        if (this.team.getStatus() == null || this.team.getGender() == null || this.team.getName() == null){
+        if (this.team.getStatus() == null || this.team.getName() == null || this.team.getPoints() == null || this.team.getGender() == null || this.team.getGames() == null || this.team.getName() == null){
             return;
         }
         teamRepository.save(this.team);
@@ -115,7 +118,7 @@ public class TeamEditor extends Dialog implements KeyNotifier {
     }
     
 	public List<Game> getGames() {
-		return GameRepository.findAll();
+		return gameRepository.findAll();
 	}
 
 }

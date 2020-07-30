@@ -17,6 +17,8 @@
 
 	<properties>
 		<java.version>14</java.version>
+		<maven.compiler.source>14</maven.compiler.source>
+		<maven.compiler.target>14</maven.compiler.target>
 		<vaadin.version>16.0.1</vaadin.version>
 	</properties>
 
@@ -103,6 +105,14 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>14</source>
+					<target>14</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

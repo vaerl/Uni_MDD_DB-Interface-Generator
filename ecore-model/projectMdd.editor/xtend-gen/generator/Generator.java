@@ -3125,10 +3125,10 @@ public class Generator {
     _builder.append("    \t   ");
     _builder.append("this.");
     String _firstLower_8 = StringExtensions.toFirstLower(entity.getName());
-    _builder.append(_firstLower_8, "   \t    ");
+    _builder.append(_firstLower_8, "    \t   ");
     _builder.append("Repository = ");
     String _firstLower_9 = StringExtensions.toFirstLower(entity.getName());
-    _builder.append(_firstLower_9, "   \t    ");
+    _builder.append(_firstLower_9, "    \t   ");
     _builder.append("Repository;");
     _builder.newLineIfNotEmpty();
     _builder.append("    \t   ");
@@ -3489,12 +3489,12 @@ public class Generator {
     _builder.append("\t");
     _builder.append("void delete() {");
     _builder.newLine();
-    _builder.append("       ");
+    _builder.append("\t      ");
     String _firstLower_33 = StringExtensions.toFirstLower(entity.getName());
-    _builder.append(_firstLower_33, "       ");
+    _builder.append(_firstLower_33, "\t      ");
     _builder.append("Repository.delete(this.");
     String _firstLower_34 = StringExtensions.toFirstLower(entity.getName());
-    _builder.append(_firstLower_34, "       ");
+    _builder.append(_firstLower_34, "\t      ");
     _builder.append(");");
     _builder.newLineIfNotEmpty();
     _builder.append("\t      ");
