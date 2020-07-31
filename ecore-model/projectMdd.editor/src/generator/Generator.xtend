@@ -1191,10 +1191,10 @@ class Generator {
 					Select<«entity.name.toFirstUpper».«e.name.toFirstUpper»> «e.name.toFirstLower» = new Select<>();
 				«ENDFOR»
 				«FOR rel : entity.outwardRelations»
-					MultiselectComboBox<«rel.end.name.toFirstUpper»> multiselectComboBox«rel.end.name.toFirstUpper» = new MultiselectComboBox();
+					MultiselectComboBox<«rel.end.name.toFirstUpper»> multiselectComboBox«rel.end.name.toFirstUpper» = new MultiselectComboBox<>();
 				«ENDFOR»
 				«FOR rel : entity.inwardRelations»
-					MultiselectComboBox<«rel.start.name.toFirstUpper»> multiselectComboBox«rel.start.name.toFirstUpper» = new MultiselectComboBox();
+					MultiselectComboBox<«rel.start.name.toFirstUpper»> multiselectComboBox«rel.start.name.toFirstUpper» = new MultiselectComboBox<>();
 				«ENDFOR»
 				VerticalLayout fields = new VerticalLayout(
 				«FOR e : entity.attributes.filter(TypeAttribute) SEPARATOR ', '»«e.name.toFirstLower»«ENDFOR»
