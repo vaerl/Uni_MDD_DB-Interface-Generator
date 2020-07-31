@@ -830,6 +830,7 @@ class Generator {
 			import lombok.Setter;
 			import javax.persistence.*;
 			import java.util.Set;
+			import java.util.HashSet;
 			
 			@Setter
 			@Getter
@@ -856,33 +857,33 @@ class Generator {
 				«FOR relation : entity.inwardRelations»
 					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
 						@OneToOne(mappedBy = "«relation.start.name.toFirstLower»")
-						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower» = new «relation.start.name.toFirstUpper»();
 					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
 						@ManyToOne
 						@JoinColumn(name = "«relation.start.name.toFirstLower»_id", nullable = false)
-						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower»;
+						private «relation.start.name.toFirstUpper» «relation.start.name.toFirstLower» = new «relation.start.name.toFirstUpper»();
 					«ELSE»
 						@ManyToMany(mappedBy = "«relation.end.name.toFirstLower»s")
-						private Set<«relation.start.name.toFirstUpper»> «relation.start.name.toFirstLower»s;
+						private Set<«relation.start.name.toFirstUpper»> «relation.start.name.toFirstLower»s = new HashSet<«relation.start.name.toFirstUpper»>();
 					«ENDIF»
 				«ENDFOR»
 				
 				// outward relations
 				«FOR relation : entity.outwardRelations»
 					«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
-						@OneToOne(cascade = CascadeType.ALL)
+						@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 						@JoinColumn(name = "«relation.end.name.toFirstLower»_id", referencedColumnName = "«relation.end.name.toFirstLower»_id")
-						private «relation.end.name.toFirstUpper» «relation.end.name.toFirstLower»;
+						private «relation.end.name.toFirstUpper» «relation.end.name.toFirstLower» = «relation.start.name.toFirstUpper»();
 					«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
-						@OneToMany(mappedBy = "«relation.start.name.toFirstLower»", cascade = CascadeType.ALL)
-						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+						@OneToMany(mappedBy = "«relation.start.name.toFirstLower»", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s = new HashSet<«relation.end.name.toFirstUpper»>();
 					«ELSE»
-						@ManyToMany(cascade = CascadeType.ALL)
+						@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 						@JoinTable(
 						name = "«relation.start.name.toFirstUpper»«relation.end.name.toFirstUpper»",
 						joinColumns = {@JoinColumn(name = "«relation.start.name.toFirstLower»_id")}, 
 										inverseJoinColumns = {@JoinColumn(name = "«relation.end.name.toFirstLower»_id")})
-						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s;
+						private Set<«relation.end.name.toFirstUpper»> «relation.end.name.toFirstLower»s = new HashSet<«relation.end.name.toFirstUpper»>();
 					«ENDIF»
 				«ENDFOR»
 				

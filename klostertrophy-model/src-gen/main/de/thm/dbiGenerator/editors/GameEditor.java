@@ -48,7 +48,7 @@ public class GameEditor extends Dialog implements KeyNotifier {
 	Select<Game.Status> status = new Select<>();
 	Select<Game.SortOrder> sortOrder = new Select<>();
 	Select<Game.PointType> pointType = new Select<>();
-	MultiselectComboBox<Team> multiselectComboBoxTeam = new MultiselectComboBox();
+	MultiselectComboBox<Team> multiselectComboBoxTeam = new MultiselectComboBox<>();
 	VerticalLayout fields = new VerticalLayout(
 	name
 	, 

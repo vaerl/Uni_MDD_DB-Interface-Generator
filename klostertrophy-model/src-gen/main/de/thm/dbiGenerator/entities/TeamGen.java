@@ -4,11 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 public class TeamGen {
 	
@@ -28,18 +29,12 @@ public class TeamGen {
 	// inward relations
 	
 	// outward relations
-	// Edited
 	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	@JoinTable(
 	name = "TeamGame",
 	joinColumns = {@JoinColumn(name = "team_id")}, 
 					inverseJoinColumns = {@JoinColumn(name = "game_id")})
-	private Set<Game> games;
-
-	// Edited
-	public TeamGen(){
-		this.games = new HashSet<>();
-	}
+	private Set<Game> games = new HashSet<Game>();
 	
 	// enums
 	public enum Status{

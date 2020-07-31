@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
 import java.util.Set;
+import java.util.HashSet;
 
 @Setter
 @Getter
@@ -28,7 +29,7 @@ public class GameGen {
 	
 	// inward relations
 	@ManyToMany(mappedBy = "games")
-	private Set<Team> teams;
+	private Set<Team> teams = new HashSet<Team>();
 	
 	// outward relations
 	

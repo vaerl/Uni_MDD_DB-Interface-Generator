@@ -25,8 +25,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.PlatformUI;
 
-import generator.Generator;
-
 public class GenerationHandler extends AbstractHandler {
 	
 	@Override
@@ -56,25 +54,6 @@ public class GenerationHandler extends AbstractHandler {
 				projectEcore);
 		job.setUser(true);
 		job.schedule();
-		
-//		TreeIterator<EObject> contents = resEcoreFile.getAllContents();
-//		
-//		Company rootElement = null;
-
-	
-		
-//		for(EObject currentElement = null; contents.hasNext(); ) {
-//			currentElement = contents.next();
-//			if(currentElement instanceof Company) {
-//				rootElement = (Company)currentElement;
-//				break;
-//			}
-//		}
-//		
-//		
-//		System.out.println("The company has " +rootElement.getCustomers().size() +"customers");
-//		// TODO Auto-generated method stub
-//		System.out.println("Yep!");
 		return null;
 	}
 

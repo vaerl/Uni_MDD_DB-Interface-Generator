@@ -57,27 +57,27 @@ public class MainView extends VerticalLayout {
 	    	Tabs tabs = new Tabs(team, game);
 	    	tabs.setFlexGrowForEnclosedTabs(1);
 	    	tabs.setWidthFull();
-			tabs.setSelectedTab(team);
-
+	    	tabs.setSelectedTab(team);
+	    	
 	    	HorizontalLayout tabWrapper = new HorizontalLayout(tabs);
 	    	tabWrapper.setWidth("92%");
 	    	tabWrapper.setJustifyContentMode(JustifyContentMode.START);
-
+	    	
 	    	HorizontalLayout bar = new HorizontalLayout(tabWrapper, logoutWrapper);
 	    	bar.setWidthFull();
-
+	    	
 	    	Map<Tab, VerticalLayout> tabsToPages = new HashMap<>();
 	    	tabsToPages.put(team, teamPage);
 	    	tabsToPages.put(game, gamePage);
-
+	    	
 	    	tabs.addSelectedChangeListener(event -> {
 	    	     removeAll();
 	    	     add(bar, tabsToPages.get(tabs.getSelectedTab()));
 	    	});
-
+	    	
 	    	setSizeFull();
 	    	add(bar, tabsToPages.get(tabs.getSelectedTab()));
-
+	    	
 	    	UI.getCurrent().addBeforeEnterListener((BeforeEnterListener) beforeEnterEvent -> {
 	    	     if (beforeEnterEvent.getNavigationTarget() != AccessDeniedView.class && // This is to avoid a
 	    	     // loop if DeniedAccessView is the target

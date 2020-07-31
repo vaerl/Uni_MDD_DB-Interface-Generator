@@ -25,7 +25,6 @@ public class KlostertrophyApplication {
     private static final String CONTAINER_DATABASE_PASSWORD = "1234klostertrophy";
     private static final String CONTAINER_DATABASE_NAME = "trophy";
 
-    // TODO container not starting correctly!
     public static void main(String[] args) {
         createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
         startMySQLContainer(CONTAINER_DATABASE_NAME);
@@ -72,13 +71,13 @@ public class KlostertrophyApplication {
         return (args) -> {
             Team team1 = new Team();
             team1.setStatus(Team.Status.DONE);
-            team1.setName("team1");
+            team1.setName("asdf");
             team1.setPoints(-1);
             team1.setGender(Team.Gender.MALE);
             teamRepository.save(team1);
             
             Game game2 = new Game();
-            game2.setName("game1");
+            game2.setName("asdf");
             game2.setStatus(Game.Status.DONE);
             game2.setSortOrder(Game.SortOrder.ASCENDING);
             game2.setPointType(Game.PointType.TIME);

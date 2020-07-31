@@ -5,10 +5,5 @@ import javax.persistence.*;
 
 @Entity
 public class Team extends TeamGen {
-
-    // Edited
-    public Team(){
-        super();
-    }
 	
 }
