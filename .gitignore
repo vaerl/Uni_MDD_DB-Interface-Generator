@@ -1,0 +1,9 @@
+**/bin
+**/xtend-gen
+**/target
+**/node_modules
+**/.classpath
+**/.project
+**/.idea
+**/.factorypath
+**/.settings
