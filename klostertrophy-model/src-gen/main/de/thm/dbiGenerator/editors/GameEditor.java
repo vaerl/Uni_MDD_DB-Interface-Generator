@@ -7,9 +7,14 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.data.binder.Binder;
+import org.vaadin.gatanaso.MultiselectComboBox;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.thm.dbiGenerator.entities.Game;
 import de.thm.dbiGenerator.entities.Team;
@@ -43,16 +48,18 @@ public class GameEditor extends Dialog implements KeyNotifier {
 	Select<Game.Status> status = new Select<>();
 	Select<Game.SortOrder> sortOrder = new Select<>();
 	Select<Game.PointType> pointType = new Select<>();
-	Select<Team> team = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(
+	MultiselectComboBox<Team> multiselectComboBoxTeam = new MultiselectComboBox();
+	VerticalLayout fields = new VerticalLayout(
 	name
 	, 
-	status, sortOrder, pointType);
+	status, sortOrder, pointType
+	, 
+	multiselectComboBoxTeam);
 	Binder<Game> binder = new Binder<>(Game.class);
 
     @Autowired
     public GameEditor(
-    	GameRepository gameRepository,
+    	 GameRepository gameRepository,
     	 TeamRepository teamRepository
     ) {
     	
@@ -83,10 +90,14 @@ public class GameEditor extends Dialog implements KeyNotifier {
         pointType.setLabel("PointType");
         pointType.setItemLabelGenerator(Game.PointType::toString);
         pointType.setItems(new ArrayList<>(EnumSet.allOf(Game.PointType.class)));
-        team.setLabel("Team");
+        multiselectComboBoxTeam.setWidth("100%");
+        multiselectComboBoxTeam.setLabel("Teams");
+        multiselectComboBoxTeam.setPlaceholder("Choose...");
         List<Team> teamList = getTeams();
-        team.setItemLabelGenerator(Team::getName);
-        team.setItems(teamList);
+        multiselectComboBoxTeam.setItemLabelGenerator(Team::getName);
+        multiselectComboBoxTeam.setItems(teamList);
+        multiselectComboBoxTeam.setRequired(true); // mark as mandatory
+        multiselectComboBoxTeam.setErrorMessage("This field is required"); // set error message
         
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }

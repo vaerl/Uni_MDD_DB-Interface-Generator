@@ -104,7 +104,7 @@ public class LoginView extends AppLayout implements BeforeEnterObserver {
 	        String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : "main";
 	
 	        this.getUI().ifPresent(ui -> ui.navigate(StringUtils.removeStart(requestedURI, "/")));
-	    } catch (BadCredentialsException e) {
+	    } catch (Exception e) {
 	        label.setText("Ungültiger Benutzername oder ungültiges Passwort. Bitte nochmal versuchen.");
 	    }
 	}

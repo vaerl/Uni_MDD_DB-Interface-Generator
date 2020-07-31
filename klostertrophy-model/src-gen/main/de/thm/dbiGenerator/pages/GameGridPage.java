@@ -29,39 +29,39 @@ public class GameGridPage extends VerticalLayout {
   private static final long serialVersionUID = -8733687422451328748L;
   private static final Logger log = LoggerFactory.getLogger(GameGridPage.class);
 
-    private GameRepository GameRepository;
+    private GameRepository gameRepository;
     private Grid<Game> grid;
-    private GameEditor GameEditor;
+    private GameEditor gameEditor;
 
     private TextField filter;
 
     private Button evaluate;
 
     @Autowired
-    public GameGridPage(GameRepository GameRepository, GameEditor GameEditor) {
+    public GameGridPage(GameRepository gameRepository, GameEditor gameEditor) {
         super();
-        this.GameRepository = GameRepository;
-        this.GameEditor = GameEditor;
+        this.gameRepository = gameRepository;
+        this.gameEditor = gameEditor;
 
         filter = new TextField();
         HorizontalLayout actions = new HorizontalLayout();
 
         // grid
         grid = new Grid<>(Game.class);
-        grid.setItems(GameRepository.findAll());
+        grid.setItems(gameRepository.findAll());
         grid.setMultiSort(true);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
                 GridVariant.LUMO_ROW_STRIPES);
-        grid.asSingleSelect().addValueChangeListener(e -> this.GameEditor.edit(e.getValue()));
+        grid.asSingleSelect().addValueChangeListener(e -> this.gameEditor.edit(e.getValue()));
         // add Columns
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-        grid.asSingleSelect().addValueChangeListener(e -> this.GameEditor.edit(e.getValue()));
+        grid.asSingleSelect().addValueChangeListener(e -> this.gameEditor.edit(e.getValue()));
         //add Columns
         setColumns();
 
         // actions
         Button addNew = new Button("Game hinzufügen", VaadinIcon.PLUS.create());
-        addNew.addClickListener(e -> this.GameEditor.edit(new Game()));
+        addNew.addClickListener(e -> this.gameEditor.edit(new Game()));
 
         // filter
         filter.setPlaceholder("Nach Namen filtern");
@@ -69,22 +69,22 @@ public class GameGridPage extends VerticalLayout {
         filter.addValueChangeListener(e -> listValues(e.getValue()));
 
         // editor
-        GameEditor.setChangeHandler(() -> {
-            GameEditor.close();
+        gameEditor.setChangeHandler(() -> {
+            gameEditor.close();
             listValues(filter.getValue());
         });
 
 
         actions.add(filter, addNew);
-        add(actions, grid, this.GameEditor);
+        add(actions, grid, this.gameEditor);
         listValues(null);
     }
 
     void listValues(String filterText) {
         if (StringUtils.isEmpty(filterText)) {
-            grid.setItems(GameRepository.findAll());
+            grid.setItems(gameRepository.findAll());
         } else {
-            grid.setItems(GameRepository.findByNameStartsWithIgnoreCase(filterText));
+            grid.setItems(gameRepository.findByNameStartsWithIgnoreCase(filterText));
         }
     }
 
@@ -100,7 +100,7 @@ public class GameGridPage extends VerticalLayout {
             Button edit = new Button("Bearbeiten");
             edit.addClassName("edit");
             edit.addClickListener(e -> {
-                GameEditor.edit(value);
+                gameEditor.edit(value);
             });
             return edit;
         });
