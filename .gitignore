@@ -6,3 +6,5 @@ klostertrophy-model/src-gen/.settings/org.eclipse.jdt.core.prefs
 klostertrophy-model/src-gen/target/classes/application.properties
 klostertrophy-model/src-gen/.settings/org.eclipse.jdt.apt.core.prefs
 klostertrophy-model/src-gen/target/classes/application.properties
+ecore-model/projectMdd.editor/bin
+ecore-model/projectMdd.editor/xtend-gen
