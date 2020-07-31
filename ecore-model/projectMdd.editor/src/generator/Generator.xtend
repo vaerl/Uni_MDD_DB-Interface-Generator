@@ -239,6 +239,20 @@ class Generator {
 						<groupId>com.vaadin</groupId>
 						<artifactId>vaadin-spring-boot-starter</artifactId>
 					</dependency>
+					<dependency>
+					   <groupId>org.vaadin.gatanaso</groupId>
+					   <artifactId>multiselect-combo-box-flow</artifactId>
+					   <version>3.0.2</version> <!-- use appropriate version -->
+					</dependency>
+					<repository>
+					   <id>vaadin-addons</id>
+					   <url>http://maven.vaadin.com/vaadin-addons</url>
+					</repository>
+					<dependency>
+						<groupId>org.webjars.bowergithub.vaadin</groupId>
+						<artifactId>vaadin-combo-box</artifactId>
+						<version>4.2.7</version>
+					</dependency>
 					
 					<!-- database -->
 					<dependency>
@@ -1105,7 +1119,7 @@ class Generator {
 			import com.vaadin.flow.component.dialog.Dialog;
 			import com.vaadin.flow.component.icon.VaadinIcon;
 			import com.vaadin.flow.component.orderedlayout.FlexComponent;
-			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 			import com.vaadin.flow.component.select.Select;
 			import com.vaadin.flow.component.textfield.TextField;
 			import com.vaadin.flow.data.binder.Binder;
@@ -1160,20 +1174,25 @@ class Generator {
 					Select<«entity.name.toFirstUpper».«e.name.toFirstUpper»> «e.name.toFirstLower» = new Select<>();
 				«ENDFOR»
 				«FOR rel : entity.outwardRelations»
-					Select<«rel.end.name.toFirstUpper»> «rel.end.name.toFirstLower» = new Select<>();
+					MultiselectComboBox<«rel.end.name.toFirstUpper»> multiselectComboBox«rel.end.name.toFirstUpper» = new MultiselectComboBox();
 				«ENDFOR»
 				«FOR rel : entity.inwardRelations»
-					Select<«rel.start.name.toFirstUpper»> «rel.start.name.toFirstLower» = new Select<>();
+					MultiselectComboBox<«rel.start.name.toFirstUpper»> multiselectComboBox«rel.start.name.toFirstUpper» = new MultiselectComboBox();
 				«ENDFOR»
-				HorizontalLayout fields = new HorizontalLayout(
-				«FOR e : entity.attributes.filter(TypeAttribute) SEPARATOR ', '»«e.name»«ENDFOR»
-				«IF entity.attributes.filter(TypeAttribute).size > 0 && entity.attributes.filter(EnumAttribute).size > 0», «ENDIF»
-				«FOR e : entity.attributes.filter(EnumAttribute) SEPARATOR ', '»«e.name»«ENDFOR»);
+				VerticalLayout fields = new VerticalLayout(
+				«FOR e : entity.attributes.filter(TypeAttribute) SEPARATOR ', '»«e.name.toFirstLower»«ENDFOR»
+				«IF entity.attributes.filter(TypeAttribute).size > 0 && (entity.attributes.filter(EnumAttribute).size > 0
+					|| entity.outwardRelations.size > 0 || entity.inwardRelations.size > 0)», «ENDIF»
+				«FOR e : entity.attributes.filter(EnumAttribute) SEPARATOR ', '»«e.name.toFirstLower»«ENDFOR»
+				«IF entity.attributes.filter(EnumAttribute).size > 0 && (entity.outwardRelations.size > 0 || entity.inwardRelations.size > 0)», «ENDIF»
+				«FOR rel : entity.outwardRelations SEPARATOR ', '»multiselectComboBox«rel.end.name.toFirstUpper»«ENDFOR»
+				«IF entity.outwardRelations.size > 0 && entity.inwardRelations.size > 0», «ENDIF»
+				«FOR rel : entity.inwardRelations SEPARATOR ', '»multiselectComboBox«rel.start.name.toFirstUpper»«ENDFOR»);
 				Binder<«entity.name.toFirstUpper»> binder = new Binder<>(«entity.name.toFirstUpper».class);
 			
 			    @Autowired
 			    public «entity.name.toFirstUpper»Editor(
-			    	«entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository,
+			    	 «entity.name.toFirstUpper»Repository «entity.name.toFirstLower»Repository,
 			    	 «FOR rel : entity.outwardRelations SEPARATOR ", "»
 			    	 	«rel.end.name.toFirstUpper»Repository «rel.end.name.toFirstLower»Repository
 			    	 «ENDFOR»
@@ -1212,16 +1231,36 @@ class Generator {
 			        	«e.name».setItems(new ArrayList<>(EnumSet.allOf(«entity.name.toFirstUpper».«e.name.toFirstUpper».class)));
 			        «ENDFOR»
 			        «FOR rel : entity.outwardRelations»
-			        	«rel.end.name.toFirstLower».setLabel("«rel.end.name.toFirstUpper»");
+			        	multiselectComboBox«rel.end.name.toFirstUpper».setWidth("100%");
+			        	«IF rel.type == RelationType.ONE_TO_ONE_VALUE»
+			        		multiselectComboBox«rel.end.name.toFirstUpper».setLabel("«rel.end.name.toFirstUpper»");
+			        	«ELSEIF rel.type == RelationType.ONE_TO_MANY_VALUE»
+			        		multiselectComboBox«rel.end.name.toFirstUpper».setLabel("«rel.end.name.toFirstUpper»");
+			        	«ELSE»
+			        		multiselectComboBox«rel.end.name.toFirstUpper».setLabel("«rel.end.name.toFirstUpper»s");
+			        	«ENDIF»
+			        	multiselectComboBox«rel.end.name.toFirstUpper».setPlaceholder("Choose...");
 			        	List<«rel.end.name.toFirstUpper»> «rel.end.name.toFirstLower»List = get«rel.end.name.toFirstUpper»s();
-			        	«rel.end.name.toFirstLower».setItemLabelGenerator(«rel.end.name.toFirstUpper»::getName);
-			        	«rel.end.name.toFirstLower».setItems(«rel.end.name.toFirstLower»List);
+			        	multiselectComboBox«rel.end.name.toFirstUpper».setItemLabelGenerator(«rel.end.name.toFirstUpper»::getName);
+			        	multiselectComboBox«rel.end.name.toFirstUpper».setItems(«rel.end.name.toFirstLower»List);
+			        	multiselectComboBox«rel.end.name.toFirstUpper».setRequired(true); // mark as mandatory
+			        	multiselectComboBox«rel.end.name.toFirstUpper».setErrorMessage("This field is required"); // set error message
 			        «ENDFOR»
 			        «FOR rel : entity.inwardRelations»
-			        	«rel.start.name.toFirstLower».setLabel("«rel.start.name.toFirstUpper»");
+			        	multiselectComboBox«rel.start.name.toFirstUpper».setWidth("100%");
+			        	«IF rel.type == RelationType.ONE_TO_ONE_VALUE»
+			        		multiselectComboBox«rel.start.name.toFirstUpper».setLabel("«rel.start.name.toFirstUpper»");
+			        	«ELSEIF rel.type == RelationType.ONE_TO_MANY_VALUE»
+			        		multiselectComboBox«rel.start.name.toFirstUpper».setLabel("«rel.start.name.toFirstUpper»s");
+			        	«ELSE»
+			        		multiselectComboBox«rel.start.name.toFirstUpper».setLabel("«rel.start.name.toFirstUpper»s");
+			        	«ENDIF»
+			        	multiselectComboBox«rel.start.name.toFirstUpper».setPlaceholder("Choose...");
 			        	List<«rel.start.name.toFirstUpper»> «rel.start.name.toFirstLower»List = get«rel.start.name.toFirstUpper»s();
-			        	«rel.start.name.toFirstLower».setItemLabelGenerator(«rel.start.name.toFirstUpper»::getName);
-			        	«rel.start.name.toFirstLower».setItems(«rel.start.name.toFirstLower»List);
+			        	multiselectComboBox«rel.start.name.toFirstUpper».setItemLabelGenerator(«rel.start.name.toFirstUpper»::getName);
+			        	multiselectComboBox«rel.start.name.toFirstUpper».setItems(«rel.start.name.toFirstLower»List);
+			        	multiselectComboBox«rel.start.name.toFirstUpper».setRequired(true); // mark as mandatory
+			        	multiselectComboBox«rel.start.name.toFirstUpper».setErrorMessage("This field is required"); // set error message
 			        «ENDFOR»
 			        
 			        actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
@@ -1249,7 +1288,7 @@ class Generator {
 			
 			    void save() {
 			        if («FOR e : entity.attributes SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»
-			        «IF entity.attributes.filter(EnumAttribute).size > 0» || «ENDIF»
+			        «IF entity.attributes.size > 0» || «ENDIF»
 			        «FOR relation : entity.outwardRelations SEPARATOR ' || '»
 			        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
 			        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»() == null
