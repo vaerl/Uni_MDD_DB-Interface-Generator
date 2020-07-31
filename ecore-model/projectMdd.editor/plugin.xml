@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated projectMdd -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="projectMdd.presentation.ProjectMddModelWizardID"
+            name="%_UI_ProjectMddModelWizard_label"
+            class="projectMdd.presentation.ProjectMddModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/ProjectMddModelFile.gif">
+         <description>%_UI_ProjectMddModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated projectMdd -->
+      <editor
+            id="projectMdd.presentation.ProjectMddEditorID"
+            name="%_UI_ProjectMddEditor_label"
+            icon="icons/full/obj16/ProjectMddModelFile.gif"
+            extensions="projectmdd"
+            class="projectMdd.presentation.ProjectMddEditor"
+            contributorClass="projectMdd.presentation.ProjectMddActionBarContributor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="projectMdd.editor.generatorCommand"
+            name="GeneratorCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?endof=group.edit">
+         <command
+               commandId="projectMdd.editor.generatorCommand"
+               label="Generate"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="generator.GenerationHandler"
+            commandId="projectMdd.editor.generatorCommand">
+      </handler>
+   </extension>
+
+</plugin>
