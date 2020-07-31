@@ -29,39 +29,39 @@ public class TeamGridPage extends VerticalLayout {
   private static final long serialVersionUID = -8733687422451328748L;
   private static final Logger log = LoggerFactory.getLogger(TeamGridPage.class);
 
-    private TeamRepository TeamRepository;
+    private TeamRepository teamRepository;
     private Grid<Team> grid;
-    private TeamEditor TeamEditor;
+    private TeamEditor teamEditor;
 
     private TextField filter;
 
     private Button evaluate;
 
     @Autowired
-    public TeamGridPage(TeamRepository TeamRepository, TeamEditor TeamEditor) {
+    public TeamGridPage(TeamRepository teamRepository, TeamEditor teamEditor) {
         super();
-        this.TeamRepository = TeamRepository;
-        this.TeamEditor = TeamEditor;
+        this.teamRepository = teamRepository;
+        this.teamEditor = teamEditor;
 
         filter = new TextField();
         HorizontalLayout actions = new HorizontalLayout();
 
         // grid
         grid = new Grid<>(Team.class);
-        grid.setItems(TeamRepository.findAll());
+        grid.setItems(teamRepository.findAll());
         grid.setMultiSort(true);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
                 GridVariant.LUMO_ROW_STRIPES);
-        grid.asSingleSelect().addValueChangeListener(e -> this.TeamEditor.edit(e.getValue()));
+        grid.asSingleSelect().addValueChangeListener(e -> this.teamEditor.edit(e.getValue()));
         // add Columns
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
-        grid.asSingleSelect().addValueChangeListener(e -> this.TeamEditor.edit(e.getValue()));
+        grid.asSingleSelect().addValueChangeListener(e -> this.teamEditor.edit(e.getValue()));
         //add Columns
         setColumns();
 
         // actions
         Button addNew = new Button("Team hinzufügen", VaadinIcon.PLUS.create());
-        addNew.addClickListener(e -> this.TeamEditor.edit(new Team()));
+        addNew.addClickListener(e -> this.teamEditor.edit(new Team()));
 
         // filter
         filter.setPlaceholder("Nach Namen filtern");
@@ -69,22 +69,22 @@ public class TeamGridPage extends VerticalLayout {
         filter.addValueChangeListener(e -> listValues(e.getValue()));
 
         // editor
-        TeamEditor.setChangeHandler(() -> {
-            TeamEditor.close();
+        teamEditor.setChangeHandler(() -> {
+            teamEditor.close();
             listValues(filter.getValue());
         });
 
 
         actions.add(filter, addNew);
-        add(actions, grid, this.TeamEditor);
+        add(actions, grid, this.teamEditor);
         listValues(null);
     }
 
     void listValues(String filterText) {
         if (StringUtils.isEmpty(filterText)) {
-            grid.setItems(TeamRepository.findAll());
+            grid.setItems(teamRepository.findAll());
         } else {
-            grid.setItems(TeamRepository.findByNameStartsWithIgnoreCase(filterText));
+            grid.setItems(teamRepository.findByNameStartsWithIgnoreCase(filterText));
         }
     }
 
@@ -100,7 +100,7 @@ public class TeamGridPage extends VerticalLayout {
             Button edit = new Button("Bearbeiten");
             edit.addClassName("edit");
             edit.addClickListener(e -> {
-                TeamEditor.edit(value);
+                teamEditor.edit(value);
             });
             return edit;
         });

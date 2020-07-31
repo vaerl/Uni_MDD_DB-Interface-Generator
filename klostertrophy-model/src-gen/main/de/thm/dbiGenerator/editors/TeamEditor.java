@@ -7,9 +7,14 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.data.binder.Binder;
+import org.vaadin.gatanaso.MultiselectComboBox;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.thm.dbiGenerator.entities.Team;
 import de.thm.dbiGenerator.entities.Game;
@@ -40,19 +45,22 @@ public class TeamEditor extends Dialog implements KeyNotifier {
 
     //fields to edit
     TextField name = new TextField("Name");
-    TextField points = new TextField("Points");
+    IntegerField points = new IntegerField("Points");
 	Select<Team.Status> status = new Select<>();
 	Select<Team.Gender> gender = new Select<>();
-	Select<Game> game = new Select<>();
-	HorizontalLayout fields = new HorizontalLayout(
+	MultiselectComboBox<Game> multiselectComboBoxGame = new MultiselectComboBox();
+	VerticalLayout fields = new VerticalLayout(
 	name, points
 	, 
-	status, gender);
+	status, gender
+	, 
+	multiselectComboBoxGame
+	);
 	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
     public TeamEditor(
-    	TeamRepository teamRepository,
+    	 TeamRepository teamRepository,
     	 GameRepository gameRepository
     ) {
     	
@@ -80,10 +88,14 @@ public class TeamEditor extends Dialog implements KeyNotifier {
         gender.setLabel("Gender");
         gender.setItemLabelGenerator(Team.Gender::toString);
         gender.setItems(new ArrayList<>(EnumSet.allOf(Team.Gender.class)));
-        game.setLabel("Game");
+        multiselectComboBoxGame.setWidth("100%");
+        multiselectComboBoxGame.setLabel("Games");
+        multiselectComboBoxGame.setPlaceholder("Choose...");
         List<Game> gameList = getGames();
-        game.setItemLabelGenerator(Game::getName);
-        game.setItems(gameList);
+        multiselectComboBoxGame.setItemLabelGenerator(Game::getName);
+        multiselectComboBoxGame.setItems(gameList);
+        multiselectComboBoxGame.setRequired(true); // mark as mandatory
+        multiselectComboBoxGame.setErrorMessage("This field is required"); // set error message
         
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }

@@ -1,8 +1,0 @@
-/target
-/node_modules
-/.idea
-/.settings
-/bin/
-.classpath
-.project
-.factorypath

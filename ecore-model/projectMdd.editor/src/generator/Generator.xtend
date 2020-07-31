@@ -14,6 +14,7 @@ import static extension generator.Helpers.*;
 import projectMdd.TypeAttribute
 import projectMdd.EnumAttribute
 import projectMdd.RelationType
+import projectMdd.DataType
 
 /**
  * The generator for ecore files.
@@ -197,6 +198,13 @@ class Generator {
 					<java.version>14</java.version>
 					<vaadin.version>16.0.1</vaadin.version>
 				</properties>
+				
+				<repositories>
+					<repository>
+						<id>vaadin-addons</id>
+						<url>http://maven.vaadin.com/vaadin-addons</url>
+					</repository>
+				</repositories>
 			
 				<dependencies>
 					<!-- Spring -->
@@ -244,10 +252,6 @@ class Generator {
 					   <artifactId>multiselect-combo-box-flow</artifactId>
 					   <version>3.0.2</version> <!-- use appropriate version -->
 					</dependency>
-					<repository>
-					   <id>vaadin-addons</id>
-					   <url>http://maven.vaadin.com/vaadin-addons</url>
-					</repository>
 					<dependency>
 						<groupId>org.webjars.bowergithub.vaadin</groupId>
 						<artifactId>vaadin-combo-box</artifactId>
@@ -587,7 +591,7 @@ class Generator {
 				private HttpServletRequest request;
 				
 				@Autowired
-				    MainView(HttpServletRequest request, «FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name.toFirstUpper»GridPage «e.name»Page«ENDFOR») {
+				    MainView(HttpServletRequest request, «FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name.toFirstUpper»GridPage «e.name.toFirstLower»Page«ENDFOR») {
 				    	super();
 				    	this.request = request;
 				    	
@@ -604,13 +608,13 @@ class Generator {
 				    	logoutWrapper.setWidth("8%");
 				    	logoutWrapper.setJustifyContentMode(JustifyContentMode.END);
 				    	«FOR e : backend.entities.filter[it.display]»
-				    		Tab «e.name» = new Tab("«e.name.toFirstUpper»");
-				    		        «e.name».getStyle().set("font-size", "48px");
+				    		Tab «e.name.toFirstLower» = new Tab("«e.name.toFirstUpper»");
+				    		«e.name.toFirstLower».getStyle().set("font-size", "48px");
 				    	«ENDFOR»
-				    	Tabs tabs = new Tabs(«FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name»«ENDFOR»);
-				    	tabs.setSelectedTab(«backend.entities.get(0).name»);
+				    	Tabs tabs = new Tabs(«FOR e : backend.entities.filter[it.display] SEPARATOR ', '»«e.name.toFirstLower»«ENDFOR»);
 				    	tabs.setFlexGrowForEnclosedTabs(1);
 				    	tabs.setWidthFull();
+				    	tabs.setSelectedTab(«backend.entities.get(0).name.toFirstLower»);
 				    	
 				    	HorizontalLayout tabWrapper = new HorizontalLayout(tabs);
 				    	tabWrapper.setWidth("92%");
@@ -621,7 +625,7 @@ class Generator {
 				    	
 				    	Map<Tab, VerticalLayout> tabsToPages = new HashMap<>();
 				    	«FOR e : backend.entities.filter[it.display]»
-				    		tabsToPages.put(«e.name», «e.name»Page);
+				    		tabsToPages.put(«e.name.toFirstLower», «e.name.toFirstLower»Page);
 				    	«ENDFOR»
 				    	
 				    	tabs.addSelectedChangeListener(event -> {
@@ -630,7 +634,7 @@ class Generator {
 				    	});
 				    	
 				    	setSizeFull();
-				    	add(bar);
+				    	add(bar, tabsToPages.get(tabs.getSelectedTab()));
 				    	
 				    	UI.getCurrent().addBeforeEnterListener((BeforeEnterListener) beforeEnterEvent -> {
 				    	     if (beforeEnterEvent.getNavigationTarget() != AccessDeniedView.class && // This is to avoid a
@@ -793,7 +797,7 @@ class Generator {
 				        String requestedURI = savedRequest != null ? savedRequest.getRequestURI() : "main";
 				
 				        this.getUI().ifPresent(ui -> ui.navigate(StringUtils.removeStart(requestedURI, "/")));
-				    } catch (BadCredentialsException e) {
+				    } catch (Exception e) {
 				        label.setText("Ungültiger Benutzername oder ungültiges Passwort. Bitte nochmal versuchen.");
 				    }
 				}
@@ -1047,7 +1051,7 @@ class Generator {
 			
 			        // grid
 			        grid = new Grid<>(«entity.name.toFirstUpper».class);
-			        grid.setItems(«entity.name»Repository.findAll());
+			        grid.setItems(«entity.name.toFirstLower»Repository.findAll());
 			        grid.setMultiSort(true);
 			        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
 			                GridVariant.LUMO_ROW_STRIPES);
@@ -1119,10 +1123,15 @@ class Generator {
 			import com.vaadin.flow.component.dialog.Dialog;
 			import com.vaadin.flow.component.icon.VaadinIcon;
 			import com.vaadin.flow.component.orderedlayout.FlexComponent;
+			import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 			import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 			import com.vaadin.flow.component.select.Select;
 			import com.vaadin.flow.component.textfield.TextField;
+			import com.vaadin.flow.component.textfield.NumberField;
+			import com.vaadin.flow.component.textfield.IntegerField;
+			import com.vaadin.flow.component.checkbox.Checkbox;
 			import com.vaadin.flow.data.binder.Binder;
+			import org.vaadin.gatanaso.MultiselectComboBox;
 			import com.vaadin.flow.spring.annotation.UIScope;
 			import «PACKAGE».entities.«entity.name.toFirstUpper»;
 			«FOR rel : entity.outwardRelations»
@@ -1168,7 +1177,15 @@ class Generator {
 			
 			    //fields to edit
 			    «FOR e : entity.attributes.filter(TypeAttribute)»
-			    	TextField «e.name.toFirstLower» = new TextField("«e.name.toFirstUpper»");
+			    	«IF e.type == DataType.STRING»
+			    		TextField «e.name.toFirstLower» = new TextField("«e.name.toFirstUpper»");
+			    	«ELSEIF e.type == DataType.DOUBLE»
+			    		NumberField «e.name.toFirstLower» = new NumberField("«e.name.toFirstUpper»");
+			    	«ELSEIF e.type == DataType.INTEGER»
+			    		IntegerField «e.name.toFirstLower» = new IntegerField("«e.name.toFirstUpper»");
+			    	«ELSEIF e.type == DataType.BOOLEAN»
+			    		CheckBox «e.name.toFirstLower» = new CheckBox("«e.name.toFirstUpper»");
+			    	«ENDIF»
 			    «ENDFOR»
 				«FOR e : entity.attributes.filter(EnumAttribute)»
 					Select<«entity.name.toFirstUpper».«e.name.toFirstUpper»> «e.name.toFirstLower» = new Select<>();
