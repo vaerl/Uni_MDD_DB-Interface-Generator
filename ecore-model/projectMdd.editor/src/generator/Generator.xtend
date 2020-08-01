@@ -1261,8 +1261,6 @@ class Generator {
 			        	List<«rel.end.name.toFirstUpper»> «rel.end.name.toFirstLower»List = get«rel.end.name.toFirstUpper»s();
 			        	multiselectComboBox«rel.end.name.toFirstUpper».setItemLabelGenerator(«rel.end.name.toFirstUpper»::getName);
 			        	multiselectComboBox«rel.end.name.toFirstUpper».setItems(«rel.end.name.toFirstLower»List);
-			        	multiselectComboBox«rel.end.name.toFirstUpper».setRequired(true); // mark as mandatory
-			        	multiselectComboBox«rel.end.name.toFirstUpper».setErrorMessage("This field is required"); // set error message
 			        «ENDFOR»
 			        «FOR rel : entity.inwardRelations»
 			        	multiselectComboBox«rel.start.name.toFirstUpper».setWidth("100%");
@@ -1277,14 +1275,18 @@ class Generator {
 			        	List<«rel.start.name.toFirstUpper»> «rel.start.name.toFirstLower»List = get«rel.start.name.toFirstUpper»s();
 			        	multiselectComboBox«rel.start.name.toFirstUpper».setItemLabelGenerator(«rel.start.name.toFirstUpper»::getName);
 			        	multiselectComboBox«rel.start.name.toFirstUpper».setItems(«rel.start.name.toFirstLower»List);
-			        	multiselectComboBox«rel.start.name.toFirstUpper».setRequired(true); // mark as mandatory
-			        	multiselectComboBox«rel.start.name.toFirstUpper».setErrorMessage("This field is required"); // set error message
 			        «ENDFOR»
 			        
 			        actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 			    }
 			
 			    public final void edit(«entity.name.toFirstUpper» «entity.name.toFirstLower») {
+			    	«FOR relation : entity.outwardRelations»
+			    		multiselectComboBox«rel.end.name.toFirstUpper».clear();
+			    	«ENDFOR»
+			    	«FOR relation : entity.inwardRelations»
+			    		multiselectComboBox«rel.start.name.toFirstUpper».clear();
+			    	«ENDFOR»
 			        if («entity.name.toFirstLower» == null) {
 			            close();
 			            return;
@@ -1300,11 +1302,39 @@ class Generator {
 			        }
 			
 			        this.binder.setBean(this.«entity.name.toFirstLower»);
+			        «FOR relation : entity.outwardRelations»
+						this.multiselectComboBox«rel.end.name.toFirstUpper».updateSelection(
+												«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+									        		«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»()
+									        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+									        		«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»()
+									        	«ELSE»
+									        		«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»s()
+									        	«ENDIF»
+									        	, new HashSet<>());
+			        «ENDFOR»
+			        «FOR relation : entity.inwardRelations»
+			        	this.multiselectComboBox«rel.start.name.toFirstUpper».updateSelection(
+									        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+									        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»
+									        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+									        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s
+									        	«ELSE»
+									        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s
+									        	«ENDIF»
+			        							, new HashSet<>());
+			        «ENDFOR»
 			        open();
 			        this.name.focus();
 			    }
 			
 			    void save() {
+			    				    	«FOR relation : entity.outwardRelations»
+			    				    		multiselectComboBox«rel.end.name.toFirstUpper».clear();
+			    				    	«ENDFOR»
+			    				    	«FOR relation : entity.inwardRelations»
+			    				    		multiselectComboBox«rel.start.name.toFirstUpper».clear();
+			    				    	«ENDFOR»
 			        if («FOR e : entity.attributes SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»
 			        «IF entity.attributes.size > 0» || «ENDIF»
 			        «FOR relation : entity.outwardRelations SEPARATOR ' || '»
@@ -1329,6 +1359,28 @@ class Generator {
 			        ){
 			            return;
 			        }
+			        			    	«FOR relation : entity.outwardRelations»
+			        			    		this.«entity.name.toFirstLower».set
+			        			    								«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+			        			    					        		«relation.end.name.toFirstUpper»
+			        			    					        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+			        			    					        		«relation.end.name.toFirstUpper»
+			        			    					        	«ELSE»
+			        			    					        		«relation.end.name.toFirstUpper»s
+			        			    					        	«ENDIF»
+			        			    					        	(multiselectComboBox«rel.end.name.toFirstUpper».getSelectedItems());
+			        			    	«ENDFOR»
+			        			    	«FOR relation : entity.inwardRelations»
+			        			    		this.«entity.name.toFirstLower».set
+			        			    								«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+			        			    					        		«relation.start.name.toFirstUpper»
+			        			    					        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+			        			    					        		«relation.start.name.toFirstUpper»s
+			        			    					        	«ELSE»
+			        			    					        		«relation.start.name.toFirstUpper»s
+			        			    					        	«ENDIF»
+			        			    					        	(multiselectComboBox«rel.start.name.toFirstUpper».getSelectedItems());
+			        			    	«ENDFOR»
 			        «entity.name.toFirstLower»Repository.save(this.«entity.name.toFirstLower»);
 			        this.changeHandler.onChange();
 			    }
