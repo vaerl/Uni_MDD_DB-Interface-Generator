@@ -34,7 +34,7 @@ public class TeamGen {
 	name = "TeamGame",
 	joinColumns = {@JoinColumn(name = "team_id")}, 
 					inverseJoinColumns = {@JoinColumn(name = "game_id")})
-	private Set<Game> games = new HashSet<Game>();
+	private Set<Game> games = new HashSet<>();
 	
 	// enums
 	public enum Status{

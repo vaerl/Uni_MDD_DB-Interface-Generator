@@ -28,8 +28,8 @@ public class GameGen {
 	private PointType pointType;
 	
 	// inward relations
-	@ManyToMany(mappedBy = "games")
-	private Set<Team> teams = new HashSet<Team>();
+	@ManyToMany(mappedBy = "games", fetch = FetchType.EAGER)
+	private Set<Team> teams = new HashSet<>();
 	
 	// outward relations
 	
