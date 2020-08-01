@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
 import java.util.Set;
+import java.util.HashSet;
 
 @Setter
 @Getter
@@ -28,12 +29,12 @@ public class TeamGen {
 	// inward relations
 	
 	// outward relations
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	@JoinTable(
 	name = "TeamGame",
 	joinColumns = {@JoinColumn(name = "team_id")}, 
 					inverseJoinColumns = {@JoinColumn(name = "game_id")})
-	private Set<Game> games;
+	private Set<Game> games = new HashSet<>();
 	
 	// enums
 	public enum Status{

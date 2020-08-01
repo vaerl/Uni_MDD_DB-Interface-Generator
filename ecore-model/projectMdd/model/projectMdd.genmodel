@@ -32,29 +32,23 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Entity/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference projectMdd.ecore#//Entity/attributes"/>
     </genClasses>
-    <genClasses ecoreClass="projectMdd.ecore#//OutwardEntity">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference projectMdd.ecore#//OutwardEntity/outwardRelations"/>
-    </genClasses>
-    <genClasses ecoreClass="projectMdd.ecore#//InwardEntity">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference projectMdd.ecore#//InwardEntity/inwardRelations"/>
-    </genClasses>
-    <genClasses ecoreClass="projectMdd.ecore#//Attribute">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Attribute/name"/>
-    </genClasses>
-    <genClasses ecoreClass="projectMdd.ecore#//TypeAttribute">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//TypeAttribute/type"/>
-    </genClasses>
-    <genClasses ecoreClass="projectMdd.ecore#//EnumAttribute">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//EnumAttribute/values"/>
-    </genClasses>
     <genClasses ecoreClass="projectMdd.ecore#//Relation">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference projectMdd.ecore#//Relation/start"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Relation/name"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference projectMdd.ecore#//Relation/end"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Relation/type"/>
     </genClasses>
+    <genClasses ecoreClass="projectMdd.ecore#//OutwardEntity">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference projectMdd.ecore#//OutwardEntity/outwardRelations"/>
+    </genClasses>
+    <genClasses ecoreClass="projectMdd.ecore#//InwardEntity">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference projectMdd.ecore#//InwardEntity/inwardRelations"/>
+    </genClasses>
     <genClasses ecoreClass="projectMdd.ecore#//Persistable">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Persistable/transient"/>
+    </genClasses>
+    <genClasses ecoreClass="projectMdd.ecore#//Attribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Attribute/name"/>
     </genClasses>
     <genClasses ecoreClass="projectMdd.ecore#//Displayable">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Displayable/display"/>
@@ -65,6 +59,12 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/password"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/schema"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//Database/port"/>
+    </genClasses>
+    <genClasses ecoreClass="projectMdd.ecore#//EnumAttribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//EnumAttribute/values"/>
+    </genClasses>
+    <genClasses ecoreClass="projectMdd.ecore#//TypeAttribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute projectMdd.ecore#//TypeAttribute/type"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

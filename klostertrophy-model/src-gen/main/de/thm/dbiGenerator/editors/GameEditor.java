@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 
 @Component
@@ -45,28 +46,28 @@ public class GameEditor extends Dialog implements KeyNotifier {
 
     //fields to edit
     TextField name = new TextField("Name");
-	Select<Game.Status> status = new Select<>();
-	Select<Game.SortOrder> sortOrder = new Select<>();
-	Select<Game.PointType> pointType = new Select<>();
-	MultiselectComboBox<Team> multiselectComboBoxTeam = new MultiselectComboBox();
-	VerticalLayout fields = new VerticalLayout(
-	name
-	, 
-	status, sortOrder, pointType
-	, 
-	multiselectComboBoxTeam);
-	Binder<Game> binder = new Binder<>(Game.class);
+    Select<Game.Status> status = new Select<>();
+    Select<Game.SortOrder> sortOrder = new Select<>();
+    Select<Game.PointType> pointType = new Select<>();
+    MultiselectComboBox<Team> multiselectComboBoxTeam = new MultiselectComboBox<>();
+    VerticalLayout fields = new VerticalLayout(
+            name
+            ,
+            status, sortOrder, pointType
+            ,
+            multiselectComboBoxTeam);
+    Binder<Game> binder = new Binder<>(Game.class);
 
     @Autowired
     public GameEditor(
-    	 GameRepository gameRepository,
-    	 TeamRepository teamRepository
+            GameRepository gameRepository,
+            TeamRepository teamRepository
     ) {
-    	
-    	super();
-    	   this.gameRepository = gameRepository;
-    	   this.teamRepository = teamRepository;
-    	   add(fields, actions);
+
+        super();
+        this.gameRepository = gameRepository;
+        this.teamRepository = teamRepository;
+        add(fields, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
@@ -96,13 +97,12 @@ public class GameEditor extends Dialog implements KeyNotifier {
         List<Team> teamList = getTeams();
         multiselectComboBoxTeam.setItemLabelGenerator(Team::getName);
         multiselectComboBoxTeam.setItems(teamList);
-        multiselectComboBoxTeam.setRequired(true); // mark as mandatory
-        multiselectComboBoxTeam.setErrorMessage("This field is required"); // set error message
-        
+
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
     public final void edit(Game game) {
+        multiselectComboBoxTeam.clear();
         if (game == null) {
             close();
             return;
@@ -112,39 +112,42 @@ public class GameEditor extends Dialog implements KeyNotifier {
         if (persisted) {
             // Find fresh entity for editing
             this.game = gameRepository.findById(game.getId()).get();
-        }
-        else {
+        } else {
             this.game = game;
         }
 
         this.binder.setBean(this.game);
+        this.multiselectComboBoxTeam.updateSelection(
+                this.game.getTeams()
+                , new HashSet<>());
         open();
         this.name.focus();
     }
 
     void save() {
         if (this.game.getName() == null || this.game.getStatus() == null || this.game.getSortOrder() == null || this.game.getPointType() == null
-         || 
-        this.game.getTeams() == null
-        ){
+                ||
+                this.game.getTeams() == null
+        ) {
             return;
         }
+        this.game.setTeams(multiselectComboBoxTeam.getSelectedItems());
         gameRepository.save(this.game);
         this.changeHandler.onChange();
     }
 
-	void delete() {
-	      gameRepository.delete(this.game);
-	      this.changeHandler.onChange();
-	  }
+    void delete() {
+        gameRepository.delete(this.game);
+        this.changeHandler.onChange();
+    }
 
     public void setChangeHandler(ChangeHandler h) {
         // ChangeHandler is notified when either save or delete is clicked
         this.changeHandler = h;
     }
-    
-	public List<Team> getTeams() {
-		return teamRepository.findAll();
-	}
+
+    public List<Team> getTeams() {
+        return teamRepository.findAll();
+    }
 
 }
