@@ -354,7 +354,7 @@ class Generator {
 			
 			    public static void main(String[] args) {
 			        createMySQLContainer(CONTAINER_NAME, CONTAINER_DATABASE_PASSWORD, CONTAINER_DATABASE_NAME);
-			        startMySQLContainer(CONTAINER_DATABASE_NAME);
+			        startMySQLContainer(CONTAINER_NAME);
 			     	SpringApplication.run(«backend.projectName.toFirstUpper»Application.class, args);
 			    }
 			
