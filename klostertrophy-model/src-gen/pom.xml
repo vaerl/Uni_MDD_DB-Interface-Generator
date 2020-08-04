@@ -71,7 +71,7 @@
 		<dependency>
 		   <groupId>org.vaadin.gatanaso</groupId>
 		   <artifactId>multiselect-combo-box-flow</artifactId>
-		   <version>3.0.2</version> <!-- use appropriate version -->
+		   <version>3.0.2</version> <!-- this version contains an error which appears to be fixed in 2.4.2(which is only available for Vaadin 14) - however, the error seemingly does not prohibit usage of the combo-box. -->
 		</dependency>
 		<dependency>
 			<groupId>org.webjars.bowergithub.vaadin</groupId>

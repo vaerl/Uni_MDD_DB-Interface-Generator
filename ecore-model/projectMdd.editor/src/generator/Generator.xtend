@@ -1315,91 +1315,77 @@ class Generator {
 										, new HashSet<>());
 				«ENDFOR»
 				«FOR relation : entity.inwardRelations»
-					this.multiselectComboBox«relation.start.name.toFirstUpper».updateSelection(
-					     	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
-					     		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»()
-					     	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
-					     		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s()
-					     	«ELSE»
-					     		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s()
-					     	«ENDIF»
-					     	, new HashSet<>());
+				this.multiselectComboBox«relation.start.name.toFirstUpper».updateSelection(
+				     	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+				     		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»()
+				     	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+				     		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s()
+				     	«ELSE»
+				     		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s()
+				     	«ENDIF»
+				     	, new HashSet<>());
 					«ENDFOR»
 					open();
 					this.name.focus();
 					}
 					
-					    void save() {
-					        if («FOR e : entity.attributes SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»
-					        «IF entity.attributes.size > 0» || «ENDIF»
-					        «FOR relation : entity.outwardRelations SEPARATOR ' || '»
-					        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
-					        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»() == null
-					        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
-					        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»() == null
-					        	«ELSE»
-					        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»s() == null
-					        	«ENDIF»
-					        «ENDFOR»
-					        «IF entity.outwardRelations.size > 0 && entity.inwardRelations.size > 0» || «ENDIF»
-					        «FOR relation : entity.inwardRelations SEPARATOR ' || '»
-					        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
-					        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»() == null
-					        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
-					        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s() == null
-					        	«ELSE»
-					        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s() == null
-					        	«ENDIF»
-					        «ENDFOR»
-					        ){
-					            return;
-					        }
-					        			    	«FOR relation : entity.outwardRelations»
-					        			    		this.«entity.name.toFirstLower».set
-					        			    								«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
-					        			    									«relation.end.name.toFirstUpper»
-					        			    								«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
-					        			    									«relation.end.name.toFirstUpper»
-					        			    								«ELSE»
-					        			    									«relation.end.name.toFirstUpper»s
-					        			    								«ENDIF»
-					        			    								(multiselectComboBox«relation.end.name.toFirstUpper».getSelectedItems());
-					        			    	«ENDFOR»
-					        			    	«FOR relation : entity.inwardRelations»
-					        			    		this.«entity.name.toFirstLower».set«IF relation.type == RelationType.ONE_TO_ONE_VALUE»«relation.start.name.toFirstUpper»
-					        			    			«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
-					        			    				«relation.start.name.toFirstUpper»s
-					        			    			«ELSE»
-					        			    				«relation.start.name.toFirstUpper»s
-					        			    			«ENDIF»
-					        			    			(multiselectComboBox«relation.start.name.toFirstUpper».getSelectedItems());
-					        			    		«ENDFOR»
-					        	«entity.name.toFirstLower»Repository.save(this.«entity.name.toFirstLower»);
-					        	this.changeHandler.onChange();
-					    	}
-						
-							void delete() {
-							      «entity.name.toFirstLower»Repository.delete(this.«entity.name.toFirstLower»);
-							      this.changeHandler.onChange();
-							  }
-						
-						    public void setChangeHandler(ChangeHandler h) {
-						        // ChangeHandler is notified when either save or delete is clicked
-						        this.changeHandler = h;
-						    }
-						    
-						«FOR rel : entity.outwardRelations»
-							public List<«rel.end.name.toFirstUpper»> get«rel.end.name.toFirstUpper»s() {
-								return «rel.end.name.toFirstLower»Repository.findAll();
-							}
-						«ENDFOR»
-						«FOR rel : entity.inwardRelations»
-							public List<«rel.start.name.toFirstUpper»> get«rel.start.name.toFirstUpper»s() {
-								return «rel.start.name.toFirstLower»Repository.findAll();
-							}
-						«ENDFOR»
-						
-						}
+			    void save() {
+			        if («FOR e : entity.attributes SEPARATOR ' || '»this.«entity.name.toFirstLower».get«e.name.toFirstUpper»() == null«ENDFOR»
+			        «IF entity.attributes.size > 0» || «ENDIF»
+			        «FOR relation : entity.outwardRelations SEPARATOR ' || '»
+			        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»() == null
+			        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»() == null
+			        	«ELSE»
+			        		this.«entity.name.toFirstLower».get«relation.end.name.toFirstUpper»s() == null
+			        	«ENDIF»
+			        «ENDFOR»
+			        «IF entity.outwardRelations.size > 0 && entity.inwardRelations.size > 0» || «ENDIF»
+			        «FOR relation : entity.inwardRelations SEPARATOR ' || '»
+			        	«IF relation.type == RelationType.ONE_TO_ONE_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»() == null
+			        	«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»
+			        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s() == null
+			        	«ELSE»
+			        		this.«entity.name.toFirstLower».get«relation.start.name.toFirstUpper»s() == null
+			        	«ENDIF»
+			        «ENDFOR»
+			        ){
+			            return;
+			        }
+			        			    	«FOR relation : entity.outwardRelations»
+			        			    		this.«entity.name.toFirstLower».set«IF relation.type == RelationType.ONE_TO_ONE_VALUE»«relation.end.name.toFirstUpper»«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»«relation.end.name.toFirstUpper»«ELSE»«relation.end.name.toFirstUpper»s«ENDIF»(multiselectComboBox«relation.end.name.toFirstUpper».getSelectedItems());
+			        			    	«ENDFOR»
+			        			    	«FOR relation : entity.inwardRelations»
+			        			    		this.«entity.name.toFirstLower».set«IF relation.type == RelationType.ONE_TO_ONE_VALUE»«relation.start.name.toFirstUpper»«ELSEIF relation.type == RelationType.ONE_TO_MANY_VALUE»«relation.start.name.toFirstUpper»s«ELSE»«relation.start.name.toFirstUpper»s«ENDIF»(multiselectComboBox«relation.start.name.toFirstUpper».getSelectedItems());
+			        			    		«ENDFOR»
+			        	«entity.name.toFirstLower»Repository.save(this.«entity.name.toFirstLower»);
+			        	this.changeHandler.onChange();
+			    	}
+				
+					void delete() {
+					      «entity.name.toFirstLower»Repository.delete(this.«entity.name.toFirstLower»);
+					      this.changeHandler.onChange();
+					  }
+				
+				    public void setChangeHandler(ChangeHandler h) {
+				        // ChangeHandler is notified when either save or delete is clicked
+				        this.changeHandler = h;
+				    }
+				    
+				«FOR rel : entity.outwardRelations»
+					public List<«rel.end.name.toFirstUpper»> get«rel.end.name.toFirstUpper»s() {
+						return «rel.end.name.toFirstLower»Repository.findAll();
+					}
+				«ENDFOR»
+				«FOR rel : entity.inwardRelations»
+					public List<«rel.start.name.toFirstUpper»> get«rel.start.name.toFirstUpper»s() {
+						return «rel.start.name.toFirstLower»Repository.findAll();
+					}
+				«ENDFOR»
+				
+				}
 		'''
 	}
 

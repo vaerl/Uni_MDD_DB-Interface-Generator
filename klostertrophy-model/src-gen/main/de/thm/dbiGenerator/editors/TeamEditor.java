@@ -47,28 +47,28 @@ public class TeamEditor extends Dialog implements KeyNotifier {
     //fields to edit
     TextField name = new TextField("Name");
     IntegerField points = new IntegerField("Points");
-    Select<Team.Status> status = new Select<>();
-    Select<Team.Gender> gender = new Select<>();
-    MultiselectComboBox<Game> multiselectComboBoxGame = new MultiselectComboBox<>();
-    VerticalLayout fields = new VerticalLayout(
-            name, points
-            ,
-            status, gender
-            ,
-            multiselectComboBoxGame
-    );
-    Binder<Team> binder = new Binder<>(Team.class);
+	Select<Team.Status> status = new Select<>();
+	Select<Team.Gender> gender = new Select<>();
+	MultiselectComboBox<Game> multiselectComboBoxGame = new MultiselectComboBox<>();
+	VerticalLayout fields = new VerticalLayout(
+	name, points
+	, 
+	status, gender
+	, 
+	multiselectComboBoxGame
+	);
+	Binder<Team> binder = new Binder<>(Team.class);
 
     @Autowired
     public TeamEditor(
-            TeamRepository teamRepository,
-            GameRepository gameRepository
+    	 TeamRepository teamRepository,
+    	 GameRepository gameRepository
     ) {
-
-        super();
-        this.teamRepository = teamRepository;
-        this.gameRepository = gameRepository;
-        add(fields, actions);
+    	
+    	super();
+    	   this.teamRepository = teamRepository;
+    	   this.gameRepository = gameRepository;
+    	   add(fields, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
@@ -95,58 +95,58 @@ public class TeamEditor extends Dialog implements KeyNotifier {
         List<Game> gameList = getGames();
         multiselectComboBoxGame.setItemLabelGenerator(Game::getName);
         multiselectComboBoxGame.setItems(gameList);
-
+        
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
     public final void edit(Team team) {
-        multiselectComboBoxGame.clear();
-        if (team == null) {
-            close();
-            return;
-        }
+    	multiselectComboBoxGame.clear();
+    	if (team == null) {
+    	    close();
+    	    return;
+    	   }
 
         final boolean persisted = team.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
             this.team = teamRepository.findById(team.getId()).get();
-        } else {
+        }
+        else {
             this.team = team;
         }
 
         this.binder.setBean(this.team);
-        this.multiselectComboBoxGame.updateSelection(
-                team.getGames()
-                , new HashSet<>());
-        open();
-        this.name.focus();
-    }
-
+this.multiselectComboBoxGame.updateSelection(
+						team.getGames()
+						, new HashSet<>());
+		open();
+		this.name.focus();
+		}
+		
     void save() {
         if (this.team.getStatus() == null || this.team.getName() == null || this.team.getPoints() == null || this.team.getGender() == null
-                ||
-                this.team.getGames() == null
-        ) {
+         || 
+        this.team.getGames() == null
+        ){
             return;
         }
-        this.team.setGames
-                (multiselectComboBoxGame.getSelectedItems());
-        teamRepository.save(this.team);
-        this.changeHandler.onChange();
-    }
-
-    void delete() {
-        teamRepository.delete(this.team);
-        this.changeHandler.onChange();
-    }
-
-    public void setChangeHandler(ChangeHandler h) {
-        // ChangeHandler is notified when either save or delete is clicked
-        this.changeHandler = h;
-    }
-
-    public List<Game> getGames() {
-        return gameRepository.findAll();
-    }
-
-}
+        			    	this.team.setGames(multiselectComboBoxGame.getSelectedItems());
+        	teamRepository.save(this.team);
+        	this.changeHandler.onChange();
+    	}
+	
+		void delete() {
+		      teamRepository.delete(this.team);
+		      this.changeHandler.onChange();
+		  }
+	
+	    public void setChangeHandler(ChangeHandler h) {
+	        // ChangeHandler is notified when either save or delete is clicked
+	        this.changeHandler = h;
+	    }
+	    
+	public List<Game> getGames() {
+		return gameRepository.findAll();
+	}
+	
+	}
